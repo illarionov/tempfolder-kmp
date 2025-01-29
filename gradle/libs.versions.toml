@@ -12,7 +12,7 @@ gradle-maven-publish-plugin = "0.30.0"
 kotlin = "2.1.10"
 kotlinx-binary-compatibility-validator = "0.17.0"
 kotlinx-io ="0.6.0"
-spotless = "7.0.0"
+spotless = "7.0.2"
 
 [libraries]
 assertk = { group = "com.willowtreeapps.assertk", name = "assertk", version.ref = "assertk" }

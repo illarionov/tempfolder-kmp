@@ -5,8 +5,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder
+package at.released.tempfolder.blocking
 
+import at.released.tempfolder.TempfolderIOException
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.alloc
