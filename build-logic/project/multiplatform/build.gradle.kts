@@ -15,6 +15,8 @@ dependencies {
     implementation(project(":lint"))
     implementation(project(":documentation"))
     implementation(libs.atomicfu.plugin)
+    implementation(libs.agp.plugin.api)
+    runtimeOnly(libs.agp.plugin)
     implementation(libs.gradle.maven.publish.plugin)
     implementation(libs.kotlin.gradle.plugin)
 }

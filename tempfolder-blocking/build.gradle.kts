@@ -5,12 +5,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+@file:Suppress("OPT_IN_USAGE")
+
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     id("at.released.tempfolder.gradle.lint.android-lint")
+    id("at.released.tempfolder.gradle.multiplatform.android")
     id("at.released.tempfolder.gradle.multiplatform.kotlin")
     id("at.released.tempfolder.gradle.multiplatform.publish")
+    id("at.released.tempfolder.gradle.multiplatform.test.jvm")
 }
 
 group = "at.released.tempfolder"
@@ -19,8 +23,38 @@ version = tempfolderVersions.getSubmoduleVersionProvider(
     envVariableName = "TEMPFOLDER_BLOCKING_VERSION",
 ).get()
 
+android {
+    namespace = "at.released.tempfolder.blocking"
+    defaultConfig {
+        consumerProguardFiles("consumer-rules.pro")
+    }
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+        }
+    }
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = false
+            isIncludeAndroidResources = true
+        }
+    }
+    packaging {
+        resources.excludes += listOf(
+            "META-INF/LICENSE.md",
+            "META-INF/LICENSE-notice.md",
+        )
+    }
+}
+
 @OptIn(ExperimentalWasmDsl::class)
 kotlin {
+    androidTarget()
     jvm()
     js(IR) {
         nodejs()
@@ -38,12 +72,26 @@ kotlin {
     macosX64()
     mingwX64()
 
+    applyDefaultHierarchyTemplate {
+        common {
+            group("jvmAndAndroid") {
+                withJvm()
+                withAndroidTarget()
+            }
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
             api(libs.kotlinx.bytestring)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
+        }
+        androidInstrumentedTest.dependencies {
+            implementation(libs.androidx.test.core)
+            implementation(libs.androidx.test.runner)
+            implementation(libs.androidx.test.rules)
         }
     }
 }
