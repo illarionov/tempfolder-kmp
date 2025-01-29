@@ -55,12 +55,19 @@ android {
 @OptIn(ExperimentalWasmDsl::class)
 kotlin {
     androidTarget()
+    androidNativeArm32()
+    androidNativeArm64()
+    androidNativeX86()
+    androidNativeX64()
     jvm()
     js(IR) {
         nodejs()
     }
     wasmJs {
         browser()
+        nodejs()
+    }
+    wasmWasi {
         nodejs()
     }
     iosSimulatorArm64()
@@ -71,6 +78,13 @@ kotlin {
     macosArm64()
     macosX64()
     mingwX64()
+    watchosSimulatorArm64()
+    watchosX64()
+    watchosArm32()
+    watchosArm64()
+    tvosSimulatorArm64()
+    tvosX64()
+    tvosArm64()
 
     applyDefaultHierarchyTemplate {
         common {
