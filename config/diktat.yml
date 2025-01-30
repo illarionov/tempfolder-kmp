@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2024-2025 Alexey Illarionov and the at-released-tempfolder project contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # https://github.com/saveourtool/diktat/blob/master/diktat-rules/src/main/resources/diktat-analysis.yml
 - name: DIKTAT_COMMON
   configuration:
@@ -83,7 +86,7 @@
   enabled: false
   configuration:
     isCopyrightMandatory: true
-    copyrightText: 'Copyright 2024-;@currYear;, Alexey Illarionov and the at-released-tempfolder project contributors.'
+    copyrightText: 'SPDX-FileCopyrightText: 2024-2025 Alexey Illarionov and the at-released-tempfolder project contributors'
 
 - name: HEADER_WRONG_FORMAT
   enabled: false
