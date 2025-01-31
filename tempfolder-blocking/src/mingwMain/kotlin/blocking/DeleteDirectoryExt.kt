@@ -5,6 +5,7 @@
 
 package at.released.tempfolder.blocking
 
+import at.released.tempfolder.path.TempfolderPathString
 import at.released.tempfolder.TempfolderWindowsIOException
 import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem
 import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.EndOfStream
@@ -20,6 +21,16 @@ import platform.windows.GetLastError
 import platform.windows.RemoveDirectoryW
 import platform.windows.SetFileAttributesW
 
+// TODO: collect exceptions
+@Throws(TempfolderWindowsIOException::class)
+internal fun deleteDirectoryRecursively(
+    path: TempfolderPathString,
+): Unit {
+    // TODO
+    return deleteDirectoryRecursively(path.asString())
+}
+
+// TODO: collect exceptions
 @Throws(TempfolderWindowsIOException::class)
 internal fun deleteDirectoryRecursively(
     path: String,

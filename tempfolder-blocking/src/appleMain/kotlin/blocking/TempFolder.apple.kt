@@ -19,12 +19,12 @@ import platform.Foundation.NSItemReplacementDirectory
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
-internal actual fun createPlatformTempFolder(namePrefix: String): TempFolder = AppleTempFolder.create()
+internal actual fun createPlatformTempFolder(namePrefix: String): Tempfolder = AppleTempfolder.create()
 
-public class AppleTempFolder private constructor(
+public class AppleTempfolder private constructor(
     private val fileManager: NSFileManager,
     public val url: NSURL,
-) : TempFolder {
+) : Tempfolder {
     override val path: String
         get() = requireNotNull(url.path) {
             "url.path is null"
@@ -44,7 +44,7 @@ public class AppleTempFolder private constructor(
         @OptIn(BetaInteropApi::class)
         public fun create(
             fileManager: NSFileManager = NSFileManager.defaultManager,
-        ): AppleTempFolder {
+        ): AppleTempfolder {
             val tempUrl: NSURL = memScoped {
                 val error: ObjCObjectVar<NSError?> = alloc()
                 val cacheDirectory = fileManager.URLForDirectory(
@@ -62,7 +62,7 @@ public class AppleTempFolder private constructor(
                     error = error.ptr,
                 ) ?: throw TempfolderIOException("Can not create temporarily directory: ${error.value}")
             }
-            return AppleTempFolder(fileManager, tempUrl)
+            return AppleTempfolder(fileManager, tempUrl)
         }
     }
 }

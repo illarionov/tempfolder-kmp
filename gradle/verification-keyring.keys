@@ -2512,6 +2512,21 @@ nLx/8fai5lJq
 =O9cg
 -----END PGP PUBLIC KEY BLOCK-----
 
+pub    27F164F945828C4C
+uid    WillowTree <developer@willowtreeapps.com>
+
+sub    5BE125C87925F4B3
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mDMEY7d3lxYJKwYBBAHaRw8BAQdANOiFgriHFNDUJrXPLAjQCiIr19kAZqds47TA
+YYQWQiy0KVdpbGxvd1RyZWUgPGRldmVsb3BlckB3aWxsb3d0cmVlYXBwcy5jb20+
+uDgEY7d3lxIKKwYBBAGXVQEFAQEHQCLOMOSxHgakS6YLYej/AV+XEdU9z7IGCKBS
+7pOPZtpLAwEIB4h+BBgWCgAmFiEEg3ssux2WbIBkOi1lJ/Fk+UWCjEwFAmO3d5cC
+GwwFCQPCZwAACgkQJ/Fk+UWCjExiQQEA34/7oXGFuPpz4mdgWQ0OuHfT1yeWt1f1
+5NSl1pO0NZ8A/RhxdbcJcGvO69oV1cAvqhXP5EYCTUebnM5FO/JG3AsE
+=EVjd
+-----END PGP PUBLIC KEY BLOCK-----
+
 pub    280D66A55F5316C5
 uid    Brian Campbell (key for signing maven artifacts) <brian.d.campbell@gmail.com>
 

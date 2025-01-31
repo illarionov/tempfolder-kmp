@@ -17,11 +17,11 @@ import platform.posix.mkdtemp
 import platform.posix.nftw
 import platform.posix.remove
 
-internal actual fun createPlatformTempFolder(namePrefix: String): TempFolder = LinuxTempFolder.create(namePrefix)
+internal actual fun createPlatformTempFolder(namePrefix: String): Tempfolder = LinuxTempfolder.create(namePrefix)
 
-public class LinuxTempFolder private constructor(
+public class LinuxTempfolder private constructor(
     override val path: String,
-) : TempFolder {
+) : Tempfolder {
     override fun delete() {
         val code = nftw(
             path,
@@ -44,7 +44,7 @@ public class LinuxTempFolder private constructor(
     public companion object {
         public fun create(
             namePrefix: String,
-        ): LinuxTempFolder {
+        ): LinuxTempfolder {
             val tmpdir = getenv("TMPDIR")?.toKString() ?: "/tmp"
             val template = "$tmpdir/${namePrefix}XXXXXX"
             val path = memScoped {
@@ -52,7 +52,7 @@ public class LinuxTempFolder private constructor(
                 val newPath = mkdtemp(nativeTemplate) ?: error("Can not create temp dir: error $errno")
                 newPath.toKString()
             }
-            return LinuxTempFolder(path)
+            return LinuxTempfolder(path)
         }
     }
 }
