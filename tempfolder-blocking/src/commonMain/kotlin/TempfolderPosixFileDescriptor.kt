@@ -9,5 +9,5 @@ import kotlin.jvm.JvmInline
 
 @JvmInline
 public value class TempfolderPosixFileDescriptor(
-    public val fd: Int
+    public val fd: Int,
 )

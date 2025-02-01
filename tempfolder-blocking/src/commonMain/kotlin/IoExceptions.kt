@@ -15,7 +15,6 @@ public class TempfolderClosedException : TempfolderIOException {
     }
 }
 
-// TODO: doc
 public class DeleteRecursivelyException : TempfolderIOException {
     public constructor() : super()
     public constructor(message: String?) : super(message)
@@ -23,7 +22,8 @@ public class DeleteRecursivelyException : TempfolderIOException {
     public constructor(message: String, cause: Throwable?) : super(message, cause)
 
     public companion object {
-        internal const val FAILED_TO_DELETE_MESSAGE = "Failed to delete one or more files. See suppressed exceptions for details"
+        internal const val FAILED_TO_DELETE_MESSAGE =
+            "Failed to delete one or more files. See suppressed exceptions for details"
     }
 }
 

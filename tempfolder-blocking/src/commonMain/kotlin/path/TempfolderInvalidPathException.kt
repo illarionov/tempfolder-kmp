@@ -7,7 +7,7 @@ package at.released.tempfolder.path
 
 import at.released.tempfolder.TempfolderIOException
 
-public class InvalidPathException : TempfolderIOException {
+public class TempfolderInvalidPathException : TempfolderIOException {
     public constructor(message: String?) : super(message)
     public constructor(cause: Throwable) : super(cause)
     public constructor(message: String, cause: Throwable?) : super(message, cause)

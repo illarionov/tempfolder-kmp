@@ -8,14 +8,12 @@ package at.released.tempfolder.blocking
 import at.released.tempfolder.TempfolderWindowsIOException
 import at.released.tempfolder.WindowsPathString
 import at.released.tempfolder.winapi.errcode.Win32ErrorCode
-import at.released.tempfolder.winapi.errcode.getErrorMessage
 import platform.windows.CreateDirectoryW
 import platform.windows.ERROR_ALREADY_EXISTS
 import platform.windows.ERROR_PATH_NOT_FOUND
 
 @Throws(TempfolderWindowsIOException::class)
 internal fun createDirectory(path: WindowsPathString): Boolean {
-    // TODO: lpsecurityAttributes, path
     if (CreateDirectoryW(path.asString(), null) != 0) {
         return true
     }

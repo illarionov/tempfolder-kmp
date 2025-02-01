@@ -19,7 +19,7 @@ internal fun TempfolderPathString.toWindowsPathString(): WindowsPathString = if 
     this
 } else {
     val wchars = when (this.encoding) {
-        UNSPECIFIED, UTF8  -> this.asString().toCharArray()
+        UNSPECIFIED, UTF8 -> this.asString().toCharArray()
         UTF16_LE -> this.bytes.let { bytes ->
             check(bytes.size.mod(2) == 0)
             CharArray(bytes.size / 2) {
@@ -30,24 +30,17 @@ internal fun TempfolderPathString.toWindowsPathString(): WindowsPathString = if 
     WindowsPathString(wchars)
 }
 
+@Suppress("UnusedParameter")
 internal fun WindowsPathString(
     base: WindowsPathString,
-    subpath: String
-) : WindowsPathString {
+    subpath: String,
+): WindowsPathString {
     TODO()
 }
 
 internal class WindowsPathString(
     internal val wchars: CharArray,
 ) : TempfolderPathString {
-    init {
-        if (wchars.isNotEmpty()) {
-            check(wchars[0] != 0xFEFF.toChar() && wchars[0] != 0xFFFE.toChar()) {
-                "wchars should not contain BOM"
-            }
-        }
-    }
-
     override val bytes: ByteString = buildByteString(wchars.size * 2) {
         wchars.forEach {
             append(it.code.toUByte())
@@ -56,7 +49,15 @@ internal class WindowsPathString(
     }
     override val encoding: Encoding = UTF16_LE
 
+    init {
+        if (wchars.isNotEmpty()) {
+            check(wchars[0] != 0xFEFF.toChar() && wchars[0] != 0xFFFE.toChar()) {
+                "wchars should not contain BOM"
+            }
+        }
+    }
+
     override fun asString(): String {
-        return CharArray(wchars.size) { wchars[it].toInt().toChar() }.concatToString()
+        return CharArray(wchars.size) { wchars[it].code.toChar() }.concatToString()
     }
 }
