@@ -5,6 +5,6 @@
 
 package at.released.tempfolder.blocking
 
-internal actual fun createPlatformTempFolder(namePrefix: String): TempFolder {
+internal actual fun createPlatformTempFolder(namePrefix: String): Tempfolder<*> {
     error("Not yet implemented")
 }

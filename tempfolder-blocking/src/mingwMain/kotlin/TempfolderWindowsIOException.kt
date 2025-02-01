@@ -5,6 +5,8 @@
 
 package at.released.tempfolder
 
+import at.released.tempfolder.winapi.errcode.Win32ErrorCode
+
 public class TempfolderWindowsIOException : TempfolderIOException {
     public val lastError: UInt?
 
@@ -16,5 +18,11 @@ public class TempfolderWindowsIOException : TempfolderIOException {
         messagePrefix + (lastError?.let { ": 0x${it.toString(16)}" } ?: ""),
     ) {
         this.lastError = lastError
+    }
+
+    public companion object {
+        internal operator fun invoke(error: Win32ErrorCode = Win32ErrorCode.last()): TempfolderWindowsIOException {
+            return TempfolderWindowsIOException("Windows error. ${error.description()}", error.code)
+        }
     }
 }

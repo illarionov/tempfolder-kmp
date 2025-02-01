@@ -13,12 +13,20 @@ import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamIte
 import at.released.tempfolder.blocking.WindowsDirectoryStream.Filetype.DIRECTORY
 import at.released.tempfolder.blocking.WindowsDirectoryStream.Filetype.FILE
 import at.released.tempfolder.blocking.WindowsDirectoryStream.Filetype.OTHER
+import at.released.tempfolder.path.TempfolderPathString
 import platform.windows.DeleteFileW
 import platform.windows.ERROR_ACCESS_DENIED
 import platform.windows.FILE_ATTRIBUTE_NORMAL
 import platform.windows.GetLastError
 import platform.windows.RemoveDirectoryW
 import platform.windows.SetFileAttributesW
+
+@Throws(TempfolderWindowsIOException::class)
+internal fun deleteDirectoryRecursively(
+    path: TempfolderPathString,
+) {
+    return deleteDirectoryRecursively(path.asString())
+}
 
 @Throws(TempfolderWindowsIOException::class)
 internal fun deleteDirectoryRecursively(

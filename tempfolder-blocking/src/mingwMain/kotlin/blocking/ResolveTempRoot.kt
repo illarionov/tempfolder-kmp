@@ -6,11 +6,12 @@
 package at.released.tempfolder.blocking
 
 import at.released.tempfolder.TempfolderWindowsIOException
+import at.released.tempfolder.WindowsPathString
+import at.released.tempfolder.winapi.errcode.Win32ErrorCode
 import kotlinx.cinterop.CArrayPointer
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.get
 import kotlinx.cinterop.memScoped
-import platform.windows.GetLastError
 import platform.windows.GetTempPathW
 import platform.windows.MAX_PATH
 import platform.windows.WCHARVar
@@ -18,14 +19,14 @@ import platform.windows.WCHARVar
 private const val MAX_ATTEMPTS = 100
 
 @Throws(TempfolderWindowsIOException::class)
-internal fun resolveTempRoot(): String {
-    val path = getTempRoot()
+internal fun resolveTempRoot(): WindowsPathString {
+    val path = getTempRootString()
     createDirectory(path)
     return path
 }
 
 @Throws(TempfolderWindowsIOException::class)
-private fun getTempRoot(): String {
+private fun getTempRootString(): WindowsPathString {
     var length = MAX_PATH
     repeat(MAX_ATTEMPTS) {
         when (val result = getTempPath(length)) {
@@ -41,28 +42,22 @@ private fun getTempPath(length: Int): GetTempPathResult = memScoped {
     val buffer: CArrayPointer<WCHARVar> = allocArray(length)
     val charsCopied: Int = GetTempPathW(length.toUInt(), buffer).toInt()
     when {
-        charsCopied == 0 -> GetTempPathResult.Error(GetLastError())
+        charsCopied == 0 -> GetTempPathResult.Error(Win32ErrorCode.last())
         charsCopied <= length -> {
-            val pathCharArray = CharArray(charsCopied) { index ->
-                buffer[index].toInt().toChar()
-            }
-            val path = pathCharArray.concatToString()
-            GetTempPathResult.Success(path)
+            val pathChars = CharArray(charsCopied) { index -> buffer[index].toInt().toChar() }
+            GetTempPathResult.Success(WindowsPathString(pathChars))
         }
 
         else -> GetTempPathResult.BufferToSmall(charsCopied)
     }
 }
 
-private fun getTempPathToWindowsIoException(lastError: UInt): TempfolderWindowsIOException {
-    return TempfolderWindowsIOException(
-        "Windows error. Code: 0x${lastError.toString(16).padStart(8, '0')}`",
-        lastError,
-    )
+private fun getTempPathToWindowsIoException(lastError: Win32ErrorCode): TempfolderWindowsIOException {
+    return TempfolderWindowsIOException(lastError)
 }
 
 private sealed class GetTempPathResult {
-    class Error(val lastError: UInt) : GetTempPathResult()
+    class Error(val lastError: Win32ErrorCode) : GetTempPathResult()
     class BufferToSmall(val requiredSize: Int) : GetTempPathResult()
-    class Success(val path: String) : GetTempPathResult()
+    class Success(val path: WindowsPathString) : GetTempPathResult()
 }

@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     id("at.released.tempfolder.gradle.lint.android-lint")
+    id("at.released.tempfolder.gradle.multiplatform.atomicfu")
     id("at.released.tempfolder.gradle.multiplatform.android")
     id("at.released.tempfolder.gradle.multiplatform.kotlin")
     id("at.released.tempfolder.gradle.multiplatform.publish")
@@ -99,6 +100,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
+            implementation(libs.assertk)
         }
         androidInstrumentedTest.dependencies {
             implementation(libs.androidx.test.core)
