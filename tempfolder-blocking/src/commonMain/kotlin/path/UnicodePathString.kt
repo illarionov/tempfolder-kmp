@@ -11,9 +11,9 @@ import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.encodeToByteString
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 
-internal fun String.asPathString(): TempfolderPathString = StringPathString(this)
+internal fun String.asPathString(): TempfolderPathString = UnicodePathString(this)
 
-private class StringPathString(
+private class UnicodePathString(
     private val stringValue: String,
 ) : TempfolderPathString {
     override val bytes: ByteString by lazy(PUBLICATION) {

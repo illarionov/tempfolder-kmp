@@ -5,6 +5,9 @@
 
 package at.released.tempfolder
 
+/**
+ * Exception thrown when a method cannot be called because the temporary directory has been closed
+ */
 public class TempfolderClosedException : TempfolderIOException {
     public constructor(message: String?) : super(message)
     public constructor(cause: Throwable) : super(cause)
@@ -15,6 +18,9 @@ public class TempfolderClosedException : TempfolderIOException {
     }
 }
 
+/**
+ * Group of exceptions thrown when an error occurs during recursive deletion of the temporary directory
+ */
 public class DeleteRecursivelyException : TempfolderIOException {
     public constructor() : super()
     public constructor(message: String?) : super(message)
@@ -27,6 +33,9 @@ public class DeleteRecursivelyException : TempfolderIOException {
     }
 }
 
+/**
+ * An exception class for tempfolder-related I/O errors.
+ */
 public open class TempfolderIOException : TempfolderPlatformIOException {
     public constructor() : super()
     public constructor(message: String?) : super(message)
@@ -34,6 +43,9 @@ public open class TempfolderIOException : TempfolderPlatformIOException {
     public constructor(message: String, cause: Throwable?) : super(message, cause)
 }
 
+/**
+ * Marker class for the platform IOException
+ */
 public expect open class TempfolderPlatformIOException : Exception {
     public constructor()
     public constructor(message: String?)
