@@ -6,7 +6,7 @@
 package at.released.tempfolder.blocking
 
 import at.released.tempfolder.TempfolderWindowsIOException
-import at.released.tempfolder.WindowsPathString
+import at.released.tempfolder.path.WindowsPathString
 import at.released.tempfolder.winapi.errcode.Win32ErrorCode
 import platform.windows.CreateDirectoryW
 import platform.windows.ERROR_ALREADY_EXISTS

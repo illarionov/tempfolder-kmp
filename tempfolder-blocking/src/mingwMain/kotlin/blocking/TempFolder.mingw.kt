@@ -5,6 +5,8 @@
 
 package at.released.tempfolder.blocking
 
-internal actual fun createPlatformTempFolder(namePrefix: String): Tempfolder<*> {
-    return WindowsPathTempfolder.create(namePrefix)
+import at.released.tempfolder.dsl.CommonTempfolderConfig
+
+internal actual fun createPlatformTempFolder(config: CommonTempfolderConfig): Tempfolder<*> {
+    return WindowsPathTempfolder.create(config.prefix) // TODO
 }

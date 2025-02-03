@@ -8,6 +8,7 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
+    id("at.released.tempfolder.gradle.lint.binary-compatibility-validator")
     id("at.released.tempfolder.gradle.lint.android-lint")
     id("at.released.tempfolder.gradle.multiplatform.atomicfu")
     id("at.released.tempfolder.gradle.multiplatform.android")

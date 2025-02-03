@@ -3,11 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking
+package at.released.tempfolder.blocking.path
 
 import at.released.tempfolder.DeleteRecursivelyException
 import at.released.tempfolder.TempfolderClosedException
 import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
+import at.released.tempfolder.blocking.Tempfolder
 import at.released.tempfolder.path.TempfolderPathString
 import at.released.tempfolder.path.asPathString
 import kotlinx.atomicfu.atomic

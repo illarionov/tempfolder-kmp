@@ -8,6 +8,7 @@ package at.released.tempfolder.blocking
 import at.released.tempfolder.TempfolderClosedException
 import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
 import at.released.tempfolder.TempfolderIOException
+import at.released.tempfolder.path.TempfolderCharacterCodingException
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.TempfolderPathString
 import at.released.tempfolder.path.asPathString
@@ -35,7 +36,7 @@ public class AppleNsurlTempfolder private constructor(
     private val isClosed = atomic(false)
 
     override fun getAbsolutePath(): TempfolderPathString {
-        return root.path?.asPathString() ?: throw CharacterCodingException("Can not convert url")
+        return root.path?.asPathString() ?: throw TempfolderCharacterCodingException("Can not convert url")
     }
 
     @OptIn(BetaInteropApi::class)

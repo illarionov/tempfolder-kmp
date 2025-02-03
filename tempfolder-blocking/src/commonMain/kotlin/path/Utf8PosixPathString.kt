@@ -9,16 +9,18 @@ import at.released.tempfolder.path.TempfolderPathString.Encoding
 import at.released.tempfolder.path.TempfolderPathString.Encoding.UTF8
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.encodeToByteString
-import kotlin.LazyThreadSafetyMode.PUBLICATION
 
-internal fun String.asPathString(): TempfolderPathString = UnicodePathString(this)
+internal fun String.asPathString(): TempfolderPathString = Utf8PosixPathString(this)
 
-private class UnicodePathString(
+internal class Utf8PosixPathString(
     private val stringValue: String,
 ) : TempfolderPathString {
-    override val bytes: ByteString by lazy(PUBLICATION) {
-        stringValue.encodeToByteString()
-    }
+    override val bytes: ByteString = stringValue.encodeToByteString()
     override val encoding: Encoding = UTF8
+
+    init {
+        validateBasicPosixPath(bytes)
+    }
+
     override fun asString(): String = stringValue
 }

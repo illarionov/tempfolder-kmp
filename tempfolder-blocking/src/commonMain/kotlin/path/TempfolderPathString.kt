@@ -17,9 +17,9 @@ public interface TempfolderPathString {
     /**
      * Returns the path represented as a string.
      *
-     * @throws CharacterCodingException if the path cannot be decoded into a valid Unicode string
+     * @throws TempfolderCharacterCodingException if the path cannot be decoded into a valid Unicode string
      */
-    @Throws(CharacterCodingException::class)
+    @Throws(TempfolderCharacterCodingException::class)
     public fun asString(): String
 
     /**

@@ -27,17 +27,19 @@ public sealed interface TempfolderBasePath {
      * On Windows, the result of the `GetTempPath()` method will be used.
      */
     @TempfolderDsl
-    public class Auto private constructor() : TempfolderBasePath {
+    public interface Auto : TempfolderBasePath {
         /**
          * Estimated size of files in the temporary directory used to determine the base directory
          * on Unix-like operating systems if the TEMPDIR environment variable is not set.
          */
-        public var sizeEstimate: TempfolderSizeEstimate = SMALL
+        public var sizeEstimate: TempfolderSizeEstimate
 
         public companion object {
             public operator fun invoke(
                 block: Auto.() -> Unit = {},
-            ): TempfolderBasePath = Auto().apply(block)
+            ): TempfolderBasePath = object : Auto {
+                override var sizeEstimate: TempfolderSizeEstimate = SMALL
+            }.apply(block)
         }
     }
 }

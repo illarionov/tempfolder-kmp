@@ -6,11 +6,19 @@
 package at.released.tempfolder.blocking
 
 import at.released.tempfolder.TempfolderIOException
+import at.released.tempfolder.dsl.CommonTempfolderConfig
+import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.TempfolderPathString
 
-internal expect fun createPlatformTempFolder(
-    namePrefix: String = "tempfolderTest",
-): Tempfolder<*>
+internal expect fun createPlatformTempFolder(config: CommonTempfolderConfig): Tempfolder<*>
+
+@Throws(TempfolderIOException::class)
+public fun Tempfolder(
+    block: CommonTempfolderConfig.() -> Unit,
+): Tempfolder<*> {
+    val config = CommonTempfolderConfig().apply(block)
+    return createPlatformTempFolder(config)
+}
 
 public interface Tempfolder<out FH : Any> : AutoCloseable {
     public var deleteOnClose: Boolean
@@ -22,15 +30,10 @@ public interface Tempfolder<out FH : Any> : AutoCloseable {
     @Throws(TempfolderIOException::class)
     public fun delete()
 
-    @Throws(TempfolderIOException::class)
+    @Throws(TempfolderIOException::class, TempfolderInvalidPathException::class)
     public fun resolve(name: String): TempfolderPathString
 
     override fun close()
 
-    public companion object {
-        @Throws(TempfolderIOException::class)
-        public fun create(
-            namePrefix: String = "wehTest",
-        ): Tempfolder<*> = createPlatformTempFolder(namePrefix)
-    }
+    public companion object
 }

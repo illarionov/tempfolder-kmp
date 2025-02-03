@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder
+package at.released.tempfolder.path
 
-import at.released.tempfolder.path.TempfolderPathString
 import at.released.tempfolder.path.TempfolderPathString.Encoding
 import at.released.tempfolder.path.TempfolderPathString.Encoding.UNSPECIFIED
 import at.released.tempfolder.path.TempfolderPathString.Encoding.UTF16_LE
@@ -14,7 +13,7 @@ import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.append
 import kotlinx.io.bytestring.buildByteString
 
-@Throws(CharacterCodingException::class)
+@Throws(TempfolderCharacterCodingException::class)
 internal fun TempfolderPathString.toWindowsPathString(): WindowsPathString = if (this is WindowsPathString) {
     this
 } else {
