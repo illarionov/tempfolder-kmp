@@ -11,7 +11,7 @@ import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.path.TempfolderCharacterCodingException
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.TempfolderPathString
-import at.released.tempfolder.path.asPathString
+import at.released.tempfolder.path.toPosixPathString
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ObjCObjectVar
@@ -36,7 +36,7 @@ public class AppleNsurlTempfolder private constructor(
     private val isClosed = atomic(false)
 
     override fun getAbsolutePath(): TempfolderPathString {
-        return root.path?.asPathString() ?: throw TempfolderCharacterCodingException("Can not convert url")
+        return root.path?.toPosixPathString() ?: throw TempfolderCharacterCodingException("Can not convert url")
     }
 
     @OptIn(BetaInteropApi::class)
@@ -60,7 +60,7 @@ public class AppleNsurlTempfolder private constructor(
     }
 
     override fun resolve(name: String): TempfolderPathString {
-        return root.URLByAppendingPathComponent(name)?.path?.asPathString()
+        return root.URLByAppendingPathComponent(name)?.path?.toPosixPathString()
             ?: throw TempfolderInvalidPathException("Can not resolve `$root` with appended path `$name`")
     }
 

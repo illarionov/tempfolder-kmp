@@ -12,7 +12,7 @@ import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLO
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.TempfolderPathString
-import at.released.tempfolder.path.asPathString
+import at.released.tempfolder.path.toPosixPathString
 import kotlinx.atomicfu.atomic
 import java.io.IOException
 import java.nio.file.FileSystems
@@ -33,7 +33,7 @@ public class NioTempfolder private constructor(
     private val isClosed = atomic(false)
     override var deleteOnClose: Boolean by atomic(true)
     private val absolutePathString: TempfolderPathString by lazy(PUBLICATION) {
-        root.toString().asPathString()
+        root.toString().toPosixPathString()
     }
 
     override fun getAbsolutePath(): TempfolderPathString = absolutePathString
@@ -61,7 +61,7 @@ public class NioTempfolder private constructor(
     @Throws(TempfolderIOException::class, CharacterCodingException::class)
     override fun resolve(name: String): TempfolderPathString {
         return try {
-            root.resolve(name).toString().asPathString()
+            root.resolve(name).toString().toPosixPathString()
         } catch (ipe: InvalidPathException) {
             throw TempfolderInvalidPathException(ipe)
         }

@@ -19,14 +19,14 @@ import platform.windows.WCHARVar
 private const val MAX_ATTEMPTS = 100
 
 @Throws(TempfolderWindowsIOException::class)
-internal fun resolveTempRoot(): WindowsPathString {
-    val path = getTempRootString()
+internal fun resolveTempBasePath(): WindowsPathString {
+    val path = getTempBasePathString()
     createDirectory(path)
     return path
 }
 
 @Throws(TempfolderWindowsIOException::class)
-private fun getTempRootString(): WindowsPathString {
+private fun getTempBasePathString(): WindowsPathString {
     var length = MAX_PATH
     repeat(MAX_ATTEMPTS) {
         when (val result = getTempPath(length)) {

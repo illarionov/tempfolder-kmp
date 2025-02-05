@@ -5,8 +5,8 @@
 
 package at.released.tempfolder.blocking
 
+import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.Entry
 import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.Error
-import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.FileItem
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.nativeHeap
 import kotlinx.cinterop.ptr
@@ -71,7 +71,7 @@ internal class WindowsDirectoryStream(
         }
     }
 
-    private fun WIN32_FIND_DATAW.toFileItem(rootPath: String): FileItem {
+    private fun WIN32_FIND_DATAW.toFileItem(rootPath: String): Entry {
         val fileName = cFileName.toKStringFromUtf16()
         val attributesInt = dwFileAttributes.toInt()
         val fileType = when {
@@ -84,7 +84,7 @@ internal class WindowsDirectoryStream(
         val isSymlink = attributesInt and FILE_ATTRIBUTE_REPARSE_POINT == FILE_ATTRIBUTE_REPARSE_POINT &&
                 (dwReserved0 == IO_REPARSE_TAG_SYMLINK)
 
-        return FileItem(rootPath, fileName, fileType, isSymlink)
+        return Entry(rootPath, fileName, fileType, isSymlink)
     }
 
     override fun close() {
@@ -109,7 +109,7 @@ internal class WindowsDirectoryStream(
     sealed class DirectoryStreamItem {
         data object EndOfStream : DirectoryStreamItem()
 
-        data class FileItem(
+        data class Entry(
             val rootDir: String,
             val name: String,
             val type: Filetype,

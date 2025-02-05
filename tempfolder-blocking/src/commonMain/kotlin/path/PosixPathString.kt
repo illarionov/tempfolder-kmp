@@ -5,29 +5,61 @@
 
 package at.released.tempfolder.path
 
-import at.released.tempfolder.path.TempfolderPathString.Encoding
-import at.released.tempfolder.path.TempfolderPathString.Encoding.UNSPECIFIED
+import at.released.tempfolder.path.TempfolderPathString.MultibytePathString
 import kotlinx.io.bytestring.ByteString
+import kotlinx.io.bytestring.encodeToByteString
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 
-internal class PosixPathString(
-    override val bytes: ByteString,
-    override val encoding: Encoding = UNSPECIFIED,
-) : TempfolderPathString {
-    private val stringRepresentation: Result<String> by lazy(PUBLICATION) {
-        kotlin.runCatching {
-            bytes.toByteArray().decodeToString(throwOnInvalidSequence = true)
-        }
-    }
+@Throws(TempfolderInvalidPathException::class)
+internal fun String.toPosixPathString(): Utf8PosixPathString = Utf8PosixPathString(this)
 
-    internal fun appendPosixPath(path: String): PosixPathString {
-        val newPathBytes = bytes.appendPosixPath(path)
-        return PosixPathString(newPathBytes)
+/**
+ * A byte string that passes validation as a POSIX path — it's not empty and has no bytes with a code 0.
+ */
+internal interface PosixPathString : MultibytePathString {
+    @Throws(TempfolderInvalidPathException::class)
+    fun append(path: String): PosixPathString
+}
+
+internal class UnknownEncodingPosixPathString(
+    override val bytes: ByteString,
+    override val isEncodingUndefined: Boolean = true,
+) : PosixPathString {
+    private val stringRepresentation: Result<String> by lazy(PUBLICATION) {
+        try {
+            Result.success(bytes.toByteArray().decodeToString(throwOnInvalidSequence = true))
+        } catch (ce: CharacterCodingException) {
+            Result.failure(TempfolderCharacterCodingException(ce))
+        }
     }
 
     init {
         validateBasicPosixPath(bytes)
     }
 
+    @Throws(TempfolderInvalidPathException::class)
+    override fun append(path: String): UnknownEncodingPosixPathString {
+        val newPathBytes = bytes.appendPosixPath(path)
+        return UnknownEncodingPosixPathString(newPathBytes)
+    }
+
     override fun asString(): String = stringRepresentation.getOrThrow()
+}
+
+internal class Utf8PosixPathString(
+    private val stringValue: String,
+) : PosixPathString {
+    override val isEncodingUndefined: Boolean = false
+    override val bytes: ByteString = stringValue.encodeToByteString()
+
+    init {
+        validateBasicPosixPath(bytes)
+    }
+
+    override fun append(path: String): PosixPathString {
+        val newPathBytes = bytes.appendPosixPath(path)
+        return UnknownEncodingPosixPathString(newPathBytes)
+    }
+
+    override fun asString(): String = stringValue
 }

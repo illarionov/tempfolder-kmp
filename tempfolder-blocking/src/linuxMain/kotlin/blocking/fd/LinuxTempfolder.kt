@@ -10,22 +10,16 @@ import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLO
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.TempfolderPosixFileDescriptor
 import at.released.tempfolder.blocking.Tempfolder
-import at.released.tempfolder.blocking.nativefunc.deleteRecursively
+import at.released.tempfolder.blocking.generateTempDirectoryName
+import at.released.tempfolder.blocking.nativefunc.delete.deleteRecursively
 import at.released.tempfolder.blocking.nativefunc.getRealPath
+import at.released.tempfolder.dsl.toPosixMode
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.TempfolderPathString
 import kotlinx.atomicfu.atomic
 
-@Suppress("FunctionName")
-@Throws(TempfolderIOException::class)
-public fun LinuxTempfolder(
-    block: LinuxTempfolderConfig.() -> Unit,
-): Tempfolder<TempfolderPosixFileDescriptor> {
-    TODO()
-}
-
-private class LinuxTempfolder private constructor(
+public class LinuxTempfolder private constructor(
     override val root: TempfolderPosixFileDescriptor,
     rootPath: PosixPathString?,
 ) : Tempfolder<TempfolderPosixFileDescriptor> {
@@ -42,7 +36,7 @@ private class LinuxTempfolder private constructor(
     init {
         rootPath?.bytes?.let { pathBytes ->
             check(pathBytes[pathBytes.size - 1] != '.'.code.toByte()) {
-                "path should be canonized"
+                "path should be canonical"
             }
         }
     }
@@ -58,7 +52,7 @@ private class LinuxTempfolder private constructor(
 
     @Throws(TempfolderIOException::class, TempfolderInvalidPathException::class)
     override fun resolve(name: String): TempfolderPathString {
-        return rootPath.getOrThrow()
+        return rootPath.getOrThrow().append(name)
     }
 
     override fun close() {
@@ -73,6 +67,22 @@ private class LinuxTempfolder private constructor(
     private fun throwIfClosed() {
         if (isClosed.value) {
             throw TempfolderClosedException(TEMPFOLDER_CLOSED_MESSAGE)
+        }
+    }
+
+    public companion object {
+        @Throws(TempfolderIOException::class, TempfolderInvalidPathException::class)
+        public operator fun invoke(
+            block: LinuxTempfolderConfig.() -> Unit,
+        ): LinuxTempfolder {
+            val config = LinuxTempfolderConfig().apply(block)
+            val (root, path) = createTempfolder(
+                parent = config.base,
+                mode = config.permissions.toPosixMode(),
+                advisoryLock = config.advisoryLock,
+                randomNameGenerator = { generateTempDirectoryName(config.prefix) },
+            )
+            return LinuxTempfolder(root, path)
         }
     }
 }

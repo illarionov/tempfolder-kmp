@@ -19,28 +19,14 @@ public final class at/released/tempfolder/TempfolderClosedException : at/release
 public final class at/released/tempfolder/TempfolderClosedException$Companion {
 }
 
-public class at/released/tempfolder/TempfolderIOException : java/io/IOException {
+public class at/released/tempfolder/TempfolderException : java/io/IOException {
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/String;)V
 	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
 	public fun <init> (Ljava/lang/Throwable;)V
 }
 
-public final class at/released/tempfolder/TempfolderPosixFileDescriptor {
-	public static final synthetic fun box-impl (I)Lat/released/tempfolder/TempfolderPosixFileDescriptor;
-	public static fun constructor-impl (I)I
-	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (ILjava/lang/Object;)Z
-	public static final fun equals-impl0 (II)Z
-	public final fun getFd ()I
-	public fun hashCode ()I
-	public static fun hashCode-impl (I)I
-	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (I)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()I
-}
-
-public class at/released/tempfolder/TempfolderRuntimeException : java/lang/RuntimeException {
+public class at/released/tempfolder/TempfolderIOException : at/released/tempfolder/TempfolderException {
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/String;)V
 	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -123,22 +109,6 @@ public final class at/released/tempfolder/dsl/TempfolderBasePath$Path : at/relea
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class at/released/tempfolder/dsl/TempfolderCommonConfigBlock {
-	public static final field Companion Lat/released/tempfolder/dsl/TempfolderCommonConfigBlock$Companion;
-	public final fun getBase ()Lat/released/tempfolder/dsl/TempfolderBasePath;
-	public final fun getPermissions ()Ljava/util/Set;
-	public final fun getPrefix ()Ljava/lang/String;
-	public final fun setBase (Lat/released/tempfolder/dsl/TempfolderBasePath;)V
-	public final fun setPermissions (Ljava/util/Set;)V
-	public final fun setPrefix (Ljava/lang/String;)V
-}
-
-public final class at/released/tempfolder/dsl/TempfolderCommonConfigBlock$Companion {
-	public final fun auto (Lkotlin/jvm/functions/Function1;)Lat/released/tempfolder/dsl/TempfolderBasePath;
-	public static synthetic fun auto$default (Lat/released/tempfolder/dsl/TempfolderCommonConfigBlock$Companion;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lat/released/tempfolder/dsl/TempfolderBasePath;
-	public final fun path (Ljava/lang/String;)Lat/released/tempfolder/dsl/TempfolderBasePath;
-}
-
 public abstract interface annotation class at/released/tempfolder/dsl/TempfolderDsl : java/lang/annotation/Annotation {
 }
 
@@ -180,7 +150,7 @@ public final class at/released/tempfolder/path/TempfolderInvalidCharacterExcepti
 	public fun <init> (Ljava/lang/Throwable;)V
 }
 
-public class at/released/tempfolder/path/TempfolderInvalidPathException : at/released/tempfolder/TempfolderRuntimeException {
+public class at/released/tempfolder/path/TempfolderInvalidPathException : at/released/tempfolder/TempfolderException {
 	public static final field Companion Lat/released/tempfolder/path/TempfolderInvalidPathException$Companion;
 	public fun <init> (Ljava/lang/String;)V
 	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -201,17 +171,28 @@ public final class at/released/tempfolder/path/TempfolderPathEmptyException$Comp
 }
 
 public abstract interface class at/released/tempfolder/path/TempfolderPathString {
+	public static final field Companion Lat/released/tempfolder/path/TempfolderPathString$Companion;
 	public abstract fun asString ()Ljava/lang/String;
 	public abstract fun getBytes ()Lkotlinx/io/bytestring/ByteString;
-	public abstract fun getEncoding ()Lat/released/tempfolder/path/TempfolderPathString$Encoding;
+}
+
+public final class at/released/tempfolder/path/TempfolderPathString$Companion {
+	public final fun getEncoding (Lat/released/tempfolder/path/TempfolderPathString;)Lat/released/tempfolder/path/TempfolderPathString$Encoding;
 }
 
 public final class at/released/tempfolder/path/TempfolderPathString$Encoding : java/lang/Enum {
-	public static final field UNSPECIFIED Lat/released/tempfolder/path/TempfolderPathString$Encoding;
+	public static final field UNDEFINED Lat/released/tempfolder/path/TempfolderPathString$Encoding;
 	public static final field UTF16_LE Lat/released/tempfolder/path/TempfolderPathString$Encoding;
 	public static final field UTF8 Lat/released/tempfolder/path/TempfolderPathString$Encoding;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lat/released/tempfolder/path/TempfolderPathString$Encoding;
 	public static fun values ()[Lat/released/tempfolder/path/TempfolderPathString$Encoding;
+}
+
+public abstract interface class at/released/tempfolder/path/TempfolderPathString$MultibytePathString : at/released/tempfolder/path/TempfolderPathString {
+	public abstract fun isEncodingUndefined ()Z
+}
+
+public abstract interface class at/released/tempfolder/path/TempfolderPathString$WideCharPathString : at/released/tempfolder/path/TempfolderPathString {
 }
 

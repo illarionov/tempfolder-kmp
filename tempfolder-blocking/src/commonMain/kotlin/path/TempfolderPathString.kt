@@ -10,9 +10,8 @@ import kotlinx.io.bytestring.ByteString
 /**
  * An entity representing a system-dependent path in a file system or a relative path segment with no specified base.
  */
-public interface TempfolderPathString {
+public sealed interface TempfolderPathString {
     public val bytes: ByteString
-    public val encoding: Encoding
 
     /**
      * Returns the path represented as a string.
@@ -22,6 +21,12 @@ public interface TempfolderPathString {
     @Throws(TempfolderCharacterCodingException::class)
     public fun asString(): String
 
+    public interface MultibytePathString : TempfolderPathString {
+        public val isEncodingUndefined: Boolean
+    }
+
+    public interface WideCharPathString : TempfolderPathString
+
     /**
      * Encoding of the [TempfolderPathString.bytes] payload.
      */
@@ -29,8 +34,16 @@ public interface TempfolderPathString {
         /**
          * Encoding is not specified (Most likely it's UTF8)
          */
-        UNSPECIFIED,
+        UNDEFINED,
         UTF8,
         UTF16_LE,
+    }
+
+    public companion object {
+        public val TempfolderPathString.encoding: Encoding
+            get() = when (this) {
+                is MultibytePathString -> if (isEncodingUndefined) Encoding.UNDEFINED else Encoding.UTF8
+                is WideCharPathString -> Encoding.UTF16_LE
+            }
     }
 }

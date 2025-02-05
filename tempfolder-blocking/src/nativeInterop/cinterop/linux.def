@@ -1,0 +1,50 @@
+# Rather than compiling the Linux x64 header files, we use copies of only the required function declarations from
+# the system headers. This keeps the generated interop layer small and allows the project to be built on any platform.
+# Original license of the system headers: GPL-2.0 WITH Linux-syscall-note
+
+headerFilter = linux/openat2.h sys/stat.h #include <sys/syscall.h> limits.h stdlib.h unistd.h fcntl.h
+compilerOpts = -D_ANSI_SOURCE -D_POSIX_C_SOURCE=199309 -D_BSD_SOURCE -D_XOPEN_SOURCE=700
+noStringConversion = fstatat mkdirat realpath unlinkat
+
+---
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+// linux/openat2.h
+struct open_how {
+  unsigned long long flags;
+  unsigned long long mode;
+  unsigned long long resolve;
+};
+
+#define RESOLVE_NO_XDEV 0x01
+#define RESOLVE_NO_MAGICLINKS 0x02
+#define RESOLVE_NO_SYMLINKS 0x04
+#define RESOLVE_BENEATH 0x08
+#define RESOLVE_IN_ROOT 0x10
+#define RESOLVE_CACHED 0x20
+
+// stdlib.h
+extern char* realpath(const char *restrict path, char *restrict resolved_path);
+
+// sys/stat.h
+extern int mkdirat (int fd, const char *path, mode_t mode);
+extern int fstatat (int fd, const char *file, struct stat *buf, int flag);
+
+// bits/syscall.h
+#define SYS_openat2 437
+
+// /usr/include/linux/fcntl.h
+#define AT_FDCWD -100
+
+#define AT_REMOVEDIR 0x200
+
+#define AT_SYMLINK_NOFOLLOW 0x100
+#define AT_SYMLINK_FOLLOW 0x400
+
+// unistd.h
+extern int unlinkat (int fd, const char *path, int flags);

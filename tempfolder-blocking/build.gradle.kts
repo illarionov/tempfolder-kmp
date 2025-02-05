@@ -6,6 +6,7 @@
 @file:Suppress("OPT_IN_USAGE")
 
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     id("at.released.tempfolder.gradle.lint.binary-compatibility-validator")
@@ -73,8 +74,12 @@ kotlin {
     iosSimulatorArm64()
     iosArm64()
     iosX64()
-    linuxArm64()
-    linuxX64()
+    linuxArm64 {
+        setupLinuxInterops()
+    }
+    linuxX64 {
+        setupLinuxInterops()
+    }
     macosArm64()
     macosX64()
     mingwX64()
@@ -107,6 +112,14 @@ kotlin {
             implementation(libs.androidx.test.core)
             implementation(libs.androidx.test.runner)
             implementation(libs.androidx.test.rules)
+        }
+    }
+}
+
+private fun KotlinNativeTarget.setupLinuxInterops() = compilations.named("main") {
+    cinterops {
+        create("linux") {
+            packageName("at.released.tempfolder.platform.linux")
         }
     }
 }

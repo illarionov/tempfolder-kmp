@@ -6,11 +6,21 @@
 package at.released.tempfolder
 
 /**
- * An exception class for tempfolder-related non-I/O errors.
+ * An exception class for tempfolder-related errors.
  */
-public open class TempfolderRuntimeException : RuntimeException {
+public open class TempfolderException : TempfolderPlatformIOException {
     public constructor() : super()
     public constructor(message: String?) : super(message)
     public constructor(cause: Throwable) : super(cause)
     public constructor(message: String, cause: Throwable?) : super(message, cause)
+}
+
+/**
+ * Marker class for the platform IOException
+ */
+public expect open class TempfolderPlatformIOException : Exception {
+    public constructor()
+    public constructor(message: String?)
+    public constructor(cause: Throwable)
+    public constructor(message: String, cause: Throwable?)
 }

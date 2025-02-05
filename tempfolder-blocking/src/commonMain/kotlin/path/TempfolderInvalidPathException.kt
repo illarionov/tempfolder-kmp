@@ -5,10 +5,10 @@
 
 package at.released.tempfolder.path
 
-import at.released.tempfolder.TempfolderRuntimeException
+import at.released.tempfolder.TempfolderException
 
 /**
- * Исключение, выбрасываемое при кодировании или декодировании пути в UTF строку.
+ * Exception thrown when encoding or decoding a path to a UTF string fails.
  */
 public class TempfolderCharacterCodingException : TempfolderInvalidPathException {
     public constructor(message: String?) : super(message)
@@ -17,8 +17,8 @@ public class TempfolderCharacterCodingException : TempfolderInvalidPathException
 }
 
 /**
- * Исключение, выбрасываемое, если в пути встречается недопустимый для данной файловой системы символ.
- * Путь при этом может быть валидной UTF строкой.
+ * Exception thrown when the path includes a character that is not permitted by the file system.
+ * The path may still be a valid UTF string.
  */
 public class TempfolderInvalidCharacterException : TempfolderInvalidPathException {
     public constructor(message: String?) : super(message)
@@ -27,7 +27,7 @@ public class TempfolderInvalidCharacterException : TempfolderInvalidPathExceptio
 }
 
 /**
- * Строка пути пустая.
+ * Exception thrown when the path string is empty.
  */
 public class TempfolderPathEmptyException : TempfolderInvalidPathException {
     public constructor(message: String?) : super(message)
@@ -39,9 +39,9 @@ public class TempfolderPathEmptyException : TempfolderInvalidPathException {
 }
 
 /**
- * Исключения при обработке путей
+ * Base exception for path processing errors.
  */
-public open class TempfolderInvalidPathException : TempfolderRuntimeException {
+public open class TempfolderInvalidPathException : TempfolderException {
     public constructor(message: String?) : super(message)
     public constructor(cause: Throwable) : super(cause)
     public constructor(message: String, cause: Throwable?) : super(message, cause)

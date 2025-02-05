@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+@file:Suppress("WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES")
+
 package at.released.tempfolder.dsl
 
 import at.released.tempfolder.dsl.TempfolderSizeEstimate.SMALL
@@ -12,18 +14,6 @@ import at.released.tempfolder.dsl.TempfolderSizeEstimate.SMALL
  */
 @TempfolderDsl
 public sealed interface TempfolderPosixBasePath {
-    /**
-     * The base directory is specified by opened file descriptor referring to a directory.
-     */
-    @TempfolderDsl
-    public value class FileDescriptor(public val fd: Int) : TempfolderPosixBasePath
-
-    /**
-     * The base directory is specified by the [path].
-     */
-    @TempfolderDsl
-    public data class Path(val path: String) : TempfolderPosixBasePath
-
     /**
      * The base directory is determined automatically.
      *
@@ -40,4 +30,16 @@ public sealed interface TempfolderPosixBasePath {
             ): Auto = Auto().apply(block)
         }
     }
+
+    /**
+     * The base directory is specified by the [path].
+     */
+    @TempfolderDsl
+    public data class Path(val path: String) : TempfolderPosixBasePath
+
+    /**
+     * The base directory is specified by opened file descriptor referring to a directory.
+     */
+    @TempfolderDsl
+    public value class FileDescriptor(public val fd: Int) : TempfolderPosixBasePath
 }

@@ -36,19 +36,9 @@ public class DeleteRecursivelyException : TempfolderIOException {
 /**
  * An exception class for tempfolder-related I/O errors.
  */
-public open class TempfolderIOException : TempfolderPlatformIOException {
+public open class TempfolderIOException : TempfolderException {
     public constructor() : super()
     public constructor(message: String?) : super(message)
     public constructor(cause: Throwable) : super(cause)
     public constructor(message: String, cause: Throwable?) : super(message, cause)
-}
-
-/**
- * Marker class for the platform IOException
- */
-public expect open class TempfolderPlatformIOException : Exception {
-    public constructor()
-    public constructor(message: String?)
-    public constructor(cause: Throwable)
-    public constructor(message: String, cause: Throwable?)
 }

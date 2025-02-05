@@ -51,7 +51,7 @@ public class WindowsPathTempfolder private constructor(
         public fun create(
             namePrefix: String,
         ): WindowsPathTempfolder {
-            val tempPath = resolveTempRoot()
+            val tempPath = resolveTempBasePath()
             repeat(MAX_ATTEMPTS) {
                 val tempDirectoryPath = WindowsPathString(tempPath, generateTempDirectoryName(namePrefix))
                 val directoryCreated = createDirectory(tempDirectoryPath)

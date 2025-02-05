@@ -5,6 +5,8 @@
 
 package at.released.tempfolder
 
+internal fun Int.asFileDescriptor(): TempfolderPosixFileDescriptor = TempfolderPosixFileDescriptor(this)
+
 public value class TempfolderPosixFileDescriptor(
     public val fd: Int,
 )

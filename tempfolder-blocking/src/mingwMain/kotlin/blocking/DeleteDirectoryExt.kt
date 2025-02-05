@@ -8,8 +8,8 @@ package at.released.tempfolder.blocking
 import at.released.tempfolder.TempfolderWindowsIOException
 import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem
 import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.EndOfStream
+import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.Entry
 import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.Error
-import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.FileItem
 import at.released.tempfolder.blocking.WindowsDirectoryStream.Filetype.DIRECTORY
 import at.released.tempfolder.blocking.WindowsDirectoryStream.Filetype.FILE
 import at.released.tempfolder.blocking.WindowsDirectoryStream.Filetype.OTHER
@@ -36,12 +36,12 @@ internal fun deleteDirectoryRecursively(
         when (val item = walker.next()) {
             EndOfStream -> break
             is Error -> throw TempfolderWindowsIOException("Failed to delete file or directory", item.lastError)
-            is FileItem -> item.delete()
+            is Entry -> item.delete()
         }
     }
 }
 
-private fun FileItem.delete() {
+private fun Entry.delete() {
     when (type) {
         FILE, OTHER -> if (DeleteFileW(absolutePath) == 0) {
             val lastErr = GetLastError()
@@ -75,10 +75,10 @@ private fun stripReadOnlyAttribute(path: String) {
 private class BottomUpFileTreeWalker(
     path: String,
 ) : AutoCloseable {
-    private val stack: ArrayDeque<Pair<WindowsDirectoryStream, FileItem>> = ArrayDeque()
+    private val stack: ArrayDeque<Pair<WindowsDirectoryStream, Entry>> = ArrayDeque()
 
     init {
-        val rootItem = FileItem(path, "", DIRECTORY, false)
+        val rootItem = Entry(path, "", DIRECTORY, false)
         stack.addLast(WindowsDirectoryStream(path) to rootItem)
     }
 
@@ -94,7 +94,7 @@ private class BottomUpFileTreeWalker(
                     break
                 }
 
-                is FileItem -> when (item.type) {
+                is Entry -> when (item.type) {
                     FILE, OTHER -> break
                     DIRECTORY -> {
                         if (item.isSymlink) {
