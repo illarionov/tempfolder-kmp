@@ -10,7 +10,7 @@ import at.released.tempfolder.blocking.fd.LinuxTempfolderConfig
 import at.released.tempfolder.dsl.CommonTempfolderConfig
 import at.released.tempfolder.dsl.TempfolderBasePath.Auto
 import at.released.tempfolder.dsl.TempfolderBasePath.Path
-import at.released.tempfolder.dsl.TempfolderPosixBasePath
+import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath
 
 internal actual fun createPlatformTempFolder(config: CommonTempfolderConfig): Tempfolder<*> {
     return LinuxTempfolder(config.toLinuxTempfolderConfig())

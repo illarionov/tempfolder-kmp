@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.dsl
+package at.released.tempfolder.posix200809.dsl
 
 /**
  * The type of advisory lock to be set on an open temporarily directory.

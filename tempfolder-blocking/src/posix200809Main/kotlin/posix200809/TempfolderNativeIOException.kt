@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder
+package at.released.tempfolder.posix200809
+
+import at.released.tempfolder.TempfolderIOException
 
 public class TempfolderNativeIOException : TempfolderIOException {
     public val errno: Int

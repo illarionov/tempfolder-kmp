@@ -5,13 +5,13 @@
 
 package at.released.tempfolder.blocking.fd
 
-import at.released.tempfolder.dsl.AdvisoryLockType
-import at.released.tempfolder.dsl.AdvisoryLockType.SHARED
 import at.released.tempfolder.dsl.CommonTempfolderConfig.Companion.DEFAULT_PERMISSIONS
 import at.released.tempfolder.dsl.CommonTempfolderConfig.Companion.DEFAULT_PREFIX
 import at.released.tempfolder.dsl.TempfolderDsl
 import at.released.tempfolder.dsl.TempfolderFileModeBit
-import at.released.tempfolder.dsl.TempfolderPosixBasePath
+import at.released.tempfolder.posix200809.dsl.AdvisoryLockType
+import at.released.tempfolder.posix200809.dsl.AdvisoryLockType.SHARED
+import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath
 
 @TempfolderDsl
 public class LinuxTempfolderConfig internal constructor() {

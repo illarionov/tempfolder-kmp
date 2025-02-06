@@ -3,26 +3,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking.nativefunc.delete
+package at.released.tempfolder.blocking.fd.delete
 
 import at.released.tempfolder.DeleteRecursivelyException
 import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.TempfolderNativeIOException
-import at.released.tempfolder.TempfolderPosixFileDescriptor
-import at.released.tempfolder.asFileDescriptor
-import at.released.tempfolder.blocking.nativefunc.delete.DirStream.DirEntryType.DIRECTORY
-import at.released.tempfolder.blocking.nativefunc.delete.DirStream.DirEntryType.OTHER
-import at.released.tempfolder.blocking.nativefunc.delete.DirStream.DirEntryType.UNKNOWN
-import at.released.tempfolder.blocking.nativefunc.delete.DirStream.DirStreamItem.EndOfStream
-import at.released.tempfolder.blocking.nativefunc.delete.DirStream.DirStreamItem.Entry
-import at.released.tempfolder.blocking.nativefunc.delete.DirStream.DirStreamItem.Error
-import at.released.tempfolder.blocking.nativefunc.errnoDescription
-import at.released.tempfolder.blocking.nativefunc.isDirectory
-import at.released.tempfolder.blocking.nativefunc.unlinkDirectory
-import at.released.tempfolder.blocking.nativefunc.unlinkFile
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.path.toPosixPathString
+import at.released.tempfolder.posix200809.TempfolderNativeIOException
+import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
+import at.released.tempfolder.posix200809.delete.DirStream
+import at.released.tempfolder.posix200809.delete.DirStream.DirEntryType.DIRECTORY
+import at.released.tempfolder.posix200809.delete.DirStream.DirEntryType.OTHER
+import at.released.tempfolder.posix200809.delete.DirStream.DirEntryType.UNKNOWN
+import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem.EndOfStream
+import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem.Entry
+import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem.Error
+import at.released.tempfolder.posix200809.errnoDescription
+import at.released.tempfolder.posix200809.isDirectory
+import at.released.tempfolder.posix200809.unlinkDirectory
+import at.released.tempfolder.posix200809.unlinkFile
 import at.released.tempfolder.util.runStackSuppressedExceptions
 import kotlinx.cinterop.CPointer
 import kotlinx.io.bytestring.ByteString
@@ -31,7 +31,6 @@ import platform.posix.EISDIR
 import platform.posix.ENOENT
 import platform.posix.EPERM
 import platform.posix.close
-import platform.posix.dirfd
 import platform.posix.dup
 import platform.posix.errno
 import platform.posix.fdopendir
@@ -79,7 +78,7 @@ private class BottomUpFileTreeRemover(
             throw opendirException
         }
         rewinddir(dir)
-        stack.addLast(DirStream(dir))
+        stack.addLast(LinuxDirStream(dir))
         usedFds += 1
 
         runStackSuppressedExceptions(
@@ -96,7 +95,7 @@ private class BottomUpFileTreeRemover(
                 is Entry -> handleEntry(dirEntry)
                 is Error -> throw DeleteRecursivelyException(dirEntry.error).withSuppressedExceptions()
                 EndOfStream -> {
-                    val unlinkError = unlinkDirectory(dirfd(this.stream.dir).asFileDescriptor(), PATH_CURRENT_DIRECTORY)
+                    val unlinkError = unlinkDirectory(stream.dirfd, PATH_CURRENT_DIRECTORY)
                     if (unlinkError != 0 && unlinkError != ENOENT) {
                         addSuppressedNativeIOException("Can not remove directory")
                     }
@@ -126,15 +125,14 @@ private class BottomUpFileTreeRemover(
     }
 
     private fun handleNotDirectory(name: PosixPathString) {
-        val errno = unlinkFile(dirfd(stream.dir).asFileDescriptor(), name)
+        val errno = unlinkFile(stream.dirfd, name)
         if (errno != 0) {
             addSuppressedNativeIOException("Can not remove file `${name.asStringOrDescription()}`")
         }
     }
 
     private fun handleUnknown(name: PosixPathString) {
-        val streamFd: TempfolderPosixFileDescriptor = dirfd(stream.dir).asFileDescriptor()
-        val errno = unlinkFile(streamFd, name)
+        val errno = unlinkFile(stream.dirfd, name)
         when (errno) {
             0 -> Unit
             ENOENT -> Unit // Ignore
@@ -148,7 +146,7 @@ private class BottomUpFileTreeRemover(
         name: PosixPathString,
     ) {
         val isDirectory = try {
-            isDirectory(dirfd(stream.dir).asFileDescriptor(), name)
+            isDirectory(stream.dirfd, name)
         } catch (isDirectoryException: TempfolderNativeIOException) {
             addSuppressedException(isDirectoryException)
             return
@@ -165,11 +163,11 @@ private class BottomUpFileTreeRemover(
         val dir = fdopendir(root.fd)
         if (dir != null) {
             rewinddir(dir)
-            stack.addLast(DirStream(dir))
+            stack.addLast(LinuxDirStream(dir))
             usedFds += 1
         } else {
             addSuppressedNativeIOException("Can not open directory `${name.asStringOrDescription()}`.")
-            unlinkDirectory(dirfd(stream.dir).asFileDescriptor(), name) // ignore errors
+            unlinkDirectory(stream.dirfd, name) // ignore errors
         }
     }
 

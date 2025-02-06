@@ -5,8 +5,10 @@
 
 @file:Suppress("OPT_IN_USAGE")
 
+import org.apache.tools.ant.taskdefs.condition.Os
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
     id("at.released.tempfolder.gradle.lint.binary-compatibility-validator")
@@ -74,12 +76,8 @@ kotlin {
     iosSimulatorArm64()
     iosArm64()
     iosX64()
-    linuxArm64 {
-        setupLinuxInterops()
-    }
-    linuxX64 {
-        setupLinuxInterops()
-    }
+    linuxArm64()
+    linuxX64()
     macosArm64()
     macosX64()
     mingwX64()
@@ -97,6 +95,39 @@ kotlin {
                 withJvm()
                 withAndroidTarget()
             }
+            group("native") {
+                group("posix200809") {
+                    group("androidNative")
+                    group("apple")
+                    group("linux")
+                }
+            }
+        }
+    }
+
+    targets.withType<KotlinNativeTarget>().matching { it.konanTarget.family.isAppleFamily }.configureEach {
+        if (Os.isFamily("mac")) {
+            compilations.named("main") {
+                cinterops.create("apple") {
+                    packageName("at.released.tempfolder.platform.apple")
+                }
+            }
+        }
+    }
+    targets.withType<KotlinNativeTarget>().matching { it.konanTarget.family == Family.LINUX }.configureEach {
+        compilations.named("main") {
+            cinterops.create("linux") {
+                packageName("at.released.tempfolder.platform.linux")
+            }
+        }
+    }
+    targets.withType<KotlinNativeTarget>().matching { it.konanTarget.family == Family.ANDROID }.configureEach {
+        compilations.named("main") {
+            cinterops {
+                create("androidnative") {
+                    packageName("at.released.tempfolder.platform.androidnative")
+                }
+            }
         }
     }
 
@@ -112,14 +143,6 @@ kotlin {
             implementation(libs.androidx.test.core)
             implementation(libs.androidx.test.runner)
             implementation(libs.androidx.test.rules)
-        }
-    }
-}
-
-private fun KotlinNativeTarget.setupLinuxInterops() = compilations.named("main") {
-    cinterops {
-        create("linux") {
-            packageName("at.released.tempfolder.platform.linux")
         }
     }
 }

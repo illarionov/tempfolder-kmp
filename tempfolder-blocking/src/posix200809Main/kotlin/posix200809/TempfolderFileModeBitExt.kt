@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.dsl
+package at.released.tempfolder.posix200809
 
+import at.released.tempfolder.dsl.TempfolderFileModeBit
 import platform.posix.S_IRGRP
 import platform.posix.S_IROTH
 import platform.posix.S_IRUSR
@@ -14,9 +15,8 @@ import platform.posix.S_IWUSR
 import platform.posix.S_IXGRP
 import platform.posix.S_IXOTH
 import platform.posix.S_IXUSR
-import platform.posix.mode_t
 
-internal fun Set<TempfolderFileModeBit>.toPosixMode(): mode_t = this.fold(0U) { mask, bit -> mask or bit.posixMask }
+internal fun Set<TempfolderFileModeBit>.toPosixMode(): UInt = this.fold(0U) { mask, bit -> mask or bit.posixMask }
 
 private val TempfolderFileModeBit.posixMask: UInt
     get() = when (this) {

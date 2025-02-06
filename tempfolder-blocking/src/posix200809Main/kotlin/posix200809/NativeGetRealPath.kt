@@ -3,15 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking.nativefunc
+package at.released.tempfolder.posix200809
 
 import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.TempfolderNativeIOException
-import at.released.tempfolder.TempfolderPosixFileDescriptor
 import at.released.tempfolder.path.PosixPathString
-import at.released.tempfolder.path.toPosixPathString
+import at.released.tempfolder.posix200809.path.toPosixPathString
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.UnsafeNumber
 import platform.posix.O_DIRECTORY
 import platform.posix.O_NOFOLLOW
 import platform.posix.O_NONBLOCK
@@ -21,7 +20,6 @@ import platform.posix.free
 import platform.posix.getcwd
 import platform.posix.open
 
-// XXX thread-unsafe
 @Throws(TempfolderIOException::class)
 internal fun TempfolderPosixFileDescriptor.getRealPath(): PosixPathString {
     val targetFd = this.fd
@@ -71,6 +69,7 @@ private class CurrentDirectoryChanger private constructor(
 
 @Throws(TempfolderIOException::class)
 private fun getCurrentWorkingDirectory(): PosixPathString {
+    @OptIn(UnsafeNumber::class)
     val cwd: CPointer<ByteVar> = getcwd(null, 0U)
         ?: throw TempfolderNativeIOException(errno, "Can not get current working directory. ${errnoDescription()}")
 

@@ -3,16 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking.nativefunc
+package at.released.tempfolder.posix200809
 
 import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.TempfolderNativeIOException
-import at.released.tempfolder.TempfolderPosixFileDescriptor
 import at.released.tempfolder.path.PosixPathString
-import at.released.tempfolder.path.allocNullTerminatedPath
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.platform.linux.AT_SYMLINK_NOFOLLOW
 import at.released.tempfolder.platform.linux.fstatat
+import at.released.tempfolder.posix200809.path.allocNullTerminatedPath
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
@@ -22,7 +20,7 @@ import platform.posix.errno
 import platform.posix.stat
 
 @Throws(TempfolderIOException::class)
-internal fun isDirectory(
+internal actual fun isDirectory(
     dirFd: TempfolderPosixFileDescriptor,
     name: PosixPathString,
 ): Boolean = memScoped {

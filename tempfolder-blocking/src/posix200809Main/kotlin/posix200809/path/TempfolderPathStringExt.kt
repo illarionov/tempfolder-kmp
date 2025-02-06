@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.path
+package at.released.tempfolder.posix200809.path
 
-import at.released.tempfolder.path.TempfolderPathString.Companion.encoding
-import at.released.tempfolder.path.TempfolderPathString.Encoding
-import at.released.tempfolder.path.TempfolderPathString.Encoding.UTF16_LE
+import at.released.tempfolder.path.PosixPathString
+import at.released.tempfolder.path.TempfolderInvalidPathException
+import at.released.tempfolder.path.UnknownEncodingPosixPathString
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CArrayPointer
 import kotlinx.cinterop.CPointer
@@ -43,23 +43,4 @@ internal fun NativePlacement.allocNullTerminatedPath(path: PosixPathString): CAr
     bytes.indices.forEach { pathNative[it] = bytes[it] }
     pathNative[bytes.size] = 0
     return pathNative
-}
-
-internal fun TempfolderPathString.createNullTerminatedByteArray(): ByteArray =
-    createNullTerminatedByteArray(bytes, this.encoding)
-
-internal fun createNullTerminatedByteArray(
-    bytes: ByteString,
-    encoding: Encoding,
-): ByteArray {
-    val isWideChar = encoding == UTF16_LE
-    if (isWideChar) {
-        require(bytes.size % 2 == 0)
-    }
-    val size = bytes.size + if (isWideChar) 2 else 1
-    return ByteArray(size).also {
-        bytes.copyInto(it)
-        it[bytes.size] = 0
-        it[bytes.size + 1] = 0
-    }
 }

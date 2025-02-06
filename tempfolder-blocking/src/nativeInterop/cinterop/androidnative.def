@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2025 Alexey Illarionov and the at-released-tempfolder project contributors
+# SPDX-License-Identifier: Apache-2.0
+
+headerFilter = sys/stat.h sys/param.h fcntl.h
+noStringConversion = fstatat mkdirat realpath unlinkat openat
+
+---
+#include <sys/stat.h>
+#include <sys/param.h>
+#include <fcntl.h>
+
+extern int openat(int fd, const char *path, int oflag, ...);
+
+// sys/stat.h
+extern int mkdirat (int fd, const char *path, mode_t mode);
+extern int fstatat (int fd, const char *file, struct stat *buf, int flag);
+
+// unistd.h
+extern int unlinkat (int fd, const char *path, int flags);
+
+// stdlib.h
+extern char* realpath(const char *restrict path, char *restrict resolved_path);
