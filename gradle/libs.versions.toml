@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [versions]
-androidMinSdk = "14"
+androidMinSdk = "19"
 androidCompileSdk = "35"
 
 agp = "8.7.3"

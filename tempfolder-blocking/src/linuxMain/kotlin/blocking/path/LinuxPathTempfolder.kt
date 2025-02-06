@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking
+package at.released.tempfolder.blocking.path
 
 import at.released.tempfolder.DeleteRecursivelyException
 import at.released.tempfolder.TempfolderClosedException
 import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
+import at.released.tempfolder.blocking.Tempfolder
 import at.released.tempfolder.path.TempfolderPathString
-import at.released.tempfolder.path.asPathString
+import at.released.tempfolder.path.toPosixPathString
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
@@ -30,7 +31,7 @@ public class LinuxPathTempfolder private constructor(
     private val isClosed = atomic(false)
     override var deleteOnClose: Boolean by atomic(true)
 
-    override fun getAbsolutePath(): TempfolderPathString = root.asPathString()
+    override fun getAbsolutePath(): TempfolderPathString = root.toPosixPathString()
 
     override fun delete() {
         throwIfClosed()
@@ -50,7 +51,7 @@ public class LinuxPathTempfolder private constructor(
         }
     }
 
-    override fun resolve(name: String): TempfolderPathString = "$root/$name".asPathString()
+    override fun resolve(name: String): TempfolderPathString = "$root/$name".toPosixPathString()
 
     override fun close() {
         if (isClosed.getAndSet(true)) {

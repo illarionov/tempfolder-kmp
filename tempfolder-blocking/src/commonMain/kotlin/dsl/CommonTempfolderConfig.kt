@@ -13,7 +13,7 @@ import at.released.tempfolder.dsl.TempfolderFileModeBit.USER_WRITE
  * Configuration of the created temporary directory
  */
 @TempfolderDsl
-public class TempfolderCommonConfigBlock internal constructor() {
+public class CommonTempfolderConfig internal constructor() {
     /**
      * Base path for the temporary directory
      */

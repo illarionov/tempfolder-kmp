@@ -5,6 +5,10 @@
 
 package at.released.tempfolder.blocking
 
-internal actual fun createPlatformTempFolder(namePrefix: String): Tempfolder<*> {
-    return NioTempfolder.create(namePrefix)
+import at.released.tempfolder.dsl.CommonTempfolderConfig
+import java.io.File
+
+internal actual fun createPlatformTempFolder(config: CommonTempfolderConfig): Tempfolder<*> {
+    File("df").canonicalPath
+    return NioTempfolder.create(config.prefix) // TODO
 }

@@ -8,8 +8,8 @@ package at.released.tempfolder.blocking
 import at.released.tempfolder.TempfolderClosedException
 import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
 import at.released.tempfolder.TempfolderWindowsIOException
-import at.released.tempfolder.WindowsPathString
 import at.released.tempfolder.path.TempfolderPathString
+import at.released.tempfolder.path.WindowsPathString
 import kotlinx.atomicfu.atomic
 
 public class WindowsPathTempfolder private constructor(
@@ -51,7 +51,7 @@ public class WindowsPathTempfolder private constructor(
         public fun create(
             namePrefix: String,
         ): WindowsPathTempfolder {
-            val tempPath = resolveTempRoot()
+            val tempPath = resolveTempBasePath()
             repeat(MAX_ATTEMPTS) {
                 val tempDirectoryPath = WindowsPathString(tempPath, generateTempDirectoryName(namePrefix))
                 val directoryCreated = createDirectory(tempDirectoryPath)

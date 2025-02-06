@@ -5,9 +5,8 @@
 
 package at.released.tempfolder
 
-import kotlin.jvm.JvmInline
+internal fun Int.asFileDescriptor(): TempfolderPosixFileDescriptor = TempfolderPosixFileDescriptor(this)
 
-@JvmInline
 public value class TempfolderPosixFileDescriptor(
     public val fd: Int,
 )
