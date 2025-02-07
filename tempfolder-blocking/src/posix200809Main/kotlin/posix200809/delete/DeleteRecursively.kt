@@ -3,16 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking.fd.delete
+package at.released.tempfolder.posix200809.delete
 
 import at.released.tempfolder.DeleteRecursivelyException
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.path.toPosixPathString
+import at.released.tempfolder.posix200809.DirP
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
 import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
-import at.released.tempfolder.posix200809.delete.DirStream
 import at.released.tempfolder.posix200809.delete.DirStream.DirEntryType.DIRECTORY
 import at.released.tempfolder.posix200809.delete.DirStream.DirEntryType.OTHER
 import at.released.tempfolder.posix200809.delete.DirStream.DirEntryType.UNKNOWN
@@ -20,21 +20,19 @@ import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem.EndOfSt
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem.Entry
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem.Error
 import at.released.tempfolder.posix200809.errnoDescription
+import at.released.tempfolder.posix200809.fdopendir
 import at.released.tempfolder.posix200809.isDirectory
+import at.released.tempfolder.posix200809.rewinddir
 import at.released.tempfolder.posix200809.unlinkDirectory
 import at.released.tempfolder.posix200809.unlinkFile
 import at.released.tempfolder.util.runStackSuppressedExceptions
-import kotlinx.cinterop.CPointer
 import kotlinx.io.bytestring.ByteString
-import platform.posix.DIR
 import platform.posix.EISDIR
 import platform.posix.ENOENT
 import platform.posix.EPERM
 import platform.posix.close
 import platform.posix.dup
 import platform.posix.errno
-import platform.posix.fdopendir
-import platform.posix.rewinddir
 
 @Throws(DeleteRecursivelyException::class)
 internal fun deleteRecursively(
@@ -61,7 +59,7 @@ private class BottomUpFileTreeRemover(
         if (dup == -1) {
             throw TempfolderNativeIOException(errno, "Can not duplicate descriptor. ${errnoDescription()}`")
         }
-        val dir: CPointer<DIR>? = fdopendir(dup)
+        val dir: DirP? = fdopendir(dup)
         if (dir == null) {
             val opendirException = TempfolderNativeIOException(
                 errno,
@@ -78,7 +76,7 @@ private class BottomUpFileTreeRemover(
             throw opendirException
         }
         rewinddir(dir)
-        stack.addLast(LinuxDirStream(dir))
+        stack.addLast(PosixDirStream(dir))
         usedFds += 1
 
         runStackSuppressedExceptions(
@@ -163,7 +161,7 @@ private class BottomUpFileTreeRemover(
         val dir = fdopendir(root.fd)
         if (dir != null) {
             rewinddir(dir)
-            stack.addLast(LinuxDirStream(dir))
+            stack.addLast(PosixDirStream(dir))
             usedFds += 1
         } else {
             addSuppressedNativeIOException("Can not open directory `${name.asStringOrDescription()}`.")

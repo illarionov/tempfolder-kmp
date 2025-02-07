@@ -3,29 +3,28 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking.fd.delete
+package at.released.tempfolder.posix200809.delete
 
+import at.released.tempfolder.posix200809.DirP
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
 import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.asFileDescriptor
-import at.released.tempfolder.posix200809.delete.DirStream
+import at.released.tempfolder.posix200809.closedir
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem
+import at.released.tempfolder.posix200809.dirfd
 import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.path.toPosixPathString
+import at.released.tempfolder.posix200809.readdir
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.get
-import platform.posix.DIR
 import platform.posix.DT_DIR
 import platform.posix.DT_UNKNOWN
-import platform.posix.closedir
 import platform.posix.dirent
-import platform.posix.dirfd
 import platform.posix.errno
-import platform.posix.readdir
 import platform.posix.set_posix_errno
 
-internal class LinuxDirStream(
-    private val dir: CPointer<DIR>,
+internal class PosixDirStream(
+    private val dir: DirP,
 ) : DirStream {
     override val dirfd: TempfolderPosixFileDescriptor = dirfd(dir).asFileDescriptor()
 
