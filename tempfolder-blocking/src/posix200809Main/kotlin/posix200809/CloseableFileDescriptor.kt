@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking.nativefunc
+package at.released.tempfolder.posix200809
 
-import at.released.tempfolder.TempfolderNativeIOException
 import platform.posix.close
 import platform.posix.errno
 

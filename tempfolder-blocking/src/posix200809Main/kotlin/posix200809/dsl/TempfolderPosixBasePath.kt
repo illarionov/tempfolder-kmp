@@ -5,8 +5,11 @@
 
 @file:Suppress("WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES")
 
-package at.released.tempfolder.dsl
+package at.released.tempfolder.posix200809.dsl
 
+import at.released.tempfolder.dsl.TempfolderBasePath
+import at.released.tempfolder.dsl.TempfolderDsl
+import at.released.tempfolder.dsl.TempfolderSizeEstimate
 import at.released.tempfolder.dsl.TempfolderSizeEstimate.SMALL
 
 /**
