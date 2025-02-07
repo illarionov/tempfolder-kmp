@@ -9,12 +9,12 @@ import at.released.tempfolder.TempfolderClosedException
 import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.blocking.Tempfolder
-import at.released.tempfolder.blocking.fd.delete.deleteRecursively
 import at.released.tempfolder.blocking.generateTempDirectoryName
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.TempfolderPathString
 import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
+import at.released.tempfolder.posix200809.delete.deleteRecursively
 import at.released.tempfolder.posix200809.getRealPath
 import at.released.tempfolder.posix200809.toPosixMode
 import kotlinx.atomicfu.atomic
