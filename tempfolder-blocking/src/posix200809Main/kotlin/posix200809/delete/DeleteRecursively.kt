@@ -10,7 +10,7 @@ import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.path.toPosixPathString
-import at.released.tempfolder.posix200809.DirP
+import at.released.tempfolder.posix200809.NativeDirent
 import at.released.tempfolder.posix200809.OpenDirectoryAt
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
 import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
@@ -21,10 +21,10 @@ import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem.EndOfSt
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem.Entry
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem.Error
 import at.released.tempfolder.posix200809.errnoDescription
-import at.released.tempfolder.posix200809.fdopendir
 import at.released.tempfolder.posix200809.isDirectory
 import at.released.tempfolder.posix200809.nativeOpenDirectoryAt
-import at.released.tempfolder.posix200809.rewinddir
+import at.released.tempfolder.posix200809.platformDirent
+import at.released.tempfolder.posix200809.toDirectoryStreamOrClose
 import at.released.tempfolder.posix200809.unlinkDirectory
 import at.released.tempfolder.posix200809.unlinkFile
 import at.released.tempfolder.util.runStackSuppressedExceptions
@@ -32,7 +32,6 @@ import kotlinx.io.bytestring.ByteString
 import platform.posix.EISDIR
 import platform.posix.ENOENT
 import platform.posix.EPERM
-import platform.posix.close
 import platform.posix.dup
 import platform.posix.errno
 
@@ -44,14 +43,16 @@ internal fun deleteRecursively(
     BottomUpFileTreeRemover(
         root = root,
         openDirectoryAt = ::nativeOpenDirectoryAt,
+        dirent = platformDirent,
         maxFileDescriptors = maxFileDescriptors,
     ).delete()
 }
 
 @Suppress("TooManyFunctions")
-private class BottomUpFileTreeRemover(
+private class BottomUpFileTreeRemover<D>(
     private val root: TempfolderPosixFileDescriptor,
     private val openDirectoryAt: OpenDirectoryAt,
+    private val dirent: NativeDirent<D>,
     private val maxFileDescriptors: Int = 64,
     private val maxSuppressedExceptions: Int = 8,
 ) {
@@ -66,24 +67,8 @@ private class BottomUpFileTreeRemover(
         if (dup == -1) {
             throw TempfolderNativeIOException(errno, "Can not duplicate descriptor. ${errnoDescription()}`")
         }
-        val dir: DirP? = fdopendir(dup)
-        if (dir == null) {
-            val opendirException = TempfolderNativeIOException(
-                errno,
-                "Can not open directory. ${errnoDescription()}`",
-            )
-            if (close(dup) == -1) {
-                opendirException.addSuppressed(
-                    TempfolderNativeIOException(
-                        errno,
-                        "Can not close descriptor. ${errnoDescription()}`",
-                    ),
-                )
-            }
-            throw opendirException
-        }
-        rewinddir(dir)
-        stack.addLast(PosixDirStream(dir))
+        val dir = dirent.toDirectoryStreamOrClose(dup)
+        stack.addLast(PosixDirStream(dirent, dir))
         usedFds += 1
 
         runStackSuppressedExceptions(
@@ -167,7 +152,7 @@ private class BottomUpFileTreeRemover(
     private fun handleDirectory(name: PosixPathString) {
         try {
             val dir = openDirectory(stream.dirfd, name)
-            stack.addLast(PosixDirStream(dir))
+            stack.addLast(PosixDirStream(dirent, dir))
             usedFds += 1
         } catch (error: TempfolderNativeIOException) {
             addSuppressedException(error)
@@ -179,26 +164,12 @@ private class BottomUpFileTreeRemover(
     private fun openDirectory(
         dirrectory: TempfolderPosixFileDescriptor,
         path: PosixPathString,
-    ): DirP {
+    ): D {
         val fd = openDirectoryAt(dirrectory, path, true)
         if (fd.fd == -1) {
             throw TempfolderNativeIOException(errno, "Can not open directory `$path`. ${errnoDescription()}`")
         }
-        val dirp: DirP? = fdopendir(fd.fd)
-        if (dirp == null) {
-            val opendirException = TempfolderNativeIOException(errno, "Can not open directory. ${errnoDescription()}`")
-            if (close(fd.fd) == -1) {
-                opendirException.addSuppressed(
-                    TempfolderNativeIOException(
-                        errno,
-                        "Can not close descriptor. ${errnoDescription()}`",
-                    ),
-                )
-            }
-            throw opendirException
-        }
-        rewinddir(dirp)
-        return dirp
+        return dirent.toDirectoryStreamOrClose(fd.fd)
     }
 
     private inline fun addSuppressedNativeIOException(errorText: String, error: Int = errno) {

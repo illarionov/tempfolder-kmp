@@ -8,11 +8,41 @@
 package at.released.tempfolder.posix200809
 
 import kotlinx.cinterop.CPointer
+import platform.posix.close
 import platform.posix.dirent
+import platform.posix.errno
 
-internal expect class DirP
-internal expect fun fdopendir(fd: Int): DirP?
-internal expect fun closedir(dirp: DirP): Int
-internal expect fun dirfd(dirp: DirP): Int
-internal expect fun readdir(dirp: DirP): CPointer<dirent>?
-internal expect fun rewinddir(dirp: DirP)
+internal expect val platformDirent: NativeDirent<*>
+
+/**
+ * #include <dirent.h>
+ */
+internal interface NativeDirent<D> {
+    fun fdopendir(fd: Int): D?
+    fun closedir(dirp: D): Int
+    fun dirfd(dirp: D): Int
+    fun readdir(dirp: D): CPointer<dirent>?
+    fun rewinddir(dirp: D)
+}
+
+@Throws(TempfolderNativeIOException::class)
+internal fun <D> NativeDirent<D>.toDirectoryStreamOrClose(dirfd: Int): D {
+    val dir: D? = fdopendir(dirfd)
+    if (dir == null) {
+        val opendirException = TempfolderNativeIOException(
+            errno,
+            "Can not open directory. ${errnoDescription()}`",
+        )
+        if (close(dirfd) == -1) {
+            opendirException.addSuppressed(
+                TempfolderNativeIOException(
+                    errno,
+                    "Can not close descriptor. ${errnoDescription()}`",
+                ),
+            )
+        }
+        throw opendirException
+    }
+    rewinddir(dir)
+    return dir
+}
