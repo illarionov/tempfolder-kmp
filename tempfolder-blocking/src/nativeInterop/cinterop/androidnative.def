@@ -1,15 +1,32 @@
 # SPDX-FileCopyrightText: 2025 Alexey Illarionov and the at-released-tempfolder project contributors
 # SPDX-License-Identifier: Apache-2.0
 
-headerFilter = sys/stat.h sys/param.h fcntl.h
-noStringConversion = fstatat mkdirat realpath unlinkat openat
+headerFilter = linux/openat2.h sys/stat.h sys/syscall.h sys/param.h fcntl.h
+noStringConversion = fstatat mkdirat realpath unlinkat
 
 ---
+
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <sys/param.h>
 #include <fcntl.h>
 
-extern int openat(int fd, const char *path, int oflag, ...);
+// sysroot/usr/include/linux/openat2.h
+struct open_how {
+  uint64_t flags;
+  uint64_t mode;
+  uint64_t resolve;
+};
+
+#define RESOLVE_NO_XDEV 0x01
+#define RESOLVE_NO_MAGICLINKS 0x02
+#define RESOLVE_NO_SYMLINKS 0x04
+#define RESOLVE_BENEATH 0x08
+#define RESOLVE_IN_ROOT 0x10
+#define RESOLVE_CACHED 0x20
+
+// bits/syscall.h
+#define SYS_openat2 437
 
 // sys/stat.h
 extern int mkdirat (int fd, const char *path, mode_t mode);
