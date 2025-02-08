@@ -5,16 +5,13 @@
 
 package at.released.tempfolder.posix200809.delete
 
-import at.released.tempfolder.posix200809.DirP
+import at.released.tempfolder.posix200809.NativeDirent
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
 import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.asFileDescriptor
-import at.released.tempfolder.posix200809.closedir
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem
-import at.released.tempfolder.posix200809.dirfd
 import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.path.toPosixPathString
-import at.released.tempfolder.posix200809.readdir
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.get
 import platform.posix.DT_DIR
@@ -23,13 +20,14 @@ import platform.posix.dirent
 import platform.posix.errno
 import platform.posix.set_posix_errno
 
-internal class PosixDirStream(
-    private val dir: DirP,
+internal class PosixDirStream<D>(
+    private val dirent: NativeDirent<D>,
+    private val dir: D,
 ) : DirStream {
-    override val dirfd: TempfolderPosixFileDescriptor = dirfd(dir).asFileDescriptor()
+    override val dirfd: TempfolderPosixFileDescriptor = dirent.dirfd(dir).asFileDescriptor()
 
     override fun close() {
-        if (closedir(dir) == -1) {
+        if (dirent.closedir(dir) == -1) {
             throw TempfolderNativeIOException(
                 errno,
                 "Can not close directory descriptor. ${errnoDescription()}`",
@@ -39,7 +37,7 @@ internal class PosixDirStream(
 
     override fun readNext(): DirStreamItem {
         set_posix_errno(0)
-        val dirent: CPointer<dirent>? = readdir(dir)
+        val dirent: CPointer<dirent>? = dirent.readdir(dir)
         return when {
             dirent != null -> DirStreamItem.Entry(
                 name = dirent[0].d_name.toPosixPathString(),
