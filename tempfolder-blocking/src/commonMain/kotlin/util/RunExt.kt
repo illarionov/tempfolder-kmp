@@ -6,7 +6,7 @@
 package at.released.tempfolder.util
 
 @Suppress("TooGenericExceptionCaught")
-internal inline fun <R> runStackSuppressedExceptions(
+internal inline fun <R> runBlockStackSuppressedExceptions(
     block: () -> R,
     finally: () -> Unit,
 ): R {

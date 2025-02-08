@@ -26,19 +26,13 @@ internal interface NativeDirent<D> {
 }
 
 @Throws(TempfolderNativeIOException::class)
-internal fun <D> NativeDirent<D>.toDirectoryStreamOrClose(dirfd: Int): D {
+internal fun <D> NativeDirent<D>.openDirectoryStreamOrCloseFd(dirfd: Int): D {
     val dir: D? = fdopendir(dirfd)
     if (dir == null) {
-        val opendirException = TempfolderNativeIOException(
-            errno,
-            "Can not open directory. ${errnoDescription()}`",
-        )
+        val opendirException = TempfolderNativeIOException(errno, "Can not open directory. ${errnoDescription()}`")
         if (close(dirfd) == -1) {
             opendirException.addSuppressed(
-                TempfolderNativeIOException(
-                    errno,
-                    "Can not close descriptor. ${errnoDescription()}`",
-                ),
+                TempfolderNativeIOException(errno, "Can not close descriptor. ${errnoDescription()}`"),
             )
         }
         throw opendirException
