@@ -11,6 +11,7 @@ import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.path.toPosixPathString
 import at.released.tempfolder.posix200809.DirP
+import at.released.tempfolder.posix200809.OpenDirectoryAt
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
 import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.delete.DirStream.DirEntryType.DIRECTORY
@@ -22,6 +23,7 @@ import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem.Error
 import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.fdopendir
 import at.released.tempfolder.posix200809.isDirectory
+import at.released.tempfolder.posix200809.nativeOpenDirectoryAt
 import at.released.tempfolder.posix200809.rewinddir
 import at.released.tempfolder.posix200809.unlinkDirectory
 import at.released.tempfolder.posix200809.unlinkFile
@@ -39,12 +41,17 @@ internal fun deleteRecursively(
     root: TempfolderPosixFileDescriptor,
     maxFileDescriptors: Int = 64,
 ) {
-    BottomUpFileTreeRemover(root, maxFileDescriptors).delete()
+    BottomUpFileTreeRemover(
+        root = root,
+        openDirectoryAt = ::nativeOpenDirectoryAt,
+        maxFileDescriptors = maxFileDescriptors,
+    ).delete()
 }
 
 @Suppress("TooManyFunctions")
 private class BottomUpFileTreeRemover(
     private val root: TempfolderPosixFileDescriptor,
+    private val openDirectoryAt: OpenDirectoryAt,
     private val maxFileDescriptors: Int = 64,
     private val maxSuppressedExceptions: Int = 8,
 ) {
@@ -158,15 +165,40 @@ private class BottomUpFileTreeRemover(
     }
 
     private fun handleDirectory(name: PosixPathString) {
-        val dir = fdopendir(root.fd)
-        if (dir != null) {
-            rewinddir(dir)
+        try {
+            val dir = openDirectory(stream.dirfd, name)
             stack.addLast(PosixDirStream(dir))
             usedFds += 1
-        } else {
-            addSuppressedNativeIOException("Can not open directory `${name.asStringOrDescription()}`.")
+        } catch (error: TempfolderNativeIOException) {
+            addSuppressedException(error)
             unlinkDirectory(stream.dirfd, name) // ignore errors
         }
+    }
+
+    @Throws(TempfolderNativeIOException::class)
+    private fun openDirectory(
+        dirrectory: TempfolderPosixFileDescriptor,
+        path: PosixPathString,
+    ): DirP {
+        val fd = openDirectoryAt(dirrectory, path, true)
+        if (fd.fd == -1) {
+            throw TempfolderNativeIOException(errno, "Can not open directory `$path`. ${errnoDescription()}`")
+        }
+        val dirp: DirP? = fdopendir(fd.fd)
+        if (dirp == null) {
+            val opendirException = TempfolderNativeIOException(errno, "Can not open directory. ${errnoDescription()}`")
+            if (close(fd.fd) == -1) {
+                opendirException.addSuppressed(
+                    TempfolderNativeIOException(
+                        errno,
+                        "Can not close descriptor. ${errnoDescription()}`",
+                    ),
+                )
+            }
+            throw opendirException
+        }
+        rewinddir(dirp)
+        return dirp
     }
 
     private inline fun addSuppressedNativeIOException(errorText: String, error: Int = errno) {

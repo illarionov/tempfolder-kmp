@@ -101,11 +101,18 @@ kotlin {
                     group("apple")
                     group("linux")
                 }
+                group("androidNative") {
+                    group("androidNativeX64") {
+                        withAndroidNativeArm64()
+                        withAndroidNativeX64()
+                    }
+                }
             }
         }
     }
 
     targets.withType<KotlinNativeTarget>().matching { it.konanTarget.family.isAppleFamily }.configureEach {
+        // https://youtrack.jetbrains.com/issue/KT-73136
         if (Os.isFamily("mac")) {
             compilations.named("main") {
                 cinterops.create("apple") {

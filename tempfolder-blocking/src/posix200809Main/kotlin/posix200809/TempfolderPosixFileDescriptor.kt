@@ -9,4 +9,8 @@ internal fun Int.asFileDescriptor(): TempfolderPosixFileDescriptor = TempfolderP
 
 public value class TempfolderPosixFileDescriptor(
     public val fd: Int,
-)
+) {
+    public companion object {
+        internal val CURRENT_WORKING_DIRECTORY = TempfolderPosixFileDescriptor(-100)
+    }
+}
