@@ -63,3 +63,21 @@ internal class Utf8PosixPathString(
 
     override fun asString(): String = stringValue
 }
+
+/**
+ * A byte string that passes validation as a component of POSIX path — it's not empty, has no path separators
+ * and bytes with a code 0.
+ */
+internal class PosixPathStringComponent private constructor(
+    delegate: PosixPathString,
+) : MultibytePathString, PosixPathString by delegate {
+    init {
+        validatePosixPathComponent(delegate.bytes)
+    }
+
+    internal companion object {
+        internal fun PosixPathString.asPathComponent(): PosixPathStringComponent {
+            return PosixPathStringComponent(this)
+        }
+    }
+}

@@ -5,6 +5,7 @@
 
 package at.released.tempfolder.path
 
+import at.released.tempfolder.path.PosixPathStringComponent.Companion.asPathComponent
 import at.released.tempfolder.path.TempfolderPathEmptyException.Companion.PATH_IS_EMPTY_MESSAGE
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.append
@@ -13,6 +14,14 @@ import kotlinx.io.bytestring.encodeToByteString
 import kotlinx.io.bytestring.indexOf
 import kotlinx.io.bytestring.indices
 import kotlinx.io.bytestring.isEmpty
+
+internal const val UNIX_PATH_SEPARATOR = '/'.code.toByte()
+internal val PATH_CURRENT_DIRECTORY = ".".toPosixPathString().asPathComponent()
+internal val PATH_PARENT_DIRECTORY = "..".toPosixPathString().asPathComponent()
+
+internal fun PosixPathString.isSpecialDirectory(): Boolean = isCurrentDirectory() || isParentDirectory()
+internal fun PosixPathString.isCurrentDirectory(): Boolean = bytes == PATH_CURRENT_DIRECTORY.bytes
+internal fun PosixPathString.isParentDirectory(): Boolean = bytes == PATH_PARENT_DIRECTORY.bytes
 
 @Throws(TempfolderInvalidPathException::class)
 internal fun validateBasicPosixPath(path: ByteString) {
@@ -24,7 +33,12 @@ internal fun validateBasicPosixPath(path: ByteString) {
     }
 }
 
-private const val UNIX_PATH_SEPARATOR = '/'.code.toByte()
+internal fun validatePosixPathComponent(component: ByteString) {
+    validateBasicPosixPath(component)
+    if (component.indexOf(UNIX_PATH_SEPARATOR) != -1) {
+        throw (TempfolderInvalidCharacterException("A Unix path component must not contain a path separator"))
+    }
+}
 
 @Throws(TempfolderInvalidPathException::class)
 internal fun ByteString.appendPosixPath(
