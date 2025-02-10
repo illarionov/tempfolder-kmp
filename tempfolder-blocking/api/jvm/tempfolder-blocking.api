@@ -47,7 +47,7 @@ public final class at/released/tempfolder/blocking/NioTempfolder : at/released/t
 }
 
 public final class at/released/tempfolder/blocking/NioTempfolder$Companion {
-	public final fun create (Ljava/lang/String;)Lat/released/tempfolder/blocking/NioTempfolder;
+	public final fun invoke (Ljava/lang/String;)Lat/released/tempfolder/blocking/NioTempfolder;
 }
 
 public abstract interface class at/released/tempfolder/blocking/Tempfolder : java/lang/AutoCloseable {
@@ -65,7 +65,8 @@ public final class at/released/tempfolder/blocking/Tempfolder$Companion {
 }
 
 public final class at/released/tempfolder/blocking/TempfolderKt {
-	public static final fun Tempfolder (Lkotlin/jvm/functions/Function1;)Lat/released/tempfolder/blocking/Tempfolder;
+	public static final fun createTempfolder (Lkotlin/jvm/functions/Function1;)Lat/released/tempfolder/blocking/Tempfolder;
+	public static synthetic fun createTempfolder$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lat/released/tempfolder/blocking/Tempfolder;
 }
 
 public final class at/released/tempfolder/dsl/CommonTempfolderConfig {
@@ -113,6 +114,7 @@ public abstract interface annotation class at/released/tempfolder/dsl/Tempfolder
 }
 
 public final class at/released/tempfolder/dsl/TempfolderFileModeBit : java/lang/Enum {
+	public static final field Companion Lat/released/tempfolder/dsl/TempfolderFileModeBit$Companion;
 	public static final field GROUP_EXECUTE Lat/released/tempfolder/dsl/TempfolderFileModeBit;
 	public static final field GROUP_READ Lat/released/tempfolder/dsl/TempfolderFileModeBit;
 	public static final field GROUP_WRITE Lat/released/tempfolder/dsl/TempfolderFileModeBit;
@@ -128,6 +130,9 @@ public final class at/released/tempfolder/dsl/TempfolderFileModeBit : java/lang/
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lat/released/tempfolder/dsl/TempfolderFileModeBit;
 	public static fun values ()[Lat/released/tempfolder/dsl/TempfolderFileModeBit;
+}
+
+public final class at/released/tempfolder/dsl/TempfolderFileModeBit$Companion {
 }
 
 public final class at/released/tempfolder/dsl/TempfolderSizeEstimate : java/lang/Enum {

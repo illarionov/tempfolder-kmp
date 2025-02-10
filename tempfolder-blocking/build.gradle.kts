@@ -18,6 +18,7 @@ plugins {
     id("at.released.tempfolder.gradle.multiplatform.kotlin")
     id("at.released.tempfolder.gradle.multiplatform.publish")
     id("at.released.tempfolder.gradle.multiplatform.test.jvm")
+    id("at.released.tempfolder.gradle.multiplatform.test.native")
 }
 
 group = "at.released.tempfolder"
@@ -39,12 +40,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-        }
-    }
-    testOptions {
-        unitTests {
-            isReturnDefaultValues = false
-            isIncludeAndroidResources = true
         }
     }
     packaging {

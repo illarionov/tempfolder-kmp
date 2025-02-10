@@ -18,6 +18,12 @@ import platform.posix.S_IXUSR
 
 internal fun Set<TempfolderFileModeBit>.toPosixMode(): UInt = this.fold(0U) { mask, bit -> mask or bit.posixMask }
 
+internal fun TempfolderFileModeBit.Companion.fromPosixMode(mode: UInt): Set<TempfolderFileModeBit> {
+    return TempfolderFileModeBit.entries.mapNotNullTo(mutableSetOf()) {
+        if (mode and it.posixMask == it.posixMask) it else null
+    }
+}
+
 private val TempfolderFileModeBit.posixMask: UInt
     get() = when (this) {
         TempfolderFileModeBit.SUID -> 0b100_000_000_000U

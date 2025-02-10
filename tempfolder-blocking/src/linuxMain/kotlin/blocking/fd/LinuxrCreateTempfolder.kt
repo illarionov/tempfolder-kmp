@@ -19,10 +19,6 @@ import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.toPosixPathString
 import at.released.tempfolder.platform.linux.AT_FDCWD
-import at.released.tempfolder.platform.linux.RESOLVE_BENEATH
-import at.released.tempfolder.platform.linux.SYS_openat2
-import at.released.tempfolder.platform.linux.mkdirat
-import at.released.tempfolder.platform.linux.open_how
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
 import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.asFileDescriptor
@@ -32,23 +28,15 @@ import at.released.tempfolder.posix200809.dsl.AdvisoryLockType.NONE
 import at.released.tempfolder.posix200809.dsl.AdvisoryLockType.SHARED
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath
 import at.released.tempfolder.posix200809.errnoDescription
-import at.released.tempfolder.posix200809.path.allocNullTerminatedPath
-import at.released.tempfolder.posix200809.unlinkDirectory
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.ptr
-import kotlinx.cinterop.sizeOf
+import at.released.tempfolder.posix200809.nativeOpenDirectoryAt
+import at.released.tempfolder.posix200809.platformMkdirat
+import at.released.tempfolder.posix200809.platformUnlinkDirectory
 import platform.linux.flock
 import platform.posix.EEXIST
 import platform.posix.LOCK_EX
 import platform.posix.LOCK_SH
-import platform.posix.O_DIRECTORY
-import platform.posix.O_NOFOLLOW
-import platform.posix.O_NONBLOCK
 import platform.posix.errno
-import platform.posix.memset
 import platform.posix.mode_t
-import platform.posix.syscall
 
 private const val MAX_ATTEMPTS = 100
 
@@ -86,14 +74,14 @@ private fun tryCreateTempfolder(
     }
 
     try {
-        val rootFd = openDirectory(dirFd, pathname, mode)
+        val rootFd = nativeOpenDirectoryAt(dirFd, pathname, resolveBeneath = false)
         setLock(rootFd, advisoryLock)
         return DescriptorWithPath(
             root = rootFd,
             absolutePath = if (base is Path) pathname else null,
         )
     } catch (ie: TempfolderNativeIOException) {
-        val errno = unlinkDirectory(dirFd, pathname)
+        val errno = platformUnlinkDirectory(dirFd, pathname)
         if (errno != 0) {
             ie.addSuppressed(
                 TempfolderNativeIOException(errno, "Can not remove temp directory. ${errnoDescription()}"),
@@ -108,40 +96,8 @@ private fun tryCreateDirectory(
     directoryName: PosixPathString,
     mode: mode_t,
 ): CreateDirectoryResult {
-    val mkdirResult = memScoped {
-        val pathBytes = allocNullTerminatedPath(directoryName)
-        mkdirat(base.fd, pathBytes, mode)
-    }
+    val mkdirResult = platformMkdirat(base, directoryName, mode)
     return CreateDirectoryResult.create(mkdirResult)
-}
-
-@Throws(TempfolderIOException::class)
-private fun openDirectory(
-    base: TempfolderPosixFileDescriptor,
-    path: PosixPathString,
-    mode: mode_t,
-): TempfolderPosixFileDescriptor {
-    val fd = memScoped {
-        val pathBytes = allocNullTerminatedPath(path)
-        val openHow: open_how = alloc<open_how> {
-            memset(ptr, 0, sizeOf<open_how>().toULong())
-            this.flags = (O_DIRECTORY or O_NOFOLLOW or O_NONBLOCK).toULong()
-            this.mode = mode.toULong()
-            this.resolve = RESOLVE_BENEATH.toULong()
-        }
-        syscall(
-            __sysno = SYS_openat2.toLong(),
-            base.fd,
-            pathBytes,
-            openHow.ptr,
-            sizeOf<open_how>().toULong(),
-        )
-    }
-    if (fd != -1L) {
-        return TempfolderPosixFileDescriptor(fd.toInt())
-    } else {
-        throw TempfolderNativeIOException(errno, "Can not open created directory. ${errnoDescription()}")
-    }
 }
 
 @Throws(TempfolderIOException::class)
@@ -163,11 +119,11 @@ private sealed class CreateDirectoryResult {
     class Error(val lastError: Exception) : CreateDirectoryResult()
 
     companion object {
-        fun create(result: Int, error: Int = errno): CreateDirectoryResult = when {
-            result != -1 -> Success
-            error == EEXIST -> DirectoryExists
+        fun create(result: Int): CreateDirectoryResult = when {
+            result == 0 -> Success
+            result == EEXIST -> DirectoryExists
             else -> Error(
-                TempfolderNativeIOException(error, "Failed to open temp directory. ${errnoDescription(error)}"),
+                TempfolderNativeIOException(result, "Failed to open temp directory. ${errnoDescription(result)}"),
             )
         }
     }

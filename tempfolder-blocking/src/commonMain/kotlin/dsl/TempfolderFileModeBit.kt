@@ -19,4 +19,7 @@ public enum class TempfolderFileModeBit {
     OTHER_READ,
     OTHER_WRITE,
     OTHER_EXECUTE,
+    ;
+
+    public companion object
 }

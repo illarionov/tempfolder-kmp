@@ -8,5 +8,5 @@ package at.released.tempfolder.blocking
 import at.released.tempfolder.dsl.CommonTempfolderConfig
 
 internal actual fun createPlatformTempFolder(config: CommonTempfolderConfig): Tempfolder<*> {
-    return WindowsPathTempfolder.create(config.prefix) // TODO
+    return WindowsPathTempfolder(config.prefix) // TODO
 }

@@ -13,8 +13,8 @@ import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.PosixPathStringComponent
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.path.isSpecialDirectory
-import at.released.tempfolder.posix200809.NativeDirent
 import at.released.tempfolder.posix200809.OpenDirectoryAt
+import at.released.tempfolder.posix200809.PlatformDirent
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
 import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.delete.DirStream.DirEntryType
@@ -28,8 +28,8 @@ import at.released.tempfolder.posix200809.isDirectory
 import at.released.tempfolder.posix200809.nativeOpenDirectoryAt
 import at.released.tempfolder.posix200809.openDirectoryStreamOrCloseFd
 import at.released.tempfolder.posix200809.platformDirent
-import at.released.tempfolder.posix200809.unlinkDirectory
-import at.released.tempfolder.posix200809.unlinkFile
+import at.released.tempfolder.posix200809.platformUnlinkDirectory
+import at.released.tempfolder.posix200809.platformUnlinkFile
 import platform.posix.EISDIR
 import platform.posix.ENOENT
 import platform.posix.EPERM
@@ -53,7 +53,7 @@ internal fun deleteRecursively(
 private class BottomUpFileTreeRemover<D>(
     private val root: TempfolderPosixFileDescriptor,
     private val openDirectoryAt: OpenDirectoryAt,
-    private val direntApi: NativeDirent<D>,
+    private val direntApi: PlatformDirent<D>,
     maxFileDescriptors: Int = 64,
     maxSuppressedExceptions: Int = 8,
 ) {
@@ -61,6 +61,7 @@ private class BottomUpFileTreeRemover<D>(
     private val pathDequeue = PathDequeue(direntApi, maxFileDescriptors)
 
     @Throws(TempfolderIOException::class)
+    @Suppress("ThrowsCount")
     fun delete() {
         try {
             enterDirectoryOrThrow(root, PATH_CURRENT_DIRECTORY, PATH_CURRENT_DIRECTORY)
@@ -70,6 +71,12 @@ private class BottomUpFileTreeRemover<D>(
 
         try {
             deleteUnsafe()
+            suppressedExceptions.removeFirstOrNull()?.let {
+                throw DeleteRecursivelyException(
+                    "${it.message}. Suppressed exceptions may contain other errors",
+                    it,
+                )
+            }
         } catch (ie: TempfolderException) {
             suppressedExceptions.addSuppressedToThrowable(ie)
             throw ie
@@ -110,7 +117,7 @@ private class BottomUpFileTreeRemover<D>(
             is PreloadedDirStream -> root to pathFromRoot
         }
 
-        val unlinkError = unlinkDirectory(rootFd, path)
+        val unlinkError = platformUnlinkDirectory(rootFd, path)
         if (unlinkError != 0 && unlinkError != ENOENT) {
             suppressedExceptions.addNativeIOException(
                 errorText = "Can not remove directory",
@@ -142,7 +149,7 @@ private class BottomUpFileTreeRemover<D>(
                         errno = tne.errno,
                         parent = tne,
                     )
-                    unlinkDirectory(stream.dirfd, basename) // ignore errors
+                    platformUnlinkDirectory(stream.dirfd, basename) // ignore errors
                 }
             }
 
@@ -158,7 +165,7 @@ private class BottomUpFileTreeRemover<D>(
                         errno = error.errno,
                         parent = error,
                     )
-                    unlinkDirectory(root, path) // ignore errors
+                    platformUnlinkDirectory(root, path) // ignore errors
                 }
             }
         }
@@ -205,7 +212,7 @@ private class BottomUpFileTreeRemover<D>(
         when (type) {
             DIRECTORY -> onDirectory(name)
             OTHER -> {
-                val errno = unlinkFile(dirfd, name)
+                val errno = platformUnlinkFile(dirfd, name)
                 if (errno != 0) {
                     suppressedExceptions.addNativeIOException(
                         errorText = "Can not remove file",
@@ -217,7 +224,7 @@ private class BottomUpFileTreeRemover<D>(
 
             UNKNOWN -> {
                 // Try to delete as a file
-                val errno = unlinkFile(dirfd, name)
+                val errno = platformUnlinkFile(dirfd, name)
                 when (errno) {
                     0 -> Unit
                     ENOENT -> Unit // Ignore
@@ -239,7 +246,7 @@ private class BottomUpFileTreeRemover<D>(
                             errno = isDirectoryException.errno,
                             parent = isDirectoryException,
                         )
-                        unlinkDirectory(dirfd, name) // Try to unlink directory, ignore errors
+                        platformUnlinkDirectory(dirfd, name) // Try to unlink directory, ignore errors
                     }
 
                     else -> suppressedExceptions.addNativeIOException(

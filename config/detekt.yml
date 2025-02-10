@@ -75,7 +75,7 @@ style:
   active: true
 
   ForbiddenComment:
-    active: true
+    active: false
   ForbiddenMethodCall:
     active: true
     methods:

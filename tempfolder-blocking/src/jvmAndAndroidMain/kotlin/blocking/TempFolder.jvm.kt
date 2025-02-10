@@ -6,9 +6,7 @@
 package at.released.tempfolder.blocking
 
 import at.released.tempfolder.dsl.CommonTempfolderConfig
-import java.io.File
 
 internal actual fun createPlatformTempFolder(config: CommonTempfolderConfig): Tempfolder<*> {
-    File("df").canonicalPath
-    return NioTempfolder.create(config.prefix) // TODO
+    return NioTempfolder(config.prefix) // TODO
 }

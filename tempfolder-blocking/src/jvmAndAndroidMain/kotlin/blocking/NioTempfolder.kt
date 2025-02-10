@@ -83,7 +83,7 @@ public class NioTempfolder private constructor(
     }
 
     public companion object {
-        public fun create(
+        public operator fun invoke(
             namePrefix: String,
         ): NioTempfolder {
             val hasPosixFilePermissionSupport = FileSystems.getDefault().supportedFileAttributeViews().contains("posix")

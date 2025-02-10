@@ -13,8 +13,8 @@ import at.released.tempfolder.path.TempfolderPathString
 internal expect fun createPlatformTempFolder(config: CommonTempfolderConfig): Tempfolder<*>
 
 @Throws(TempfolderIOException::class)
-public fun Tempfolder(
-    block: CommonTempfolderConfig.() -> Unit,
+public fun createTempfolder(
+    block: CommonTempfolderConfig.() -> Unit = {},
 ): Tempfolder<*> {
     val config = CommonTempfolderConfig().apply(block)
     return createPlatformTempFolder(config)
