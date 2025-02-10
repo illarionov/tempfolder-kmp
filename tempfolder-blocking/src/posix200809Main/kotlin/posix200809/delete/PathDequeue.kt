@@ -12,13 +12,13 @@ import at.released.tempfolder.path.PosixPathStringComponent
 import at.released.tempfolder.path.UNIX_PATH_SEPARATOR
 import at.released.tempfolder.path.UnknownEncodingPosixPathString
 import at.released.tempfolder.path.isCurrentDirectory
-import at.released.tempfolder.path.validatePosixPathComponent
 import at.released.tempfolder.posix200809.NativeDirent
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
 import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem
 import kotlinx.io.bytestring.append
 import kotlinx.io.bytestring.buildByteString
+import kotlinx.io.bytestring.isNotEmpty
 
 internal class PathDequeue<D>(
     private val dirent: NativeDirent<D>,
@@ -68,25 +68,32 @@ internal class PathDequeue<D>(
         return holder.stream
     }
 
-    fun getPathFromRoot(basename: PosixPathString = PATH_CURRENT_DIRECTORY): PosixPathString {
-        validatePosixPathComponent(basename.bytes)
+    fun getPathFromRoot(
+        dirStream: DirStream,
+        basename: PosixPathStringComponent = PATH_CURRENT_DIRECTORY,
+    ): PosixPathString {
+        val dirStreamIndex = path.indexOfFirst { it.stream === dirStream }
+        check(dirStreamIndex >= 0) { "No ${dirStream.basename} directory stream in deque" }
+        val subpath = path.subList(1, dirStreamIndex + 1)
 
-        val newSize: Int = path.sumOf { it.name.bytes.size } + path.size + basename.bytes.size
+        val newSize: Int = subpath.sumOf { it.name.bytes.size + 1 } + basename.bytes.size
         val newBytes = buildByteString(newSize) {
-            for (dirStream in path) {
-                if (dirStream.name.isCurrentDirectory()) {
-                    continue
-                }
-                append(dirStream.name.bytes)
+            subpath.forEach {
+                append(it.name.bytes)
                 append(UNIX_PATH_SEPARATOR)
             }
             if (!basename.isCurrentDirectory()) {
                 append(basename.bytes)
             }
         }
-        return UnknownEncodingPosixPathString(newBytes)
+        return if (newBytes.isNotEmpty()) {
+            UnknownEncodingPosixPathString(newBytes)
+        } else {
+            PATH_CURRENT_DIRECTORY
+        }
     }
 
+    // @Throws(TempfolderIOException::class)
     override fun close() {
         val exceptions = path.mapNotNull { dirStream ->
             try {

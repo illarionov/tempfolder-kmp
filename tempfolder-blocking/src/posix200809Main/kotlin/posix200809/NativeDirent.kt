@@ -18,7 +18,7 @@ internal expect val platformDirent: NativeDirent<*>
  * #include <dirent.h>
  */
 internal interface NativeDirent<D> {
-    fun fdopendir(fd: Int): D?
+    fun fdopendir(fd: TempfolderPosixFileDescriptor): D?
     fun closedir(dirp: D): Int
     fun dirfd(dirp: D): Int
     fun readdir(dirp: D): CPointer<dirent>?
@@ -26,11 +26,11 @@ internal interface NativeDirent<D> {
 }
 
 @Throws(TempfolderNativeIOException::class)
-internal fun <D> NativeDirent<D>.openDirectoryStreamOrCloseFd(dirfd: Int): D {
+internal fun <D> NativeDirent<D>.openDirectoryStreamOrCloseFd(dirfd: TempfolderPosixFileDescriptor): D {
     val dir: D? = fdopendir(dirfd)
     if (dir == null) {
         val opendirException = TempfolderNativeIOException(errno, "Can not open directory. ${errnoDescription()}`")
-        if (close(dirfd) == -1) {
+        if (close(dirfd.fd) == -1) {
             opendirException.addSuppressed(
                 TempfolderNativeIOException(errno, "Can not close descriptor. ${errnoDescription()}`"),
             )
