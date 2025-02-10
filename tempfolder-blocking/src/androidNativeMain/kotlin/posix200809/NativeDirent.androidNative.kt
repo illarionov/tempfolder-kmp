@@ -13,7 +13,9 @@ import platform.posix.dirent
 internal actual val platformDirent: NativeDirent<*> = AndroidDirent
 
 private object AndroidDirent : NativeDirent<CPointer<cnames.structs.DIR>> {
-    override fun fdopendir(fd: Int): CPointer<cnames.structs.DIR>? = platform.posix.fdopendir(fd)
+    override fun fdopendir(fd: TempfolderPosixFileDescriptor): CPointer<cnames.structs.DIR>? =
+        platform.posix.fdopendir(fd.androidFd)
+
     override fun rewinddir(dirp: CPointer<cnames.structs.DIR>) = platform.posix.rewinddir(dirp)
     override fun readdir(dirp: CPointer<cnames.structs.DIR>): CPointer<dirent>? = platform.posix.readdir(dirp)
     override fun dirfd(dirp: CPointer<cnames.structs.DIR>): Int = platform.posix.dirfd(dirp)
