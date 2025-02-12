@@ -27,8 +27,8 @@ import kotlin.test.Ignore
 import kotlin.test.Test
 
 class TempfolderTest {
-    @Test
     @Ignore
+    @Test
     fun tempfolder_test_success_case() {
         val path: TempfolderPathString
         createTempfolder().use { tempDirectory ->

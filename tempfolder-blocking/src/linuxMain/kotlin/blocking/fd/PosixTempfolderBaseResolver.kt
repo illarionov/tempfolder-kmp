@@ -23,12 +23,6 @@ import at.released.tempfolder.posix200809.platformRealpath
 import platform.posix.getenv
 
 internal object PosixTempfolderBaseResolver {
-    private val TempfolderSizeEstimate.tempDirectory: PosixPathString
-        get() = when (this) {
-            SMALL -> "/tmp".toPosixPathString()
-            LARGE -> "/var/tmp".toPosixPathString()
-        }
-
     @Throws(TempfolderIOException::class)
     internal fun resolve(parent: TempfolderPosixBasePath): ResolvedBase {
         return when (parent) {
@@ -49,7 +43,14 @@ internal object PosixTempfolderBaseResolver {
         return if (tmpdir != null) {
             platformRealpath(tmpdir)
         } else {
-            sizeEstimate.tempDirectory
+            getDefaultTempRoot(sizeEstimate)
+        }
+    }
+
+    private fun getDefaultTempRoot(sizeEstimate: TempfolderSizeEstimate): PosixPathString {
+        return when (sizeEstimate) {
+            SMALL -> "/tmp".toPosixPathString()
+            LARGE -> "/var/tmp".toPosixPathString()
         }
     }
 

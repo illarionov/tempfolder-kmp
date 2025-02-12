@@ -34,8 +34,13 @@ import platform.posix.EISDIR
 import platform.posix.ENOENT
 import platform.posix.EPERM
 import platform.posix.errno
-import kotlin.LazyThreadSafetyMode.NONE
 
+/**
+ * Recursively deletes the contents of the directory referenced by the descriptor [root].
+ * Does not delete the directory itself. Does not close the file descriptor.
+ *
+ * @param maxFileDescriptors the maximum number of simultaneously open directories that can be used during deletion.
+ */
 @Throws(DeleteRecursivelyException::class)
 internal fun deleteRecursively(
     root: TempfolderPosixFileDescriptor,
@@ -81,11 +86,15 @@ private class BottomUpFileTreeRemover<D>(
             suppressedExceptions.addSuppressedToThrowable(ie)
             throw ie
         } finally {
-            try {
-                close()
-            } catch (@Suppress("SwallowedException") ex: TempfolderException) {
-                // Ignore errors
-            }
+            closeSilent()
+        }
+    }
+
+    private fun closeSilent() {
+        try {
+            close()
+        } catch (@Suppress("SwallowedException") ex: TempfolderException) {
+            // Ignore errors
         }
     }
 
@@ -96,7 +105,7 @@ private class BottomUpFileTreeRemover<D>(
             when (val dirEntry = stream.readNext()) {
                 is Entry -> handleEntry(dirEntry.name, dirEntry.type)
                 is Error -> throw TempfolderIOException(
-                    "Can not read ${pathDequeue.getPathFromRoot(stream).asStringOrDescription()}",
+                    "Failed to read directory entry at ${pathDequeue.getPathFromRoot(stream).asStringOrDescription()}",
                     dirEntry.error,
                 )
 
@@ -107,26 +116,29 @@ private class BottomUpFileTreeRemover<D>(
 
     @Throws(TempfolderIOException::class)
     private fun handleEndOfStream() {
-        val dirStream = pathDequeue.last()
-        val pathFromRoot by lazy(NONE) {
-            pathDequeue.getPathFromRoot(dirStream)
+        val closingStream = pathDequeue.removeLast()
+        closingStream.close()
+        if (pathDequeue.isNotEmpty()) {
+            unlinkEmptyDirectory(closingStream.basename)
         }
+    }
 
-        val (rootFd, path) = when (dirStream) {
-            is OpenDirStream<*> -> dirStream.dirfd to PATH_CURRENT_DIRECTORY
-            is PreloadedDirStream -> root to pathFromRoot
+    @Throws(TempfolderIOException::class)
+    private fun unlinkEmptyDirectory(name: PosixPathStringComponent) {
+        val dir = pathDequeue.last()
+        val (rootFd, path) = when (dir) {
+            is OpenDirStream<*> -> dir.dirfd to name
+            is PreloadedDirStream -> root to pathDequeue.getPathFromRoot(dir, name)
         }
 
         val unlinkError = platformUnlinkDirectory(rootFd, path)
         if (unlinkError != 0 && unlinkError != ENOENT) {
-            suppressedExceptions.addNativeIOException(
+            suppressedExceptions.addOrThrowNativeIOException(
                 errorText = "Can not remove directory",
-                filePath = pathFromRoot,
+                filePath = pathDequeue.getPathFromRoot(dir, name),
                 errno = unlinkError,
             )
         }
-        pathDequeue.removeLast()
-        dirStream.close()
     }
 
     private fun handleEntry(
@@ -143,7 +155,7 @@ private class BottomUpFileTreeRemover<D>(
                 try {
                     enterDirectoryOrThrow(stream.dirfd, basename, basename)
                 } catch (tne: TempfolderNativeIOException) {
-                    suppressedExceptions.addNativeIOException(
+                    suppressedExceptions.addOrThrowNativeIOException(
                         errorText = "Can not enter directory",
                         filePath = pathDequeue.getPathFromRoot(stream, basename),
                         errno = tne.errno,
@@ -159,7 +171,7 @@ private class BottomUpFileTreeRemover<D>(
                 try {
                     enterDirectoryOrThrow(root, path, basename)
                 } catch (error: TempfolderNativeIOException) {
-                    suppressedExceptions.addNativeIOException(
+                    suppressedExceptions.addOrThrowNativeIOException(
                         errorText = "Can not enter directory",
                         filePath = path,
                         errno = error.errno,
@@ -190,18 +202,18 @@ private class BottomUpFileTreeRemover<D>(
     private fun preloadDirectory(
         stream: OpenDirStream<D>,
     ): List<Entry> {
-        val entries: MutableList<Entry> = mutableListOf()
+        val directories: MutableList<Entry> = mutableListOf()
         while (true) {
             when (val entry = stream.readNext()) {
                 is Entry -> stream.handleOpenDirStreamEntry(entry.name, entry.type) {
-                    entries.add(entry)
+                    directories.add(entry)
                 }
 
                 is Error -> throw TempfolderIOException(entry.error)
                 EndOfStream -> break
             }
         }
-        return entries
+        return directories
     }
 
     private inline fun OpenDirStream<D>.handleOpenDirStreamEntry(
@@ -214,8 +226,8 @@ private class BottomUpFileTreeRemover<D>(
             OTHER -> {
                 val errno = platformUnlinkFile(dirfd, name)
                 if (errno != 0) {
-                    suppressedExceptions.addNativeIOException(
-                        errorText = "Can not remove file",
+                    suppressedExceptions.addOrThrowNativeIOException(
+                        errorText = "Failed to delete file",
                         filePath = pathDequeue.getPathFromRoot(this, name),
                         errno = errno,
                     )
@@ -233,15 +245,15 @@ private class BottomUpFileTreeRemover<D>(
                         if (isDirectory(dirfd, name)) {
                             onDirectory(name)
                         } else {
-                            suppressedExceptions.addNativeIOException(
-                                errorText = "Can not remove file or directory",
+                            suppressedExceptions.addOrThrowNativeIOException(
+                                errorText = "Failed to delete file or directory",
                                 filePath = pathDequeue.getPathFromRoot(this, name),
                                 errno = EPERM,
                             )
                         }
                     } catch (isDirectoryException: TempfolderNativeIOException) {
-                        suppressedExceptions.addNativeIOException(
-                            errorText = "Can not determine file type",
+                        suppressedExceptions.addOrThrowNativeIOException(
+                            errorText = "Unable to determine the file type",
                             filePath = pathDequeue.getPathFromRoot(this, name),
                             errno = isDirectoryException.errno,
                             parent = isDirectoryException,
@@ -249,8 +261,8 @@ private class BottomUpFileTreeRemover<D>(
                         platformUnlinkDirectory(dirfd, name) // Try to unlink directory, ignore errors
                     }
 
-                    else -> suppressedExceptions.addNativeIOException(
-                        errorText = "Can not remove file or directory",
+                    else -> suppressedExceptions.addOrThrowNativeIOException(
+                        errorText = "Failed to delete file or directory",
                         filePath = pathDequeue.getPathFromRoot(this, name),
                         errno = EPERM,
                     )
