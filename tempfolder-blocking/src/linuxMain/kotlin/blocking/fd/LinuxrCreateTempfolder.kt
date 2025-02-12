@@ -16,12 +16,13 @@ import at.released.tempfolder.blocking.fd.PosixTempfolderBaseResolver.ResolvedBa
 import at.released.tempfolder.blocking.fd.PosixTempfolderBaseResolver.ResolvedBase.Path
 import at.released.tempfolder.blocking.generateTempDirectoryName
 import at.released.tempfolder.path.PosixPathString
+import at.released.tempfolder.path.PosixPathStringComponent
+import at.released.tempfolder.path.PosixPathStringComponent.Companion.asPathComponent
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.toPosixPathString
-import at.released.tempfolder.platform.linux.AT_FDCWD
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
 import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
-import at.released.tempfolder.posix200809.asFileDescriptor
+import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor.Companion.CURRENT_WORKING_DIRECTORY
 import at.released.tempfolder.posix200809.dsl.AdvisoryLockType
 import at.released.tempfolder.posix200809.dsl.AdvisoryLockType.EXCLUSIVE
 import at.released.tempfolder.posix200809.dsl.AdvisoryLockType.NONE
@@ -46,10 +47,10 @@ internal fun createTempfolder(
     mode: mode_t = 0b000_111_000_000U,
     advisoryLock: AdvisoryLockType = SHARED,
     randomNameGenerator: () -> String = { generateTempDirectoryName("tempfolder-") },
-): DescriptorWithPath {
+): TempfolderCoordinates {
     val base: ResolvedBase = PosixTempfolderBaseResolver.resolve(parent)
     val tempDirectoryFd = (1..MAX_ATTEMPTS).firstNotNullOfOrNull {
-        val directoryName = randomNameGenerator().toPosixPathString()
+        val directoryName = randomNameGenerator().toPosixPathString().asPathComponent()
         tryCreateTempfolder(base, directoryName, mode, advisoryLock)
     }
     return tempDirectoryFd ?: throw TempfolderIOException("Can not create temp folder: max attempts reached")
@@ -58,13 +59,13 @@ internal fun createTempfolder(
 @Throws(TempfolderIOException::class)
 private fun tryCreateTempfolder(
     base: ResolvedBase,
-    directoryName: PosixPathString,
+    directoryName: PosixPathStringComponent,
     mode: mode_t,
     advisoryLock: AdvisoryLockType,
-): DescriptorWithPath? {
+): TempfolderCoordinates? {
     val (dirFd: TempfolderPosixFileDescriptor, pathname: PosixPathString) = when (base) {
         is FileDescriptor -> base.fd to directoryName
-        is Path -> AT_FDCWD.asFileDescriptor() to base.path.append(directoryName.asString())
+        is Path -> CURRENT_WORKING_DIRECTORY to base.path.append(directoryName.asString())
     }
 
     when (val createDirectoryResult = tryCreateDirectory(dirFd, pathname, mode)) {
@@ -76,9 +77,10 @@ private fun tryCreateTempfolder(
     try {
         val rootFd = nativeOpenDirectoryAt(dirFd, pathname, resolveBeneath = false)
         setLock(rootFd, advisoryLock)
-        return DescriptorWithPath(
-            root = rootFd,
-            absolutePath = if (base is Path) pathname else null,
+        return TempfolderCoordinates(
+            parentDirfd = dirFd,
+            directoryPathname = pathname,
+            directoryDescriptor = rootFd,
         )
     } catch (ie: TempfolderNativeIOException) {
         val errno = platformUnlinkDirectory(dirFd, pathname)
@@ -129,10 +131,8 @@ private sealed class CreateDirectoryResult {
     }
 }
 
-internal class DescriptorWithPath(
-    val root: TempfolderPosixFileDescriptor,
-    val absolutePath: PosixPathString?,
-) {
-    operator fun component1(): TempfolderPosixFileDescriptor = root
-    operator fun component2(): PosixPathString? = absolutePath
-}
+internal class TempfolderCoordinates(
+    val parentDirfd: TempfolderPosixFileDescriptor,
+    val directoryPathname: PosixPathString,
+    val directoryDescriptor: TempfolderPosixFileDescriptor,
+)

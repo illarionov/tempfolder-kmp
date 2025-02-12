@@ -22,6 +22,7 @@ internal val PATH_PARENT_DIRECTORY = "..".toPosixPathString().asPathComponent()
 internal fun PosixPathString.isSpecialDirectory(): Boolean = isCurrentDirectory() || isParentDirectory()
 internal fun PosixPathString.isCurrentDirectory(): Boolean = bytes == PATH_CURRENT_DIRECTORY.bytes
 internal fun PosixPathString.isParentDirectory(): Boolean = bytes == PATH_PARENT_DIRECTORY.bytes
+internal fun PosixPathString.isAbsolute(): Boolean = bytes[0] == UNIX_PATH_SEPARATOR
 
 @Throws(TempfolderInvalidPathException::class)
 internal fun validateBasicPosixPath(path: ByteString) {

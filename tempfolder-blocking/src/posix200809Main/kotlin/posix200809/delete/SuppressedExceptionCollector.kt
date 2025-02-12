@@ -17,18 +17,21 @@ internal class SuppressedExceptionCollector(
 ) {
     private val exceptions: MutableList<TempfolderException> = ArrayList(maxSuppressedExceptions)
 
-    inline fun addNativeIOException(
+    inline fun addOrThrowNativeIOException(
         errorText: String,
         filePath: PosixPathString,
         errno: Int = platform.posix.errno,
         parent: TempfolderIOException? = null,
     ) {
+        val exception = TempfolderNativeIOException(
+            errno,
+            "$errorText `${filePath.asStringOrDescription()}`. ${errnoDescription(errno)}",
+            parent,
+        )
         if (exceptions.size < maxSuppressedExceptions) {
-            exceptions += TempfolderNativeIOException(
-                errno,
-                "$errorText `${filePath.asStringOrDescription()}`. ${errnoDescription(errno)}",
-                parent,
-            )
+            exceptions += exception
+        } else {
+            throw exception
         }
     }
 
