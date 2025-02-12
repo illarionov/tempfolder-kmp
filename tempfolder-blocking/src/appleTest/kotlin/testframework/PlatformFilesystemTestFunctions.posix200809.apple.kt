@@ -34,5 +34,5 @@ internal actual fun nativeGetFileMode(
     if (resultCode == -1) {
         throw TempfolderNativeIOException(errno, "Can not stat `${path.asStringOrDescription()}`")
     }
-    return statbuf.st_mode and 0xfffU
+    return statbuf.st_mode.toUInt() and 0xfffU
 }

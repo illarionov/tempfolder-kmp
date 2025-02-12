@@ -8,6 +8,7 @@ package at.released.tempfolder.posix200809
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.platform.apple.openat
 import at.released.tempfolder.posix200809.path.allocNullTerminatedPath
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.memScoped
 import platform.posix.errno
 
@@ -21,7 +22,7 @@ internal actual fun platformOpenAt(
 ): TempfolderPosixFileDescriptor {
     val fd = memScoped {
         val pathBytes = allocNullTerminatedPath(path)
-        openat(dirfd.appleFd, pathBytes, flags, mode)
+        openat(dirfd.appleFd, pathBytes, flags.convert(), mode.toInt())
     }
     if (fd != -1) {
         return fd.asFileDescriptor()

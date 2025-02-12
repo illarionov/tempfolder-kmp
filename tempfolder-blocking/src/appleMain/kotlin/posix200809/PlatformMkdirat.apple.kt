@@ -8,6 +8,7 @@ package at.released.tempfolder.posix200809
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.platform.apple.mkdirat
 import at.released.tempfolder.posix200809.path.allocNullTerminatedPath
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.memScoped
 import platform.posix.errno
 
@@ -17,7 +18,7 @@ internal actual fun platformMkdirat(
     mode: UInt,
 ): Int = memScoped {
     val pathBytes = allocNullTerminatedPath(directoryName)
-    val result = mkdirat(base.fd, pathBytes, mode)
+    val result = mkdirat(base.fd, pathBytes, mode.convert())
     return if (result != -1) {
         0
     } else {
