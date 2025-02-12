@@ -12,18 +12,14 @@ import at.released.tempfolder.dsl.TempfolderSizeEstimate.SMALL
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.toPosixPathString
-import at.released.tempfolder.platform.linux.realpath
 import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.asFileDescriptor
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath.Auto
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath.FileDescriptor
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath.Path
-import at.released.tempfolder.posix200809.errnoDescription
-import at.released.tempfolder.posix200809.path.allocNullTerminatedPath
 import at.released.tempfolder.posix200809.path.toPosixPathString
-import kotlinx.cinterop.memScoped
-import platform.posix.free
+import at.released.tempfolder.posix200809.platformRealpath
 import platform.posix.getenv
 
 internal object PosixTempfolderBaseResolver {
@@ -37,7 +33,7 @@ internal object PosixTempfolderBaseResolver {
     internal fun resolve(parent: TempfolderPosixBasePath): ResolvedBase {
         return when (parent) {
             is Auto -> ResolvedBase.Path(getDefaultPath(parent.sizeEstimate))
-            is Path -> ResolvedBase.Path(resolveAbsolutePath(parent.path.toPosixPathString()))
+            is Path -> ResolvedBase.Path(platformRealpath(parent.path.toPosixPathString()))
             is FileDescriptor -> ResolvedBase.FileDescriptor(parent.fd.asFileDescriptor())
         }
     }
@@ -51,22 +47,10 @@ internal object PosixTempfolderBaseResolver {
         }
 
         return if (tmpdir != null) {
-            resolveAbsolutePath(tmpdir)
+            platformRealpath(tmpdir)
         } else {
             sizeEstimate.tempDirectory
         }
-    }
-
-    @Throws(TempfolderIOException::class)
-    private fun resolveAbsolutePath(
-        path: PosixPathString,
-    ): PosixPathString = memScoped {
-        val pathNative = allocNullTerminatedPath(path)
-        val realPath = realpath(pathNative, null)
-            ?: throw TempfolderIOException("Can not expand path. ${errnoDescription()}")
-        val pathString = realPath.toPosixPathString()
-        free(realPath)
-        return pathString
     }
 
     internal sealed interface ResolvedBase {

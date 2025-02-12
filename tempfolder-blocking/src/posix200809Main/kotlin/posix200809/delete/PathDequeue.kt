@@ -12,7 +12,7 @@ import at.released.tempfolder.path.PosixPathStringComponent
 import at.released.tempfolder.path.UNIX_PATH_SEPARATOR
 import at.released.tempfolder.path.UnknownEncodingPosixPathString
 import at.released.tempfolder.path.isCurrentDirectory
-import at.released.tempfolder.posix200809.NativeDirent
+import at.released.tempfolder.posix200809.PlatformDirent
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
 import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem
@@ -21,7 +21,7 @@ import kotlinx.io.bytestring.buildByteString
 import kotlinx.io.bytestring.isNotEmpty
 
 internal class PathDequeue<D>(
-    private val dirent: NativeDirent<D>,
+    private val dirent: PlatformDirent<D>,
     private val maxFileDescriptors: Int = 64,
 ) : AutoCloseable {
     private val path: ArrayDeque<StreamHolder> = ArrayDeque()

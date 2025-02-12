@@ -48,7 +48,7 @@ public class WindowsPathTempfolder private constructor(
     public companion object {
         private const val MAX_ATTEMPTS = 100
 
-        public fun create(
+        public operator fun invoke(
             namePrefix: String,
         ): WindowsPathTempfolder {
             val tempPath = resolveTempBasePath()
