@@ -26,7 +26,16 @@ import platform.Foundation.NSError
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 
-public class NsurlTempDirectory private constructor(
+@Throws(TempfolderIOException::class)
+public fun Tempfolder.Companion.createNsurlTempDirectory(
+    block: NsurlTempDirectoryConfig.() -> Unit = {},
+): Tempfolder<NSURL> {
+    val config = NsurlTempDirectoryConfig().apply(block)
+    val tempDirectoryUrl = createAppleNsurlTempDirectory(config.fileManager, config.base)
+    return NsurlTempDirectory(config.fileManager, tempDirectoryUrl)
+}
+
+private class NsurlTempDirectory(
     private val fileManager: NSFileManager,
     absolutePath: NSURL,
 ) : Tempfolder<NSURL> {
@@ -63,16 +72,7 @@ public class NsurlTempDirectory private constructor(
         }
     }
 
-    public companion object {
-        @Throws(TempfolderIOException::class)
-        public operator fun invoke(
-            block: NsurlTempDirectoryConfig.() -> Unit = {},
-        ): NsurlTempDirectory {
-            val config = NsurlTempDirectoryConfig().apply(block)
-            val tempDirectoryUrl = createAppleNsurlTempDirectory(config.fileManager, config.base)
-            return NsurlTempDirectory(config.fileManager, tempDirectoryUrl)
-        }
-
+    companion object {
         @Throws(TempfolderIOException::class)
         private fun deleteRecursively(fileManager: NSFileManager, root: NSURL) {
             val error = memScoped {

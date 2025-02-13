@@ -22,7 +22,6 @@ import at.released.tempfolder.testframework.assertions.isNotExists
 import at.released.tempfolder.testframework.assertions.isSamePathAs
 import at.released.tempfolder.testframework.assertions.posixFileModeIfSupportedIsEqualTo
 import at.released.tempfolder.testframework.platformFilesystem
-import at.released.weh.test.ignore.annotations.IgnoreApple
 import at.released.weh.test.ignore.annotations.IgnoreJs
 import at.released.weh.test.ignore.annotations.IgnoreMingw
 import at.released.weh.test.ignore.annotations.IgnoreWasmJs
@@ -31,7 +30,6 @@ import kotlinx.io.bytestring.ByteString
 import kotlin.test.Test
 
 public class TempfolderTest {
-    @IgnoreApple
     @IgnoreJs
     @IgnoreMingw
     @IgnoreWasmJs

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking.fd
+package at.released.tempfolder.posix200809.blocking.fd
 
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.dsl.TempfolderSizeEstimate
@@ -12,8 +12,8 @@ import at.released.tempfolder.dsl.TempfolderSizeEstimate.SMALL
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.toPosixPathString
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.asFileDescriptor
+import at.released.tempfolder.posix200809.blocking.fd.PosixTempDirectoryCreator.ResolvedTempRoot
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath.Auto
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath.FileDescriptor
@@ -22,13 +22,13 @@ import at.released.tempfolder.posix200809.path.toPosixPathString
 import at.released.tempfolder.posix200809.platformRealpath
 import platform.posix.getenv
 
-internal object PosixTempfolderBaseResolver {
+internal object PosixTempRootResolver {
     @Throws(TempfolderIOException::class)
-    internal fun resolve(parent: TempfolderPosixBasePath): ResolvedBase {
+    internal fun resolve(parent: TempfolderPosixBasePath): ResolvedTempRoot {
         return when (parent) {
-            is Auto -> ResolvedBase.Path(getDefaultPath(parent.sizeEstimate))
-            is Path -> ResolvedBase.Path(platformRealpath(parent.path.toPosixPathString()))
-            is FileDescriptor -> ResolvedBase.FileDescriptor(parent.fd.asFileDescriptor())
+            is Auto -> ResolvedTempRoot.Path(getDefaultPath(parent.sizeEstimate))
+            is Path -> ResolvedTempRoot.Path(platformRealpath(parent.path.toPosixPathString()))
+            is FileDescriptor -> ResolvedTempRoot.FileDescriptor(parent.fd.asFileDescriptor())
         }
     }
 
@@ -52,10 +52,5 @@ internal object PosixTempfolderBaseResolver {
             SMALL -> "/tmp".toPosixPathString()
             LARGE -> "/var/tmp".toPosixPathString()
         }
-    }
-
-    internal sealed interface ResolvedBase {
-        value class FileDescriptor(val fd: TempfolderPosixFileDescriptor) : ResolvedBase
-        value class Path(val path: PosixPathString) : ResolvedBase
     }
 }

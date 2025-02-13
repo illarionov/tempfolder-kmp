@@ -9,12 +9,10 @@ import at.released.tempfolder.dsl.CommonTempfolderConfig.Companion.DEFAULT_PERMI
 import at.released.tempfolder.dsl.CommonTempfolderConfig.Companion.DEFAULT_PREFIX
 import at.released.tempfolder.dsl.TempfolderDsl
 import at.released.tempfolder.dsl.TempfolderFileModeBit
-import at.released.tempfolder.posix200809.dsl.AdvisoryLockType
-import at.released.tempfolder.posix200809.dsl.AdvisoryLockType.SHARED
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath
 
 @TempfolderDsl
-public class LinuxTempfolderConfig internal constructor() {
+public class AndroidNativeTempDirectoryConfig internal constructor() {
     /**
      * Base path for the temporary directory
      */
@@ -33,12 +31,6 @@ public class LinuxTempfolderConfig internal constructor() {
      * Default: 0700
      */
     public var permissions: Set<TempfolderFileModeBit> = DEFAULT_PERMISSIONS
-
-    /**
-     * The type of advisory lock to be set on an open temporarily directory to protect  from being deleted
-     * by automatic clean-up system such as systemd-tmpfiles.
-     */
-    public var advisoryLock: AdvisoryLockType = SHARED
 
     public companion object {
         public fun auto(
