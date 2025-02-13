@@ -30,7 +30,7 @@ import at.released.weh.test.ignore.annotations.IgnoreWasmWasi
 import kotlinx.io.bytestring.ByteString
 import kotlin.test.Test
 
-class TempfolderTest {
+public class TempfolderTest {
     @IgnoreApple
     @IgnoreJs
     @IgnoreMingw
@@ -47,6 +47,15 @@ class TempfolderTest {
                 isDirectory()
                 posixFileModeIfSupportedIsEqualTo(USER_READ, USER_WRITE, USER_EXECUTE)
             }
+            bootstrapSimpleSuccessTestTestHierarchy(tempDirectory)
+        }
+        assertThat(path, path.asStringOrDescription()).isNotExists()
+    }
+
+    public companion object {
+        val TEST_FILE_CONTENT = ByteString(ByteArray(1024 * 1024, { (it % 0xff).toByte() }))
+
+        fun bootstrapSimpleSuccessTestTestHierarchy(tempDirectory: Tempfolder<*>) {
             platformFilesystem.createFile(
                 tempDirectory.resolve("file1.txt"),
                 content = TEST_FILE_CONTENT,
@@ -63,10 +72,5 @@ class TempfolderTest {
                 )
             }
         }
-        assertThat(path, path.asStringOrDescription()).isNotExists()
-    }
-
-    companion object {
-        val TEST_FILE_CONTENT = ByteString(ByteArray(1024 * 1024, { (it % 0xff).toByte() }))
     }
 }

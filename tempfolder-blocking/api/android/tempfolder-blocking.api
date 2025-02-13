@@ -33,6 +33,23 @@ public class at/released/tempfolder/TempfolderIOException : at/released/tempfold
 	public fun <init> (Ljava/lang/Throwable;)V
 }
 
+public abstract class at/released/tempfolder/blocking/NioTempBase {
+}
+
+public final class at/released/tempfolder/blocking/NioTempBase$Auto : at/released/tempfolder/blocking/NioTempBase {
+	public fun <init> ()V
+	public fun <init> (Ljava/nio/file/FileSystem;)V
+	public synthetic fun <init> (Ljava/nio/file/FileSystem;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getFileSystem ()Ljava/nio/file/FileSystem;
+	public final fun setFileSystem (Ljava/nio/file/FileSystem;)V
+}
+
+public final class at/released/tempfolder/blocking/NioTempBase$Path : at/released/tempfolder/blocking/NioTempBase {
+	public fun <init> (Ljava/nio/file/Path;)V
+	public final fun getPath ()Ljava/nio/file/Path;
+	public final fun setPath (Ljava/nio/file/Path;)V
+}
+
 public final class at/released/tempfolder/blocking/NioTempDirectory : at/released/tempfolder/blocking/Tempfolder {
 	public static final field Companion Lat/released/tempfolder/blocking/NioTempDirectory$Companion;
 	public synthetic fun <init> (Ljava/nio/file/Path;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -50,37 +67,20 @@ public final class at/released/tempfolder/blocking/NioTempDirectory$Companion {
 	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lat/released/tempfolder/blocking/NioTempDirectory;
 }
 
-public abstract class at/released/tempfolder/blocking/NioTempDirectoryBase {
-}
-
-public final class at/released/tempfolder/blocking/NioTempDirectoryBase$Auto : at/released/tempfolder/blocking/NioTempDirectoryBase {
-	public fun <init> ()V
-	public fun <init> (Ljava/nio/file/FileSystem;)V
-	public synthetic fun <init> (Ljava/nio/file/FileSystem;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getFileSystem ()Ljava/nio/file/FileSystem;
-	public final fun setFileSystem (Ljava/nio/file/FileSystem;)V
-}
-
-public final class at/released/tempfolder/blocking/NioTempDirectoryBase$Path : at/released/tempfolder/blocking/NioTempDirectoryBase {
-	public fun <init> (Ljava/nio/file/Path;)V
-	public final fun getPath ()Ljava/nio/file/Path;
-	public final fun setPath (Ljava/nio/file/Path;)V
-}
-
 public final class at/released/tempfolder/blocking/NioTempDirectoryConfig {
 	public static final field Companion Lat/released/tempfolder/blocking/NioTempDirectoryConfig$Companion;
-	public final fun getBase ()Lat/released/tempfolder/blocking/NioTempDirectoryBase;
+	public final fun getBase ()Lat/released/tempfolder/blocking/NioTempBase;
 	public final fun getPermissions ()Ljava/util/Set;
 	public final fun getPrefix ()Ljava/lang/String;
-	public final fun setBase (Lat/released/tempfolder/blocking/NioTempDirectoryBase;)V
+	public final fun setBase (Lat/released/tempfolder/blocking/NioTempBase;)V
 	public final fun setPermissions (Ljava/util/Set;)V
 	public final fun setPrefix (Ljava/lang/String;)V
 }
 
 public final class at/released/tempfolder/blocking/NioTempDirectoryConfig$Companion {
-	public final fun auto (Lkotlin/jvm/functions/Function1;)Lat/released/tempfolder/blocking/NioTempDirectoryBase;
-	public static synthetic fun auto$default (Lat/released/tempfolder/blocking/NioTempDirectoryConfig$Companion;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lat/released/tempfolder/blocking/NioTempDirectoryBase;
-	public final fun path (Ljava/nio/file/Path;)Lat/released/tempfolder/blocking/NioTempDirectoryBase;
+	public final fun auto (Lkotlin/jvm/functions/Function1;)Lat/released/tempfolder/blocking/NioTempBase;
+	public static synthetic fun auto$default (Lat/released/tempfolder/blocking/NioTempDirectoryConfig$Companion;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lat/released/tempfolder/blocking/NioTempBase;
+	public final fun path (Ljava/nio/file/Path;)Lat/released/tempfolder/blocking/NioTempBase;
 }
 
 public abstract interface class at/released/tempfolder/blocking/Tempfolder : java/lang/AutoCloseable {
