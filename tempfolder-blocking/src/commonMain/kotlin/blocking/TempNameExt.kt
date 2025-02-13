@@ -7,6 +7,8 @@ package at.released.tempfolder.blocking
 
 import kotlin.random.Random
 
+internal const val MAX_CREATE_DIRECTORY_ATTEMPTS = 100
+
 private const val MAX_RANDOM_NAME_NUMBER = 36L * 36L * 36L * 36L * 36L * 36L
 
 @Suppress("MagicNumber")

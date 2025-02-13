@@ -5,6 +5,9 @@
 
 package at.released.tempfolder.testframework
 
+import at.released.tempfolder.blocking.linkOptions
+import at.released.tempfolder.blocking.toNioPosixPermissions
+import at.released.tempfolder.blocking.toTempfolderPermissions
 import at.released.tempfolder.dsl.TempfolderFileModeBit
 import at.released.tempfolder.path.TempfolderPathString
 import at.released.tempfolder.path.toPosixPathString
@@ -12,19 +15,8 @@ import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.Syml
 import kotlinx.io.bytestring.ByteString
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
-import java.nio.file.LinkOption
 import java.nio.file.Path
 import java.nio.file.attribute.PosixFileAttributeView
-import java.nio.file.attribute.PosixFilePermission
-import java.nio.file.attribute.PosixFilePermission.GROUP_EXECUTE
-import java.nio.file.attribute.PosixFilePermission.GROUP_READ
-import java.nio.file.attribute.PosixFilePermission.GROUP_WRITE
-import java.nio.file.attribute.PosixFilePermission.OTHERS_EXECUTE
-import java.nio.file.attribute.PosixFilePermission.OTHERS_READ
-import java.nio.file.attribute.PosixFilePermission.OTHERS_WRITE
-import java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE
-import java.nio.file.attribute.PosixFilePermission.OWNER_READ
-import java.nio.file.attribute.PosixFilePermission.OWNER_WRITE
 import java.nio.file.attribute.PosixFilePermissions
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectory
@@ -45,16 +37,16 @@ internal actual val platformFilesystem: PlatformFilesystemTestFunctions
 
 @Suppress("TooManyFunctions")
 internal class NioFilesystemTestFunctions(
-    val filesystem: FileSystem = FileSystems.getDefault(),
+    private val fileSystem: FileSystem = FileSystems.getDefault(),
 ) : PlatformFilesystemTestFunctions {
-    override val isPosixFileModeSupported: Boolean = filesystem.supportedFileAttributeViews().contains("posix")
+    override val isPosixFileModeSupported: Boolean = fileSystem.supportedFileAttributeViews().contains("posix")
     override val isSymlinkSupported: Boolean = true
-    override val pathSeparator: Char = filesystem.separator[0]
+    override val pathSeparator: Char = fileSystem.separator[0]
 
-    private val TempfolderPathString.nioPath: Path get() = filesystem.getPath(this.asString())
+    private val TempfolderPathString.nioPath: Path get() = fileSystem.getPath(this.asString())
 
     override fun resolvePath(base: TempfolderPathString, append: String): TempfolderPathString {
-        return filesystem.getPath(base.asString(), append).absolutePathString().toPosixPathString()
+        return fileSystem.getPath(base.asString(), append).absolutePathString().toPosixPathString()
     }
 
     override fun isDirectory(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
@@ -97,39 +89,8 @@ internal class NioFilesystemTestFunctions(
     }
 
     private fun Set<TempfolderFileModeBit>.asFileAttributes() = if (isPosixFileModeSupported) {
-        arrayOf(PosixFilePermissions.asFileAttribute(this.toPosixPermission()))
+        arrayOf(PosixFilePermissions.asFileAttribute(this.toNioPosixPermissions()))
     } else {
         emptyArray()
-    }
-
-    private companion object {
-        private val PosixFilePermission.tempfolderBit: TempfolderFileModeBit
-            get() = when (this) {
-                OWNER_READ -> TempfolderFileModeBit.USER_READ
-                OWNER_WRITE -> TempfolderFileModeBit.USER_WRITE
-                OWNER_EXECUTE -> TempfolderFileModeBit.USER_EXECUTE
-                GROUP_READ -> TempfolderFileModeBit.GROUP_READ
-                GROUP_WRITE -> TempfolderFileModeBit.GROUP_WRITE
-                GROUP_EXECUTE -> TempfolderFileModeBit.GROUP_EXECUTE
-                OTHERS_READ -> TempfolderFileModeBit.OTHER_READ
-                OTHERS_WRITE -> TempfolderFileModeBit.OTHER_WRITE
-                OTHERS_EXECUTE -> TempfolderFileModeBit.OTHER_EXECUTE
-            }
-
-        private fun linkOptions(followSymlinks: Boolean): Array<LinkOption> = if (followSymlinks) {
-            emptyArray()
-        } else {
-            arrayOf(LinkOption.NOFOLLOW_LINKS)
-        }
-
-        private fun Set<PosixFilePermission>.toTempfolderPermissions(): Set<TempfolderFileModeBit> {
-            return this.mapTo(mutableSetOf()) { it.tempfolderBit }
-        }
-
-        private fun Set<TempfolderFileModeBit>.toPosixPermission(): Set<PosixFilePermission> {
-            return PosixFilePermission.entries.mapNotNullTo(mutableSetOf()) { posixBit ->
-                posixBit.takeIf { it.tempfolderBit in this }
-            }
-        }
     }
 }

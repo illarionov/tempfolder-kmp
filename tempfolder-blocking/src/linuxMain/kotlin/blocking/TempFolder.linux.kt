@@ -13,15 +13,17 @@ import at.released.tempfolder.dsl.TempfolderBasePath.Path
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath
 
 internal actual fun createPlatformTempFolder(config: CommonTempfolderConfig): Tempfolder<*> {
-    return LinuxTempfolder(config.toLinuxTempfolderConfig())
+    return LinuxTempfolder {
+        setFromCommon(config)
+    }
 }
 
-private fun CommonTempfolderConfig.toLinuxTempfolderConfig(): LinuxTempfolderConfig.() -> Unit = {
-    val commonConfig = this@toLinuxTempfolderConfig
+private fun LinuxTempfolderConfig.setFromCommon(commonConfig: CommonTempfolderConfig) {
     base = when (val commonBase = commonConfig.base) {
         is Auto -> TempfolderPosixBasePath.Auto {
             sizeEstimate = commonBase.sizeEstimate
         }
+
         is Path -> TempfolderPosixBasePath.Path(commonBase.path)
     }
     prefix = commonConfig.prefix

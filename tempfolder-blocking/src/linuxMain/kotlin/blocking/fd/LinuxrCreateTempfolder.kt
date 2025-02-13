@@ -8,6 +8,7 @@
 package at.released.tempfolder.blocking.fd
 
 import at.released.tempfolder.TempfolderIOException
+import at.released.tempfolder.blocking.MAX_CREATE_DIRECTORY_ATTEMPTS
 import at.released.tempfolder.blocking.fd.CreateDirectoryResult.DirectoryExists
 import at.released.tempfolder.blocking.fd.CreateDirectoryResult.Error
 import at.released.tempfolder.blocking.fd.CreateDirectoryResult.Success
@@ -39,18 +40,17 @@ import platform.posix.LOCK_SH
 import platform.posix.errno
 import platform.posix.mode_t
 
-private const val MAX_ATTEMPTS = 100
 
 @Throws(TempfolderIOException::class, TempfolderInvalidPathException::class)
 internal fun createTempfolder(
     parent: TempfolderPosixBasePath,
     mode: mode_t = 0b000_111_000_000U,
     advisoryLock: AdvisoryLockType = SHARED,
-    randomNameGenerator: () -> String = { generateTempDirectoryName("tempfolder-") },
+    nameGenerator: () -> String = { generateTempDirectoryName("tempfolder-") },
 ): TempfolderCoordinates {
     val base: ResolvedBase = PosixTempfolderBaseResolver.resolve(parent)
-    val tempDirectoryFd = (1..MAX_ATTEMPTS).firstNotNullOfOrNull {
-        val directoryName = randomNameGenerator().toPosixPathString().asPathComponent()
+    val tempDirectoryFd = (1..MAX_CREATE_DIRECTORY_ATTEMPTS).firstNotNullOfOrNull {
+        val directoryName = nameGenerator().toPosixPathString().asPathComponent()
         tryCreateTempfolder(base, directoryName, mode, advisoryLock)
     }
     return tempDirectoryFd ?: throw TempfolderIOException("Can not create temp folder: max attempts reached")

@@ -31,16 +31,7 @@ plugins.withId("org.jetbrains.kotlin.multiplatform") {
 }
 
 fun KotlinTargetTestRun<*>.setupTestTmpDirectory() {
-    val targetName = this.target.disambiguationClassifier ?: error("No disambiguationClassifier")
-    val testRunFullName = "$targetName${this.name.capitalizeAscii()}"
-
-    @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
-    val prepareTempRootTask = tasks.register<PrepareTempRootTask>(
-        "prepareTempRoot${testRunFullName.capitalizeAscii()}",
-    ) {
-        outputDirectory = layout.buildDirectory.dir("testTemp/$testRunFullName")
-    }
-
+    val prepareTempRootTask = PrepareTempRootTask.setup(this, tasks, layout)
     @Suppress("UNCHECKED_CAST")
     (this as ExecutionTaskHolder<KotlinNativeTest>).executionTask.configure {
         val tempRoot = prepareTempRootTask.flatMap(PrepareTempRootTask::outputDirectory).get().asFile.absolutePath

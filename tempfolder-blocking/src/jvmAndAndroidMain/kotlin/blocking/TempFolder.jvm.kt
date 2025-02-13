@@ -6,7 +6,20 @@
 package at.released.tempfolder.blocking
 
 import at.released.tempfolder.dsl.CommonTempfolderConfig
+import at.released.tempfolder.dsl.TempfolderBasePath.Auto
+import at.released.tempfolder.dsl.TempfolderBasePath.Path
+import java.nio.file.Path as NioPath
 
 internal actual fun createPlatformTempFolder(config: CommonTempfolderConfig): Tempfolder<*> {
-    return NioTempfolder(config.prefix) // TODO
+    return NioTempDirectory {
+        setFromCommon(config)
+    }
 }
+
+private fun NioTempDirectoryConfig.setFromCommon(commonConfig: CommonTempfolderConfig) {
+    base = when (val commonBase = commonConfig.base) {
+        is Auto -> NioTempDirectoryBase.Auto()
+        is Path -> NioTempDirectoryBase.Path(NioPath.of(commonBase.path))
+    }
+}
+

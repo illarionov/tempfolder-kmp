@@ -7,6 +7,7 @@ package at.released.tempfolder.blocking.fd
 
 import at.released.tempfolder.TempfolderClosedException
 import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
+import at.released.tempfolder.TempfolderException
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.blocking.Tempfolder
 import at.released.tempfolder.blocking.generateTempDirectoryName
@@ -79,7 +80,7 @@ public class LinuxTempfolder private constructor(
     }
 
     public companion object {
-        @Throws(TempfolderIOException::class, TempfolderInvalidPathException::class)
+        @Throws(TempfolderException::class)
         public operator fun invoke(
             block: LinuxTempfolderConfig.() -> Unit,
         ): LinuxTempfolder {
@@ -88,7 +89,7 @@ public class LinuxTempfolder private constructor(
                 parent = config.base,
                 mode = config.permissions.toPosixMode(),
                 advisoryLock = config.advisoryLock,
-                randomNameGenerator = { generateTempDirectoryName(config.prefix) },
+                nameGenerator = { generateTempDirectoryName(config.prefix) },
             )
             return LinuxTempfolder(
                 parentDirfd = coordinates.parentDirfd,

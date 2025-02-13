@@ -33,10 +33,8 @@ import kotlinx.io.bytestring.ByteString
 import kotlin.test.Test
 
 class TempfolderTest {
-    @IgnoreAndroid
     @IgnoreApple
     @IgnoreJs
-    @IgnoreJvm
     @IgnoreMingw
     @IgnoreWasmJs
     @IgnoreWasmWasi

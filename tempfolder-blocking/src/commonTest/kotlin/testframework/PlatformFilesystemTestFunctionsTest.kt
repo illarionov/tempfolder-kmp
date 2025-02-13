@@ -21,7 +21,6 @@ import at.released.tempfolder.testframework.assertions.posixFileModeIfSupportedI
 import at.released.weh.test.ignore.annotations.IgnoreAndroid
 import at.released.weh.test.ignore.annotations.IgnoreApple
 import at.released.weh.test.ignore.annotations.IgnoreJs
-import at.released.weh.test.ignore.annotations.IgnoreJvm
 import at.released.weh.test.ignore.annotations.IgnoreMingw
 import at.released.weh.test.ignore.annotations.IgnoreWasmJs
 import at.released.weh.test.ignore.annotations.IgnoreWasmWasi
@@ -31,7 +30,6 @@ class PlatformFilesystemTestFunctionsTest {
     @IgnoreAndroid
     @IgnoreApple
     @IgnoreJs
-    @IgnoreJvm
     @IgnoreMingw
     @IgnoreWasmJs
     @IgnoreWasmWasi

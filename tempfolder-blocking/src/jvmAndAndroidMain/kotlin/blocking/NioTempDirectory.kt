@@ -9,6 +9,7 @@ import at.released.tempfolder.DeleteRecursivelyException
 import at.released.tempfolder.DeleteRecursivelyException.Companion.FAILED_TO_DELETE_MESSAGE
 import at.released.tempfolder.TempfolderClosedException
 import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
+import at.released.tempfolder.TempfolderException
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.TempfolderPathString
@@ -26,7 +27,7 @@ import kotlin.LazyThreadSafetyMode.PUBLICATION
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.deleteRecursively
 
-public class NioTempfolder private constructor(
+public class NioTempDirectory private constructor(
     absolutePath: Path,
 ) : Tempfolder<Path> {
     override val root: Path = absolutePath
@@ -38,24 +39,10 @@ public class NioTempfolder private constructor(
 
     override fun getAbsolutePath(): TempfolderPathString = absolutePathString
 
-    @OptIn(ExperimentalPathApi::class)
     @Throws(TempfolderIOException::class)
     override fun delete() {
         throwIfClosed()
-        try {
-            root.deleteRecursively()
-        } catch (ioe: IOException) {
-            val deleteException = ioe.suppressed.let { suppressed ->
-                if (suppressed.isEmpty()) {
-                    DeleteRecursivelyException(ioe)
-                } else {
-                    DeleteRecursivelyException(FAILED_TO_DELETE_MESSAGE).apply {
-                        suppressed.forEach(::addSuppressed)
-                    }
-                }
-            }
-            throw deleteException
-        }
+        deleteRecursively(root)
     }
 
     @Throws(TempfolderIOException::class, CharacterCodingException::class)
@@ -72,7 +59,7 @@ public class NioTempfolder private constructor(
             return
         }
         if (deleteOnClose) {
-            delete()
+            deleteRecursively(root)
         }
     }
 
@@ -83,27 +70,37 @@ public class NioTempfolder private constructor(
     }
 
     public companion object {
+        @Throws(TempfolderException::class)
         public operator fun invoke(
-            namePrefix: String,
-        ): NioTempfolder {
-            val hasPosixFilePermissionSupport = FileSystems.getDefault().supportedFileAttributeViews().contains("posix")
-            val attrs: Array<FileAttribute<*>> = if (hasPosixFilePermissionSupport) {
-                arrayOf(
-                    PosixFilePermissions.asFileAttribute(
-                        setOf(
-                            PosixFilePermission.OWNER_EXECUTE,
-                            PosixFilePermission.OWNER_READ,
-                            PosixFilePermission.OWNER_WRITE,
-                        ),
-                    ),
-                )
-            } else {
-                emptyArray()
-            }
+            block: NioTempDirectoryConfig.() -> Unit,
+        ): NioTempDirectory {
+            val config = NioTempDirectoryConfig().apply(block)
+            val path = createNioTempDirectory(
+                base = config.base,
+                mode = config.permissions,
+                nameGenerator = { generateTempDirectoryName(config.prefix) },
+            )
+            return NioTempDirectory(path)
+        }
 
-            @Suppress("SpreadOperator")
-            val folder = Files.createTempDirectory(namePrefix, *attrs)
-            return NioTempfolder(folder)
+        @OptIn(ExperimentalPathApi::class)
+        private fun deleteRecursively(
+            root: Path
+        ) {
+            try {
+                root.deleteRecursively()
+            } catch (ioe: IOException) {
+                val deleteException = ioe.suppressed.let { suppressed ->
+                    if (suppressed.isEmpty()) {
+                        DeleteRecursivelyException(ioe)
+                    } else {
+                        DeleteRecursivelyException(FAILED_TO_DELETE_MESSAGE).apply {
+                            suppressed.forEach(::addSuppressed)
+                        }
+                    }
+                }
+                throw deleteException
+            }
         }
     }
 }
