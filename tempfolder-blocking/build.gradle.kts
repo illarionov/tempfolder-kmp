@@ -139,6 +139,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
+            implementation(projects.testIgnoreAnnotations)
             implementation(libs.assertk)
         }
         androidInstrumentedTest.dependencies {
