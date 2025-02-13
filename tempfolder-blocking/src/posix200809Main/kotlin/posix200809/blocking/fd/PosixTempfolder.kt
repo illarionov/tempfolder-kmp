@@ -3,14 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking.fd
+package at.released.tempfolder.posix200809.blocking.fd
 
 import at.released.tempfolder.TempfolderClosedException
 import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
-import at.released.tempfolder.TempfolderException
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.blocking.Tempfolder
-import at.released.tempfolder.blocking.generateTempDirectoryName
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.TempfolderPathString
@@ -23,10 +21,9 @@ import at.released.tempfolder.posix200809.delete.deleteRecursively
 import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.getRealPath
 import at.released.tempfolder.posix200809.platformUnlinkDirectory
-import at.released.tempfolder.posix200809.toPosixMode
 import kotlinx.atomicfu.atomic
 
-public class LinuxTempfolder private constructor(
+internal class PosixTempfolder internal constructor(
     private val parentDirfd: TempfolderPosixFileDescriptor,
     private val directoryPathname: PosixPathString,
     override val root: TempfolderPosixFileDescriptor,
@@ -76,26 +73,6 @@ public class LinuxTempfolder private constructor(
     private fun throwIfClosed() {
         if (isClosed.value) {
             throw TempfolderClosedException(TEMPFOLDER_CLOSED_MESSAGE)
-        }
-    }
-
-    public companion object {
-        @Throws(TempfolderException::class)
-        public operator fun invoke(
-            block: LinuxTempfolderConfig.() -> Unit,
-        ): LinuxTempfolder {
-            val config = LinuxTempfolderConfig().apply(block)
-            val coordinates = createTempfolder(
-                parent = config.base,
-                mode = config.permissions.toPosixMode(),
-                advisoryLock = config.advisoryLock,
-                nameGenerator = { generateTempDirectoryName(config.prefix) },
-            )
-            return LinuxTempfolder(
-                parentDirfd = coordinates.parentDirfd,
-                directoryPathname = coordinates.directoryPathname,
-                root = coordinates.directoryDescriptor,
-            )
         }
     }
 }
