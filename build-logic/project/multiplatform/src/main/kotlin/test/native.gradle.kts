@@ -36,6 +36,7 @@ fun KotlinTargetTestRun<*>.setupTestTmpDirectory() {
         val tempRoot = prepareTempRootTask.flatMap(PrepareTempRootTask::outputDirectory).get().asFile.absolutePath
         environment("TMPDIR", tempRoot)
         environment(ENV_TEST_TMP_DIR, tempRoot)
+        environment("SIMCTL_CHILD_$ENV_TEST_TMP_DIR", tempRoot) // sets variable in IOS simulator
         dependsOn(prepareTempRootTask)
     }
 }
