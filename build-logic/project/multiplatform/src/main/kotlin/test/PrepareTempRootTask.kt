@@ -7,7 +7,6 @@ package at.released.tempfolder.gradle.multiplatform.test
 
 import at.released.tempfolder.gradle.multiplatform.ext.capitalizeAscii
 import org.gradle.api.DefaultTask
-import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.tasks.OutputDirectory
@@ -37,15 +36,22 @@ abstract class PrepareTempRootTask : DefaultTask() {
             targetTestRun: KotlinTargetTestRun<*>,
             tasks: TaskContainer,
             layout: ProjectLayout,
-        ) : TaskProvider<PrepareTempRootTask> {
+        ): TaskProvider<PrepareTempRootTask> {
             val targetName = targetTestRun.target.disambiguationClassifier ?: error("No disambiguationClassifier")
             val testRunFullName = "$targetName${targetTestRun.name.capitalizeAscii()}"
+            return setup(testRunFullName, tasks, layout)
+        }
 
+        fun setup(
+            tempDirectoryName: String,
+            tasks: TaskContainer,
+            layout: ProjectLayout,
+        ): TaskProvider<PrepareTempRootTask> {
             @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
             return tasks.register<PrepareTempRootTask>(
-                "prepareTempRoot${testRunFullName.capitalizeAscii()}",
+                "prepareTempRoot${tempDirectoryName.capitalizeAscii()}",
             ) {
-                this.outputDirectory.set(layout.buildDirectory.dir("testTemp/$testRunFullName"))
+                this.outputDirectory.set(layout.buildDirectory.dir("testTemp/$tempDirectoryName"))
             }
         }
     }

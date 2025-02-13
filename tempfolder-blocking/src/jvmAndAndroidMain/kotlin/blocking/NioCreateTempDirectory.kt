@@ -42,6 +42,7 @@ private fun resolveBase(base: NioTempDirectoryBase): Path {
         } catch (ioe: IOException) {
             throw TempfolderIOException("Failed to resolve temp dir root", ioe)
         }
+
         else -> error("Not expected")
     }
 }
@@ -60,6 +61,7 @@ private fun getDefaultPath(
     }
 }
 
+@Suppress("ThrowsCount")
 @Throws(TempfolderIOException::class)
 private fun tryCreateTempfolder(
     base: Path,
@@ -74,13 +76,13 @@ private fun tryCreateTempfolder(
 
     val path = try {
         base.resolve(directoryName)
-    }  catch (ie: InvalidPathException) {
+    } catch (ie: InvalidPathException) {
         throw TempfolderInvalidPathException(ie)
     }
 
     return try {
         path.createDirectory(attributes = modeAttr).toRealPath()
-    } catch (fe: FileAlreadyExistsException) {
+    } catch (@Suppress("SwallowedException") fe: FileAlreadyExistsException) {
         null
     } catch (ioe: IOException) {
         if (path.isDirectory(NOFOLLOW_LINKS)) {
@@ -92,5 +94,3 @@ private fun tryCreateTempfolder(
         throw TempfolderIOException("DFailed to create temp directory", uoe)
     }
 }
-
-

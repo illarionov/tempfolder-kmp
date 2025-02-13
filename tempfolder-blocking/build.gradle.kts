@@ -17,6 +17,7 @@ plugins {
     id("at.released.tempfolder.gradle.multiplatform.android")
     id("at.released.tempfolder.gradle.multiplatform.kotlin")
     id("at.released.tempfolder.gradle.multiplatform.publish")
+    id("at.released.tempfolder.gradle.multiplatform.test.android-jvm")
     id("at.released.tempfolder.gradle.multiplatform.test.jvm")
     id("at.released.tempfolder.gradle.multiplatform.test.native")
 }

@@ -1,7 +1,9 @@
 /*
- * SPDX-FileCopyrightText: 2025 Alexey Illarionov and the at-released-tempfolder project contributors
- * SPDX-License-Identifier: Apache-2.0
- */
+* SPDX-FileCopyrightText: 2025 Alexey Illarionov and the at-released-tempfolder project contributors
+* SPDX-License-Identifier: Apache-2.0
+*/
+
+@file:Suppress("OPT_IN_USAGE")
 
 plugins {
     id("at.released.tempfolder.gradle.lint.android-lint")

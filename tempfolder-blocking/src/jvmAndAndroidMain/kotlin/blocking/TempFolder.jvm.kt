@@ -22,4 +22,3 @@ private fun NioTempDirectoryConfig.setFromCommon(commonConfig: CommonTempfolderC
         is Path -> NioTempDirectoryBase.Path(NioPath.of(commonBase.path))
     }
 }
-

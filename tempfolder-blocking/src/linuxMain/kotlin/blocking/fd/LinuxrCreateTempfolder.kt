@@ -40,7 +40,6 @@ import platform.posix.LOCK_SH
 import platform.posix.errno
 import platform.posix.mode_t
 
-
 @Throws(TempfolderIOException::class, TempfolderInvalidPathException::class)
 internal fun createTempfolder(
     parent: TempfolderPosixBasePath,

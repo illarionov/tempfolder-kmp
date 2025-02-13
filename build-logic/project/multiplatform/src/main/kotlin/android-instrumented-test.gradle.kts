@@ -11,16 +11,12 @@ package at.released.tempfolder.gradle.multiplatform
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.ManagedVirtualDevice
 import com.android.build.api.dsl.TestOptions
-import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
 
 /*
  * Convention plugin that configures Android instrumented tests
  */
-listOf(
-    AppPlugin::class.java,
-    LibraryPlugin::class.java,
-).forEach { _ ->
+plugins.withType(LibraryPlugin::class.java) {
     extensions.configure(CommonExtension::class.java) {
         defaultConfig {
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

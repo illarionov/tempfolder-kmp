@@ -16,7 +16,7 @@ public sealed class NioTempDirectoryBase {
      */
     @TempfolderDsl
     public class Auto(
-        public var fileSystem : FileSystem = FileSystems.getDefault()
+        public var fileSystem: FileSystem = FileSystems.getDefault(),
     ) : NioTempDirectoryBase()
 
     /**

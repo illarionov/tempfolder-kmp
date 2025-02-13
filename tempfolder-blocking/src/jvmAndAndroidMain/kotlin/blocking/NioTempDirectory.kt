@@ -16,13 +16,8 @@ import at.released.tempfolder.path.TempfolderPathString
 import at.released.tempfolder.path.toPosixPathString
 import kotlinx.atomicfu.atomic
 import java.io.IOException
-import java.nio.file.FileSystems
-import java.nio.file.Files
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
-import java.nio.file.attribute.FileAttribute
-import java.nio.file.attribute.PosixFilePermission
-import java.nio.file.attribute.PosixFilePermissions
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.deleteRecursively
@@ -84,9 +79,7 @@ public class NioTempDirectory private constructor(
         }
 
         @OptIn(ExperimentalPathApi::class)
-        private fun deleteRecursively(
-            root: Path
-        ) {
+        private fun deleteRecursively(root: Path) {
             try {
                 root.deleteRecursively()
             } catch (ioe: IOException) {

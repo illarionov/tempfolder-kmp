@@ -5,7 +5,6 @@
 
 package at.released.tempfolder.gradle.multiplatform.test
 
-import at.released.tempfolder.gradle.multiplatform.ext.capitalizeAscii
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.ExecutionTaskHolder
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetTestRun
@@ -15,7 +14,7 @@ import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import org.jetbrains.kotlin.konan.target.Family.ANDROID
 
 /*
- * Convention plugin tests for native targets in projects with the Kotlin Multiplatform plugin
+ * Convention plugin that configures tests for native targets in projects with the Kotlin Multiplatform plugin
  */
 plugins.withId("org.jetbrains.kotlin.multiplatform") {
     extensions.configure<KotlinMultiplatformExtension> {

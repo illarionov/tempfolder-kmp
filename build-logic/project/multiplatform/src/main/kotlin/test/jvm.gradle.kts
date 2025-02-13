@@ -9,23 +9,22 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 /*
- * Convention plugin that configures unit tests in projects with the Kotlin Multiplatform plugin
+ * Convention plugin that configures unit tests in Kotlin Multiplatform projects for JVM targets
  */
 plugins.withId("org.jetbrains.kotlin.multiplatform") {
     extensions.configure<KotlinMultiplatformExtension> {
-        targets
-            .withType<KotlinJvmTarget>()
-            .configureEach {
-                testRuns.configureEach {
-                    val prepareTempRootTask = PrepareTempRootTask.setup(this, tasks, layout)
-                    val tempRoot = prepareTempRootTask.flatMap(PrepareTempRootTask::outputDirectory).get().asFile.absolutePath
-                    executionTask.configure {
-                        systemProperty("java.io.tmpdir", tempRoot)
-                        environment(ENV_TEST_TMP_DIR, tempRoot)
-                        dependsOn(prepareTempRootTask)
-                        configureTestTaskDefaults(this)
-                    }
+        targets.withType<KotlinJvmTarget>().configureEach {
+            testRuns.configureEach {
+                val prepareTempRootTask = PrepareTempRootTask.setup(this, tasks, layout)
+                val tempRoot = prepareTempRootTask.flatMap(PrepareTempRootTask::outputDirectory)
+                    .get().asFile.absolutePath
+                executionTask.configure {
+                    systemProperty("java.io.tmpdir", tempRoot)
+                    environment(ENV_TEST_TMP_DIR, tempRoot)
+                    dependsOn(prepareTempRootTask)
+                    configureTestTaskDefaults(this)
                 }
             }
+        }
     }
 }
