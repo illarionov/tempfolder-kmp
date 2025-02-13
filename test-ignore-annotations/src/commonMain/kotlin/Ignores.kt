@@ -12,6 +12,9 @@ import kotlin.annotation.AnnotationTarget.CLASS
 import kotlin.annotation.AnnotationTarget.FUNCTION
 
 @Target(CLASS, FUNCTION)
+public expect annotation class IgnoreAndroid()
+
+@Target(CLASS, FUNCTION)
 public expect annotation class IgnoreJs()
 
 @Target(CLASS, FUNCTION)
@@ -37,3 +40,6 @@ public expect annotation class IgnoreMingw()
 
 @Target(CLASS, FUNCTION)
 public expect annotation class IgnoreWasmJs()
+
+@Target(CLASS, FUNCTION)
+public expect annotation class IgnoreWasmWasi()

@@ -9,6 +9,9 @@ import kotlin.annotation.AnnotationTarget.CLASS
 import kotlin.annotation.AnnotationTarget.FUNCTION
 
 @Target(CLASS, FUNCTION)
+public actual annotation class IgnoreAndroid actual constructor()
+
+@Target(CLASS, FUNCTION)
 public actual annotation class IgnoreApple actual constructor()
 
 @Target(CLASS, FUNCTION)
@@ -34,3 +37,5 @@ public actual annotation class IgnoreNative actual constructor()
 
 @Target(CLASS, FUNCTION)
 public actual annotation class IgnoreWasmJs actual constructor()
+
+public actual typealias IgnoreWasmWasi = kotlin.test.Ignore

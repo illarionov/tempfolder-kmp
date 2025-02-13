@@ -8,6 +8,8 @@ package at.released.weh.test.ignore.annotations
 import kotlin.annotation.AnnotationTarget.CLASS
 import kotlin.annotation.AnnotationTarget.FUNCTION
 
+public actual typealias IgnoreAndroid = org.junit.Ignore
+
 @Target(CLASS, FUNCTION)
 public actual annotation class IgnoreApple actual constructor()
 
@@ -34,3 +36,6 @@ public actual annotation class IgnoreLinux actual constructor()
 
 @Target(CLASS, FUNCTION)
 public actual annotation class IgnoreMingw actual constructor()
+
+@Target(CLASS, FUNCTION)
+public actual annotation class IgnoreWasmWasi actual constructor()

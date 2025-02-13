@@ -7,7 +7,6 @@ plugins {
     id("at.released.tempfolder.gradle.lint.android-lint")
     id("at.released.tempfolder.gradle.multiplatform.android")
     id("at.released.tempfolder.gradle.multiplatform.kotlin")
-
 }
 
 group = "at.released.weh"
@@ -54,6 +53,9 @@ kotlin {
             api(kotlin("test"))
         }
         jvmMain.dependencies {
+            api(kotlin("test-junit"))
+        }
+        androidMain.dependencies {
             api(kotlin("test-junit"))
         }
     }

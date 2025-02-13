@@ -18,12 +18,24 @@ import at.released.tempfolder.testframework.assertions.isDirectory
 import at.released.tempfolder.testframework.assertions.isFile
 import at.released.tempfolder.testframework.assertions.isSymlink
 import at.released.tempfolder.testframework.assertions.posixFileModeIfSupportedIsEqualTo
-import kotlin.test.Ignore
+import at.released.weh.test.ignore.annotations.IgnoreAndroid
+import at.released.weh.test.ignore.annotations.IgnoreApple
+import at.released.weh.test.ignore.annotations.IgnoreJs
+import at.released.weh.test.ignore.annotations.IgnoreJvm
+import at.released.weh.test.ignore.annotations.IgnoreMingw
+import at.released.weh.test.ignore.annotations.IgnoreWasmJs
+import at.released.weh.test.ignore.annotations.IgnoreWasmWasi
 import kotlin.test.Test
 
 class PlatformFilesystemTestFunctionsTest {
+    @IgnoreAndroid
+    @IgnoreApple
+    @IgnoreJs
+    @IgnoreJvm
+    @IgnoreMingw
+    @IgnoreWasmJs
+    @IgnoreWasmWasi
     @Test
-    @Ignore
     fun platformTestFunctions_test_filesystem_functions() {
         createTempfolder {
             prefix = "platformFilesystemTestFunctionsTest-"
