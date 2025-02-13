@@ -7,7 +7,7 @@ package at.released.tempfolder.blocking
 
 import at.released.tempfolder.TempfolderException
 import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.blocking.NioTempDirectoryBase.Auto
+import at.released.tempfolder.blocking.NioTempBase.Auto
 import at.released.tempfolder.dsl.TempfolderFileModeBit
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import java.io.IOException
@@ -22,7 +22,7 @@ import kotlin.io.path.isDirectory
 
 @Throws(TempfolderException::class)
 internal fun createNioTempDirectory(
-    base: NioTempDirectoryBase,
+    base: NioTempBase,
     mode: Set<TempfolderFileModeBit>,
     nameGenerator: () -> String,
 ): Path {
@@ -34,7 +34,7 @@ internal fun createNioTempDirectory(
     return tempDirectoryPath ?: throw TempfolderIOException("Can not create temp folder: max attempts reached")
 }
 
-private fun resolveBase(base: NioTempDirectoryBase): Path {
+private fun resolveBase(base: NioTempBase): Path {
     return when (base) {
         is Auto -> getDefaultPath(base.fileSystem)
         is Path -> try {

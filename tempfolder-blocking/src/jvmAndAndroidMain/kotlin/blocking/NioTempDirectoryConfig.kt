@@ -16,7 +16,7 @@ public class NioTempDirectoryConfig internal constructor() {
     /**
      * Base path for the temporary directory
      */
-    public var base: NioTempDirectoryBase = NioTempDirectoryBase.Auto()
+    public var base: NioTempBase = NioTempBase.Auto()
 
     /**
      * Prefix for the directory name.
@@ -34,9 +34,9 @@ public class NioTempDirectoryConfig internal constructor() {
 
     public companion object {
         public fun auto(
-            block: NioTempDirectoryBase.Auto.() -> Unit = {},
-        ): NioTempDirectoryBase = NioTempDirectoryBase.Auto().apply(block)
+            block: NioTempBase.Auto.() -> Unit = {},
+        ): NioTempBase = NioTempBase.Auto().apply(block)
 
-        public fun path(path: Path): NioTempDirectoryBase = NioTempDirectoryBase.Path(path)
+        public fun path(path: Path): NioTempBase = NioTempBase.Path(path)
     }
 }

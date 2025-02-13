@@ -18,7 +18,7 @@ internal actual fun createPlatformTempFolder(config: CommonTempfolderConfig): Te
 
 private fun NioTempDirectoryConfig.setFromCommon(commonConfig: CommonTempfolderConfig) {
     base = when (val commonBase = commonConfig.base) {
-        is Auto -> NioTempDirectoryBase.Auto()
-        is Path -> NioTempDirectoryBase.Path(NioPath.of(commonBase.path))
+        is Auto -> NioTempBase.Auto()
+        is Path -> NioTempBase.Path(NioPath.of(commonBase.path))
     }
 }
