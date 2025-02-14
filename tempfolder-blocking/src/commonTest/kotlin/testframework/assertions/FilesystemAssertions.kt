@@ -14,6 +14,7 @@ import assertk.assertions.support.expected
 import assertk.assertions.support.show
 import at.released.tempfolder.dsl.TempfolderFileModeBit
 import at.released.tempfolder.path.TempfolderPathString
+import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.path.toPosixPathString
 import at.released.tempfolder.testframework.platformFilesystem
 
@@ -26,16 +27,20 @@ fun Assert<TempfolderPathString>.isSamePathAs(path: String) = given { path1 ->
         return
     }
 
-    expected("path the same as:${show(path)}")
+    expected("path the same as:${show(path)} but was:${show(path1.asStringOrDescription())}")
 }
 
 fun Assert<TempfolderPathString>.isDirectory(
     followBasenameSymlink: Boolean = false,
-) = transform { platformFilesystem.isDirectory(it, followBasenameSymlink) }.isTrue()
+) = transform(appendName("isDirectory", separator = "::")) {
+    platformFilesystem.isDirectory(it, followBasenameSymlink)
+}.isTrue()
 
 fun Assert<TempfolderPathString>.isFile(
     followBasenameSymlink: Boolean = false,
-) = transform { platformFilesystem.isFile(it, followBasenameSymlink) }.isTrue()
+) = transform(appendName("isFile", separator = "::")) {
+    platformFilesystem.isFile(it, followBasenameSymlink)
+}.isTrue()
 
 fun Assert<TempfolderPathString>.isSymlink() = transform { platformFilesystem.isSymlink(it) }.isTrue()
 
