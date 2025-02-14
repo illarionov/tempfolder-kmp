@@ -14,8 +14,7 @@ import at.released.tempfolder.path.WindowsPathString.Companion.toWindowsPathStri
 import at.released.tempfolder.path.windowsAppendPath
 import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.SymlinkType
 import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.SymlinkType.NOT_SPECIFIED
-import at.released.tempfolder.testframework.winapi.FileStatInfo.Companion.isSymlink
-import at.released.tempfolder.testframework.winapi.windowsGetFileStatInfo
+import at.released.tempfolder.testframework.winapi.windowsGetFileAttributeTagInfo
 import at.released.tempfolder.winapi.windowsGetFullPathname
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
@@ -37,42 +36,47 @@ import platform.windows.FILE_ATTRIBUTE_NORMAL
 import platform.windows.FILE_FLAG_OPEN_REPARSE_POINT
 import platform.windows.GENERIC_WRITE
 import platform.windows.GetLastError
-import platform.windows.HANDLE
 import platform.windows.INVALID_HANDLE_VALUE
 import platform.windows.SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE
 import platform.windows.WriteFile
 
 internal actual val platformFilesystem: PlatformFilesystemTestFunctions get() = WindowsFilesystemTestFunctions
 
+@Suppress("TooManyFunctions")
 internal object WindowsFilesystemTestFunctions : PlatformFilesystemTestFunctions {
     override val isPosixFileModeSupported: Boolean get() = false
     override val isSymlinkSupported: Boolean get() = true
     override val pathSeparator: Char get() = '\\'
+
+    private val SymlinkType.mask: UInt
+        get() = when (this) {
+            SymlinkType.SYMLINK_TO_FILE, NOT_SPECIFIED -> 0
+            SymlinkType.SYMLINK_TO_DIRECTORY -> platform.windows.SYMBOLIC_LINK_FLAG_DIRECTORY
+        }.toUInt()
 
     override fun resolvePath(base: TempfolderPathString, append: String): TempfolderPathString {
         return windowsAppendPath(base.asString(), append).toWindowsPathString()
     }
 
     override fun isDirectory(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
-        check(!followBasenameSymlink) { "Following symlinks not implemented" }
-        return windowsGetFileStatInfo(path.asString()).let {
+        return windowsGetFileAttributeTagInfo(path.asString(), followBasenameSymlink).let {
             it.fileAttributes.isDirectory && !it.fileAttributes.isSymlinkOrReparsePoint
         }
     }
 
     override fun isFile(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
-        return windowsGetFileStatInfo(path.asString()).let {
+        return windowsGetFileAttributeTagInfo(path.asString(), followBasenameSymlink).let {
             !it.fileAttributes.isDirectory && !it.fileAttributes.isSymlinkOrReparsePoint
         }
     }
 
     override fun isSymlink(path: TempfolderPathString): Boolean {
-        return windowsGetFileStatInfo(path.asString()).isSymlink
+        return windowsGetFileAttributeTagInfo(path.asString()).isSymlink
     }
 
     override fun isExists(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
         return try {
-            windowsGetFileStatInfo(path.asString())
+            windowsGetFileAttributeTagInfo(path.asString(), followBasenameSymlink)
             true
         } catch (iw: TempfolderWindowsIOException) {
             if (iw.lastError == ERROR_FILE_NOT_FOUND.toUInt()) {
@@ -108,7 +112,7 @@ internal object WindowsFilesystemTestFunctions : PlatformFilesystemTestFunctions
         }
         try {
             memScoped {
-                val bytesWritten = alloc<DWORDVar>()
+                val bytesWritten: DWORDVar = alloc()
                 val writeResult = content.toByteArray().usePinned {
                     WriteFile(handle, it.addressOf(0), content.size.convert(), bytesWritten.ptr, null)
                 }
@@ -147,22 +151,9 @@ internal object WindowsFilesystemTestFunctions : PlatformFilesystemTestFunctions
         }
     }
 
-    private val SymlinkType.mask: UInt
-        get() = when (this) {
-            SymlinkType.SYMLINK_TO_FILE, NOT_SPECIFIED -> 0
-            SymlinkType.SYMLINK_TO_DIRECTORY -> platform.windows.SYMBOLIC_LINK_FLAG_DIRECTORY
-        }.toUInt()
-
-
     private fun TempfolderPathString.toWindowsPathString(): WindowsPathString = if (this is WindowsPathString) {
         this
     } else {
         this.asString().toWindowsPathString()
-    }
-
-    private fun <R> withOpenFileHandle(
-        func: (HANDLE) -> R
-    ): R {
-
     }
 }
