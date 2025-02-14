@@ -33,12 +33,14 @@ public class AndroidNativeTempDirectoryConfig internal constructor() {
     public var permissions: Set<TempfolderFileModeBit> = DEFAULT_PERMISSIONS
 
     public companion object {
-        public fun auto(
+        public fun AndroidNativeTempDirectoryConfig.auto(
             block: TempfolderPosixBasePath.Auto.() -> Unit = {},
         ): TempfolderPosixBasePath = TempfolderPosixBasePath.Auto(block)
 
-        public fun path(path: String): TempfolderPosixBasePath = TempfolderPosixBasePath.Path(path)
+        public fun AndroidNativeTempDirectoryConfig.path(path: String): TempfolderPosixBasePath =
+            TempfolderPosixBasePath.Path(path)
 
-        public fun fileDescriptor(fd: Int): TempfolderPosixBasePath = TempfolderPosixBasePath.FileDescriptor(fd)
+        public fun AndroidNativeTempDirectoryConfig.fileDescriptor(fd: Int): TempfolderPosixBasePath =
+            TempfolderPosixBasePath.FileDescriptor(fd)
     }
 }

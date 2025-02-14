@@ -30,7 +30,7 @@ import at.released.weh.test.ignore.annotations.IgnoreWasmWasi
 import kotlinx.io.bytestring.ByteString
 import kotlin.test.Test
 
-public class TempfolderTest {
+class TempfolderTest {
     @IgnoreJs
     @IgnoreMingw
     @IgnoreWasmJs

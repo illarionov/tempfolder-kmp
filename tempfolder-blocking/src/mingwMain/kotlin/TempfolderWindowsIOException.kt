@@ -8,14 +8,14 @@ package at.released.tempfolder
 import at.released.tempfolder.winapi.errcode.Win32ErrorCode
 
 public class TempfolderWindowsIOException : TempfolderIOException {
-    public val lastError: UInt?
+    public val lastError: UInt
 
-    public constructor(lastError: UInt? = null) : super() {
+    public constructor(lastError: UInt) : super() {
         this.lastError = lastError
     }
 
-    public constructor(messagePrefix: String, lastError: UInt? = null) : super(
-        messagePrefix + (lastError?.let { ": 0x${it.toString(16)}" } ?: ""),
+    public constructor(messagePrefix: String, lastError: UInt) : super(
+        messagePrefix + (lastError.let { ": 0x${it.toString(16)}" }),
     ) {
         this.lastError = lastError
     }

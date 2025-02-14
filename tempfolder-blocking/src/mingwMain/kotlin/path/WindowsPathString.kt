@@ -5,60 +5,49 @@
 
 package at.released.tempfolder.path
 
-import at.released.tempfolder.path.TempfolderPathString.Companion.encoding
-import at.released.tempfolder.path.TempfolderPathString.Encoding.UNDEFINED
-import at.released.tempfolder.path.TempfolderPathString.Encoding.UTF16_LE
-import at.released.tempfolder.path.TempfolderPathString.Encoding.UTF8
 import at.released.tempfolder.path.TempfolderPathString.WideCharPathString
+import kotlinx.cinterop.CArrayPointer
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.append
 import kotlinx.io.bytestring.buildByteString
+import platform.windows.WCHARVar
 
-@Throws(TempfolderCharacterCodingException::class)
-internal fun TempfolderPathString.toWindowsPathString(): WindowsPathString {
-    return if (this is WindowsPathString) {
-        this
-    } else {
-        val wchars = when (this.encoding) {
-            UNDEFINED, UTF8 -> this.asString().toCharArray()
-            UTF16_LE -> this.bytes.let { bytes ->
-                check(bytes.size.mod(2) == 0)
-                CharArray(bytes.size / 2) {
-                    (bytes[it * 2].toInt() or (bytes[it * 2 + 1].toInt() shl 8)).toChar()
-                }
-            }
-        }
-        WindowsPathString(wchars)
-    }
-}
-
-@Suppress("UnusedParameter")
-internal fun WindowsPathString(
-    base: WindowsPathString,
-    subpath: String,
-): WindowsPathString {
-    TODO()
-}
-
-internal class WindowsPathString(
-    internal val wchars: CharArray,
+internal class WindowsPathString private constructor(
+    private val wchars: String,
 ) : WideCharPathString {
-    override val bytes: ByteString = buildByteString(wchars.size * 2) {
+    override val bytes: ByteString = buildByteString(wchars.length * 2) {
         wchars.forEach {
             append(it.code.toUByte())
             append((it.code ushr 8).toUByte())
         }
     }
 
-    init {
-        if (wchars.isNotEmpty()) {
-            check(wchars[0] != 0xFEFF.toChar() && wchars[0] != 0xFFFE.toChar()) {
-                "wchars should not contain BOM"
-            }
-        }
+    override fun asString(): String = wchars
+
+    override fun toString(): String {
+        return "WindowsPathString(`$wchars`)"
     }
 
-    override fun asString(): String {
-        return CharArray(wchars.size) { wchars[it].code.toChar() }.concatToString()
+    @Throws(TempfolderInvalidPathException::class)
+    fun append(path: String): WindowsPathString {
+        return windowsAppendPath(wchars, path).toWindowsPathString()
+    }
+
+    companion object {
+        internal fun String.toWindowsPathString(): WindowsPathString = WindowsPathString(this)
+
+        internal fun CArrayPointer<WCHARVar>.readWindowsPath(length: Int): WindowsPathString {
+            return create(readChars(length))
+        }
+
+        @Throws(TempfolderCharacterCodingException::class)
+        fun create(wchars: CharArray): WindowsPathString {
+            if (wchars.isNotEmpty() &&
+                (wchars[0] == 0xFEFF.toChar() || wchars[0] == 0xFFFE.toChar())
+            ) {
+                throw TempfolderCharacterCodingException("wchars should not contain BOM")
+            }
+            return WindowsPathString(wchars.concatToString())
+        }
     }
 }
