@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 headerFilter = sys/stat.h sys/param.h fcntl.h
+compilerOpts = -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE
+compilerOpts.macos_x64 = -D_DARWIN_NO_64_BIT_INODE
+compilerOpts.ios_arm32 = -D_DARWIN_NO_64_BIT_INODE
 noStringConversion = fstatat mkdirat realpath unlinkat openat
 
 ---

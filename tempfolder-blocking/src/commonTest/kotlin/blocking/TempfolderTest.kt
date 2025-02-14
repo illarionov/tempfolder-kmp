@@ -21,6 +21,7 @@ import at.released.tempfolder.testframework.assertions.isDirectory
 import at.released.tempfolder.testframework.assertions.isNotExists
 import at.released.tempfolder.testframework.assertions.isSamePathAs
 import at.released.tempfolder.testframework.assertions.posixFileModeIfSupportedIsEqualTo
+import at.released.tempfolder.testframework.isSimulatorOrVirtualDevice
 import at.released.tempfolder.testframework.platformFilesystem
 import at.released.weh.test.ignore.annotations.IgnoreJs
 import at.released.weh.test.ignore.annotations.IgnoreMingw
@@ -37,16 +38,25 @@ public class TempfolderTest {
     @Test
     fun tempfolder_test_success_case() {
         val path: TempfolderPathString
-        createTempfolder().use { tempDirectory ->
-            path = tempDirectory.getAbsolutePath()
-            assertThat(path).all {
-                dirname().isSamePathAs(testTempDirRoot)
+        val tempDirectory = createTempfolder()
+        path = tempDirectory.getAbsolutePath()
+        try {
+            assertThat(path, path.asStringOrDescription()).all {
+                if (!isSimulatorOrVirtualDevice()) {
+                    dirname().isSamePathAs(testTempDirRoot)
+                }
                 basename().transform { it.asString() }.startsWith(CommonTempfolderConfig.DEFAULT_PREFIX)
                 isDirectory()
                 posixFileModeIfSupportedIsEqualTo(USER_READ, USER_WRITE, USER_EXECUTE)
             }
             bootstrapSimpleSuccessTestTestHierarchy(tempDirectory)
+        } catch (ex: Throwable) {
+            tempDirectory.deleteOnClose = false
+            throw ex
+        } finally {
+            tempDirectory.close()
         }
+
         assertThat(path, path.asStringOrDescription()).isNotExists()
     }
 
