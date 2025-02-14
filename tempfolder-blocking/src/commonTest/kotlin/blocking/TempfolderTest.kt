@@ -24,7 +24,6 @@ import at.released.tempfolder.testframework.assertions.posixFileModeIfSupportedI
 import at.released.tempfolder.testframework.isSimulatorOrVirtualDevice
 import at.released.tempfolder.testframework.platformFilesystem
 import at.released.weh.test.ignore.annotations.IgnoreJs
-import at.released.weh.test.ignore.annotations.IgnoreMingw
 import at.released.weh.test.ignore.annotations.IgnoreWasmJs
 import at.released.weh.test.ignore.annotations.IgnoreWasmWasi
 import kotlinx.io.bytestring.ByteString
@@ -32,7 +31,6 @@ import kotlin.test.Test
 
 class TempfolderTest {
     @IgnoreJs
-    @IgnoreMingw
     @IgnoreWasmJs
     @IgnoreWasmWasi
     @Test

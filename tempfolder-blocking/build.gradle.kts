@@ -134,6 +134,16 @@ kotlin {
         }
     }
 
+    targets.withType<KotlinNativeTarget>().matching { it.konanTarget.family == Family.MINGW }.configureEach {
+        compilations.named("test") {
+            cinterops {
+                create("windowstest") {
+                    packageName("at.released.tempfolder.platform.windows")
+                }
+            }
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
             api(libs.kotlinx.bytestring)
