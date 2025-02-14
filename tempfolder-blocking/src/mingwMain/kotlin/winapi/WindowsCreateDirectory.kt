@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking
+package at.released.tempfolder.winapi
 
 import at.released.tempfolder.TempfolderWindowsIOException
 import at.released.tempfolder.path.WindowsPathString
@@ -13,7 +13,7 @@ import platform.windows.ERROR_ALREADY_EXISTS
 import platform.windows.ERROR_PATH_NOT_FOUND
 
 @Throws(TempfolderWindowsIOException::class)
-internal fun createDirectory(path: WindowsPathString): Boolean {
+internal fun windowsCreateDirectory(path: WindowsPathString): Boolean {
     if (CreateDirectoryW(path.asString(), null) != 0) {
         return true
     }

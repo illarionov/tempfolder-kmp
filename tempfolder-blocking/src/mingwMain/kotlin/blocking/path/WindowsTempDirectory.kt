@@ -3,16 +3,28 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking
+package at.released.tempfolder.blocking.path
 
 import at.released.tempfolder.TempfolderClosedException
 import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
-import at.released.tempfolder.TempfolderWindowsIOException
+import at.released.tempfolder.TempfolderException
+import at.released.tempfolder.blocking.Tempfolder
 import at.released.tempfolder.path.TempfolderPathString
 import at.released.tempfolder.path.WindowsPathString
+import at.released.tempfolder.winapi.delete.deleteDirectoryRecursively
 import kotlinx.atomicfu.atomic
 
-public class WindowsPathTempfolder private constructor(
+@Throws(TempfolderException::class)
+public fun Tempfolder.Companion.createWindowsTempDirectory(
+    block: WindowsTempDirectoryConfig.() -> Unit = {},
+): Tempfolder<TempfolderPathString> {
+    val config = WindowsTempDirectoryConfig().apply(block)
+    val tempRoot: WindowsPathString = WindowsPathResolver.resolve(config.base)
+    WindowsTempDirectoryCreator.createDirectory(tempRoot, config.permissions)
+    return WindowsTempDirectory(tempRoot)
+}
+
+private class WindowsTempDirectory(
     private val absolutePath: WindowsPathString,
 ) : Tempfolder<TempfolderPathString> {
     override var deleteOnClose: Boolean by atomic(false)
@@ -27,7 +39,7 @@ public class WindowsPathTempfolder private constructor(
     }
 
     override fun resolve(name: String): TempfolderPathString {
-        return WindowsPathString(absolutePath, name)
+        return absolutePath.append(name)
     }
 
     override fun close() {
@@ -35,31 +47,13 @@ public class WindowsPathTempfolder private constructor(
             return
         }
         if (deleteOnClose) {
-            delete()
+            deleteDirectoryRecursively(absolutePath)
         }
     }
 
     private fun throwIfClosed() {
         if (isClosed.value) {
             throw TempfolderClosedException(TEMPFOLDER_CLOSED_MESSAGE)
-        }
-    }
-
-    public companion object {
-        private const val MAX_ATTEMPTS = 100
-
-        public operator fun invoke(
-            namePrefix: String,
-        ): WindowsPathTempfolder {
-            val tempPath = resolveTempBasePath()
-            repeat(MAX_ATTEMPTS) {
-                val tempDirectoryPath = WindowsPathString(tempPath, generateTempDirectoryName(namePrefix))
-                val directoryCreated = createDirectory(tempDirectoryPath)
-                if (directoryCreated) {
-                    return WindowsPathTempfolder(tempDirectoryPath)
-                }
-            }
-            throw TempfolderWindowsIOException("Can not create directory: max attempts reached")
         }
     }
 }

@@ -37,10 +37,10 @@ public class CommonTempfolderConfig internal constructor() {
         internal const val DEFAULT_PREFIX = "tempfolder-"
         internal val DEFAULT_PERMISSIONS = setOf(USER_READ, USER_WRITE, USER_EXECUTE)
 
-        public fun auto(
+        public fun CommonTempfolderConfig.auto(
             block: TempfolderBasePath.Auto.() -> Unit = {},
         ): TempfolderBasePath = TempfolderBasePath.Auto(block)
 
-        public fun path(path: String): TempfolderBasePath = TempfolderBasePath.Path(path)
+        public fun CommonTempfolderConfig.path(path: String): TempfolderBasePath = TempfolderBasePath.Path(path)
     }
 }

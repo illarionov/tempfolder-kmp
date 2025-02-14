@@ -113,9 +113,9 @@ public final class at/released/tempfolder/dsl/CommonTempfolderConfig {
 }
 
 public final class at/released/tempfolder/dsl/CommonTempfolderConfig$Companion {
-	public final fun auto (Lkotlin/jvm/functions/Function1;)Lat/released/tempfolder/dsl/TempfolderBasePath;
-	public static synthetic fun auto$default (Lat/released/tempfolder/dsl/CommonTempfolderConfig$Companion;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lat/released/tempfolder/dsl/TempfolderBasePath;
-	public final fun path (Ljava/lang/String;)Lat/released/tempfolder/dsl/TempfolderBasePath;
+	public final fun auto (Lat/released/tempfolder/dsl/CommonTempfolderConfig;Lkotlin/jvm/functions/Function1;)Lat/released/tempfolder/dsl/TempfolderBasePath;
+	public static synthetic fun auto$default (Lat/released/tempfolder/dsl/CommonTempfolderConfig$Companion;Lat/released/tempfolder/dsl/CommonTempfolderConfig;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lat/released/tempfolder/dsl/TempfolderBasePath;
+	public final fun path (Lat/released/tempfolder/dsl/CommonTempfolderConfig;Ljava/lang/String;)Lat/released/tempfolder/dsl/TempfolderBasePath;
 }
 
 public abstract interface class at/released/tempfolder/dsl/TempfolderBasePath {

@@ -41,12 +41,14 @@ public class LinuxTempDirectoryConfig internal constructor() {
     public var advisoryLock: AdvisoryLockType = SHARED
 
     public companion object {
-        public fun auto(
+        public fun LinuxTempDirectoryConfig.auto(
             block: TempfolderPosixBasePath.Auto.() -> Unit = {},
         ): TempfolderPosixBasePath = TempfolderPosixBasePath.Auto(block)
 
-        public fun path(path: String): TempfolderPosixBasePath = TempfolderPosixBasePath.Path(path)
+        public fun LinuxTempDirectoryConfig.path(path: String): TempfolderPosixBasePath =
+            TempfolderPosixBasePath.Path(path)
 
-        public fun fileDescriptor(fd: Int): TempfolderPosixBasePath = TempfolderPosixBasePath.FileDescriptor(fd)
+        public fun LinuxTempDirectoryConfig.fileDescriptor(fd: Int): TempfolderPosixBasePath =
+            TempfolderPosixBasePath.FileDescriptor(fd)
     }
 }

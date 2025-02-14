@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking
+package at.released.tempfolder.winapi.delete
 
-import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.Entry
-import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.Error
+import at.released.tempfolder.path.windowsAppendPath
+import at.released.tempfolder.winapi.delete.WindowsDirectoryStream.DirectoryStreamItem.Entry
+import at.released.tempfolder.winapi.delete.WindowsDirectoryStream.DirectoryStreamItem.Error
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.nativeHeap
 import kotlinx.cinterop.ptr
@@ -36,7 +37,7 @@ internal class WindowsDirectoryStream(
         check(!isClosed)
         val lastError: UInt
         if (childItemsHandle == null) {
-            val childPattern = combinePath(path, "*")
+            val childPattern = windowsAppendPath(path, "*")
             childItemsHandle = FindFirstFileExW(
                 lpFileName = childPattern,
                 fInfoLevelId = _FINDEX_INFO_LEVELS.FindExInfoBasic,
@@ -115,7 +116,7 @@ internal class WindowsDirectoryStream(
             val type: Filetype,
             val isSymlink: Boolean,
         ) : DirectoryStreamItem() {
-            val absolutePath: String get() = combinePath(rootDir, name)
+            val absolutePath: String get() = windowsAppendPath(rootDir, name)
         }
 
         data class Error(

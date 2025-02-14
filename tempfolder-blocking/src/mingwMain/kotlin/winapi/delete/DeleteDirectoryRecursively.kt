@@ -3,17 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package at.released.tempfolder.blocking
+package at.released.tempfolder.winapi.delete
 
 import at.released.tempfolder.TempfolderWindowsIOException
-import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem
-import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.EndOfStream
-import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.Entry
-import at.released.tempfolder.blocking.WindowsDirectoryStream.DirectoryStreamItem.Error
-import at.released.tempfolder.blocking.WindowsDirectoryStream.Filetype.DIRECTORY
-import at.released.tempfolder.blocking.WindowsDirectoryStream.Filetype.FILE
-import at.released.tempfolder.blocking.WindowsDirectoryStream.Filetype.OTHER
+import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.TempfolderPathString
+import at.released.tempfolder.path.windowsPathEndWithSpecialDirectory
+import at.released.tempfolder.winapi.delete.WindowsDirectoryStream.DirectoryStreamItem
+import at.released.tempfolder.winapi.delete.WindowsDirectoryStream.DirectoryStreamItem.EndOfStream
+import at.released.tempfolder.winapi.delete.WindowsDirectoryStream.DirectoryStreamItem.Entry
+import at.released.tempfolder.winapi.delete.WindowsDirectoryStream.DirectoryStreamItem.Error
+import at.released.tempfolder.winapi.delete.WindowsDirectoryStream.Filetype.DIRECTORY
+import at.released.tempfolder.winapi.delete.WindowsDirectoryStream.Filetype.FILE
+import at.released.tempfolder.winapi.delete.WindowsDirectoryStream.Filetype.OTHER
 import platform.windows.DeleteFileW
 import platform.windows.ERROR_ACCESS_DENIED
 import platform.windows.FILE_ATTRIBUTE_NORMAL
@@ -31,12 +33,18 @@ internal fun deleteDirectoryRecursively(
 @Throws(TempfolderWindowsIOException::class)
 internal fun deleteDirectoryRecursively(
     path: String,
-): Unit = BottomUpFileTreeWalker(path).use { walker ->
-    while (true) {
-        when (val item = walker.next()) {
-            EndOfStream -> break
-            is Error -> throw TempfolderWindowsIOException("Failed to delete file or directory", item.lastError)
-            is Entry -> item.delete()
+) {
+    if (windowsPathEndWithSpecialDirectory(path)) {
+        throw TempfolderInvalidPathException("Path `$path` should be canonicalized")
+    }
+
+    BottomUpFileTreeWalker(path).use { walker ->
+        while (true) {
+            when (val item = walker.next()) {
+                EndOfStream -> break
+                is Error -> throw TempfolderWindowsIOException("Failed to delete file or directory", item.lastError)
+                is Entry -> item.delete()
+            }
         }
     }
 }
@@ -86,7 +94,7 @@ private class BottomUpFileTreeWalker(
     fun next(): DirectoryStreamItem {
         var item: DirectoryStreamItem = EndOfStream
         while (stack.isNotEmpty()) {
-            val (topStream, topItemInfo) = stack.last()
+            val (topStream: WindowsDirectoryStream, streamDirEntry: Entry) = stack.last()
             item = topStream.next()
             when (item) {
                 is Error -> {
@@ -109,7 +117,7 @@ private class BottomUpFileTreeWalker(
 
                 EndOfStream -> {
                     stack.removeLast()
-                    item = topItemInfo
+                    item = streamDirEntry
                     break
                 }
             }

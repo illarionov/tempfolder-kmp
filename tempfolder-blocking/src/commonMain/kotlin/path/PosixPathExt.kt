@@ -52,14 +52,14 @@ internal fun ByteString.appendPosixPath(
         }
     }
 
-    val pathByteString = path.encodeToByteString()
-    val startIndex = pathByteString.indices.firstOrNull { pathByteString[it] != UNIX_PATH_SEPARATOR } ?: return this
+    val appendPath = path.encodeToByteString()
+    val firstNonSeparator = appendPath.indices.firstOrNull { appendPath[it] != UNIX_PATH_SEPARATOR } ?: return this
 
-    return buildByteString(source.size + pathByteString.size) {
+    return buildByteString(source.size + appendPath.size) {
         append(source)
         if (source[source.size - 1] != UNIX_PATH_SEPARATOR) {
             append(UNIX_PATH_SEPARATOR)
         }
-        append(pathByteString.substring(startIndex))
+        append(appendPath.substring(firstNonSeparator))
     }
 }
