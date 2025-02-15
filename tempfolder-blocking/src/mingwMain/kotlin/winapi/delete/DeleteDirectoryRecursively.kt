@@ -42,7 +42,7 @@ internal fun deleteDirectoryRecursively(
         while (true) {
             when (val item = walker.next()) {
                 EndOfStream -> break
-                is Error -> throw TempfolderWindowsIOException("Failed to delete file or directory", item.lastError)
+                is Error -> throw TempfolderWindowsIOException("Failed to delete file or directory")
                 is Entry -> item.delete()
             }
         }
@@ -60,23 +60,20 @@ private fun Entry.delete() {
                     // Ignore
                 }
                 if (DeleteFileW(absolutePath) == 0) {
-                    val newLastErr = GetLastError()
-                    throw TempfolderWindowsIOException("Failed to delete file `$absolutePath`", newLastErr)
+                    throw TempfolderWindowsIOException("Failed to delete file `$absolutePath`")
                 }
             }
         }
 
         DIRECTORY -> if (RemoveDirectoryW(absolutePath) == 0) {
-            val lastErr = GetLastError()
-            throw TempfolderWindowsIOException("Failed to delete directory `$absolutePath`", lastErr)
+            throw TempfolderWindowsIOException("Failed to delete directory `$absolutePath`")
         }
     }
 }
 
 private fun stripReadOnlyAttribute(path: String) {
     if (SetFileAttributesW(path, FILE_ATTRIBUTE_NORMAL.toUInt()) == 0) {
-        val lastErr = GetLastError()
-        throw TempfolderWindowsIOException("Failed to set file attributes to normal on`$path`", lastErr)
+        throw TempfolderWindowsIOException("Failed to set file attributes to normal on`$path`")
     }
 }
 
