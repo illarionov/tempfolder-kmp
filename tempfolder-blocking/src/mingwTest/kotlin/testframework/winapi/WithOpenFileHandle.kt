@@ -15,7 +15,6 @@ import platform.windows.FILE_READ_ATTRIBUTES
 import platform.windows.FILE_SHARE_DELETE
 import platform.windows.FILE_SHARE_READ
 import platform.windows.FILE_SHARE_WRITE
-import platform.windows.GetLastError
 import platform.windows.HANDLE
 import platform.windows.INVALID_HANDLE_VALUE
 import platform.windows.OPEN_EXISTING
@@ -25,7 +24,7 @@ internal fun <R> withOpenFileHandle(
     followbaseSymlink: Boolean,
     func: (HANDLE) -> R,
 ): R {
-    var followSymlinkAttrs = if (followbaseSymlink) {
+    val followSymlinkAttrs = if (followbaseSymlink) {
         0U
     } else {
         FILE_FLAG_OPEN_REPARSE_POINT.toUInt()
@@ -41,7 +40,7 @@ internal fun <R> withOpenFileHandle(
         hTemplateFile = null,
     )
     if (handle == null || handle == INVALID_HANDLE_VALUE) {
-        throw TempfolderWindowsIOException("CreateFileW() failed", GetLastError())
+        throw TempfolderWindowsIOException("CreateFileW() failed")
     }
 
     try {

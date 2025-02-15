@@ -20,14 +20,14 @@ public fun Tempfolder.Companion.createWindowsTempDirectory(
 ): Tempfolder<TempfolderPathString> {
     val config = WindowsTempDirectoryConfig().apply(block)
     val tempRoot: WindowsPathString = WindowsPathResolver.resolve(config.base)
-    WindowsTempDirectoryCreator.createDirectory(tempRoot, config.permissions)
-    return WindowsTempDirectory(tempRoot)
+    val tempDirectory = WindowsTempDirectoryCreator.createDirectory(tempRoot, config.permissions)
+    return WindowsTempDirectory(tempDirectory)
 }
 
 private class WindowsTempDirectory(
     private val absolutePath: WindowsPathString,
 ) : Tempfolder<TempfolderPathString> {
-    override var deleteOnClose: Boolean by atomic(false)
+    override var deleteOnClose: Boolean by atomic(true)
     override val root: TempfolderPathString get() = absolutePath
     private val isClosed = atomic(false)
 

@@ -11,13 +11,13 @@ import at.released.tempfolder.path.TempfolderPathString
 import at.released.tempfolder.path.Utf8PosixPathString
 
 public fun Assert<TempfolderPathString>.isValidString(): Assert<String> = transform(
-    appendName("toString", separator = "."),
+    appendName("toString", separator = "::"),
 ) { path ->
     path.asString()
 }
 
 public fun Assert<TempfolderPathString>.dirname(): Assert<TempfolderPathString> {
-    return transform(appendName("basename", separator = ".")) { path ->
+    return transform(appendName("dirname", separator = "::")) { path ->
         val noTrailingSlash: String = path.asString().trimEnd(Char::isAnyPathSeparator)
         val lastSlashIndex = noTrailingSlash.indices.reversed()
             .firstOrNull { noTrailingSlash[it].isAnyPathSeparator() } ?: noTrailingSlash.length
@@ -27,7 +27,7 @@ public fun Assert<TempfolderPathString>.dirname(): Assert<TempfolderPathString> 
 }
 
 fun Assert<TempfolderPathString>.basename(): Assert<TempfolderPathString> {
-    return transform(appendName("basename", separator = ".")) { path ->
+    return transform(appendName("basename", separator = "::")) { path ->
         val basename = path.asString().trimEnd(Char::isAnyPathSeparator).substringAfterLastSlash().ifEmpty { "." }
         Utf8PosixPathString(basename)
     }

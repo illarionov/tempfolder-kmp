@@ -14,7 +14,6 @@ import kotlinx.cinterop.memScoped
 import platform.windows.MAX_PATH
 import platform.windows.WCHARVar
 import kotlin.Result.Companion.failure
-import kotlin.Result.Companion.success
 
 private const val MAX_ATTEMPTS = 100
 private const val WIN32_ERROR_BUFFER_OVERFLOW = 0x6FU
@@ -28,11 +27,8 @@ internal inline fun readPathPickBufferSize(
             val buffer: CArrayPointer<WCHARVar> = allocArray(length)
             val charsRequired: Int = readPathFunc(length.toUInt(), buffer).toInt()
             when {
-                charsRequired == 0 -> return failure(TempfolderWindowsIOException())
-                charsRequired <= length -> kotlin.runCatching {
-                    success(buffer.readWindowsPath(charsRequired))
-                }
-
+                charsRequired == 0 -> return failure(TempfolderWindowsIOException("Read path failed"))
+                charsRequired <= length -> return kotlin.runCatching { buffer.readWindowsPath(charsRequired) }
                 else -> length = charsRequired + 1
             }
         }

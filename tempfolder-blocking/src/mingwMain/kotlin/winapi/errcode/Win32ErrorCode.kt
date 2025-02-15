@@ -10,7 +10,7 @@ import platform.windows.GetLastError
 internal value class Win32ErrorCode(
     val code: UInt,
 ) {
-    fun description(): String = "0x${code.toString(16).padStart(8, '0')} `${getErrorMessage()}`"
+    fun description(): String = "0x${code.toString(16).padStart(8, '0')} ${ getErrorMessage() }`"
 
     override fun toString(): String {
         return "Win32Error(${description()})"

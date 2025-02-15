@@ -12,6 +12,8 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import org.jetbrains.kotlin.konan.target.Family.ANDROID
+import org.jetbrains.kotlin.konan.target.Family.MINGW
+import org.jetbrains.kotlin.konan.target.KonanTarget
 
 /*
  * Convention plugin that configures tests for native targets in projects with the Kotlin Multiplatform plugin
@@ -30,13 +32,22 @@ plugins.withId("org.jetbrains.kotlin.multiplatform") {
 }
 
 fun KotlinTargetTestRun<*>.setupTestTmpDirectory() {
+    val konanTarget: KonanTarget = (this.target as KotlinNativeTargetWithTests<*>).konanTarget
+
     val prepareTempRootTask = PrepareTempRootTask.setup(this, tasks, layout)
     @Suppress("UNCHECKED_CAST")
     (this as ExecutionTaskHolder<KotlinNativeTest>).executionTask.configure {
         val tempRoot = prepareTempRootTask.flatMap(PrepareTempRootTask::outputDirectory).get().asFile.absolutePath
-        environment("TMPDIR", tempRoot)
         environment(ENV_TEST_TMP_DIR, tempRoot)
         environment("SIMCTL_CHILD_$ENV_TEST_TMP_DIR", tempRoot) // sets variable in IOS simulator
+
+        if (konanTarget.family == MINGW) {
+            environment("TMP", tempRoot)
+        } else {
+            environment("TMPDIR", tempRoot)
+            environment("SIMCTL_CHILD_TMPDIR", tempRoot)
+        }
+
         dependsOn(prepareTempRootTask)
     }
 }

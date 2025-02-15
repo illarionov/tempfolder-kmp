@@ -24,7 +24,7 @@ internal object WindowsTempDirectoryCreator {
             val tempDirectoryPath = root.append(directoryName)
             val directoryCreated = windowsCreateDirectory(tempDirectoryPath)
             if (directoryCreated) {
-                return root
+                return tempDirectoryPath
             }
         }
         throw TempfolderIOException("Can not create directory: max attempts reached")

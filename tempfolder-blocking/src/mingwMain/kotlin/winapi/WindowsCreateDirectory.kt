@@ -29,7 +29,7 @@ internal fun windowsCreateDirectory(path: WindowsPathString): Boolean {
 private fun createDirectoryToWindowsIoException(
     lastError: Win32ErrorCode,
 ): TempfolderWindowsIOException = when (lastError.code.toInt()) {
-    ERROR_ALREADY_EXISTS -> TempfolderWindowsIOException("Path already exists", lastError.code)
-    ERROR_PATH_NOT_FOUND -> TempfolderWindowsIOException("Failed to resolve intermediate directories", lastError.code)
-    else -> TempfolderWindowsIOException("Windows error. ${lastError.description()}", lastError.code)
+    ERROR_ALREADY_EXISTS -> TempfolderWindowsIOException("Path already exists", lastError)
+    ERROR_PATH_NOT_FOUND -> TempfolderWindowsIOException("Failed to resolve intermediate directories")
+    else -> TempfolderWindowsIOException("Windows error.")
 }

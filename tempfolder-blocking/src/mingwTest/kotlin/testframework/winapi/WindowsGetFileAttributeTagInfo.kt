@@ -15,7 +15,6 @@ import kotlinx.cinterop.sizeOf
 import platform.windows.FILE_ATTRIBUTE_TAG_INFO
 import platform.windows.FILE_INFO_BY_HANDLE_CLASS
 import platform.windows.GetFileInformationByHandleEx
-import platform.windows.GetLastError
 import platform.windows.HANDLE
 
 internal fun windowsGetFileAttributeTagInfo(
@@ -37,7 +36,7 @@ internal fun HANDLE.getFileAttributeTagInfo(): FileAttributeTagInfo = memScoped 
             ReparseTag(fileAttributeTagInfo.ReparseTag),
         )
     } else {
-        throw TempfolderWindowsIOException("GetFileInformationByName(FILE_ATTRIBUTE_TAG_INFO) failed", GetLastError())
+        throw TempfolderWindowsIOException("GetFileInformationByName(FILE_ATTRIBUTE_TAG_INFO) failed")
     }
 }
 

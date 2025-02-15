@@ -14,15 +14,18 @@ public class TempfolderWindowsIOException : TempfolderIOException {
         this.lastError = lastError
     }
 
-    public constructor(messagePrefix: String, lastError: UInt) : super(
-        messagePrefix + (lastError.let { ": 0x${it.toString(16)}" }),
-    ) {
+    public constructor(message: String, lastError: UInt, cause: Throwable?) : super(message, cause) {
         this.lastError = lastError
     }
 
     public companion object {
-        internal operator fun invoke(error: Win32ErrorCode = Win32ErrorCode.last()): TempfolderWindowsIOException {
-            return TempfolderWindowsIOException("Windows error. ${error.description()}", error.code)
+        internal operator fun invoke(
+            messagePrefix: String,
+            lastError: Win32ErrorCode = Win32ErrorCode.last(),
+            cause: Throwable? = null,
+        ): TempfolderWindowsIOException {
+            val messageDescription = ": ${lastError.description()}"
+            return TempfolderWindowsIOException("$messagePrefix$messageDescription", lastError.code, cause)
         }
     }
 }
