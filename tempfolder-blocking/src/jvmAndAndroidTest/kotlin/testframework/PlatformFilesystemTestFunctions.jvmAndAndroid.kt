@@ -45,7 +45,7 @@ internal class NioFilesystemTestFunctions(
 
     private val TempfolderPathString.nioPath: Path get() = fileSystem.getPath(this.asString())
 
-    override fun resolvePath(base: TempfolderPathString, append: String): TempfolderPathString {
+    override fun joinPath(base: TempfolderPathString, append: String): TempfolderPathString {
         return fileSystem.getPath(base.asString(), append).absolutePathString().toPosixPathString()
     }
 

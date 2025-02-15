@@ -37,7 +37,7 @@ private fun Char.isWindowsPathSeparator(): Boolean = this == '\\' || this == '/'
 
 /**
  * @return an array of UCS-2 characters read from the given pointer with the specified [length].
- * Note: The returned array may not form a valid UTF-16 string.
+ * Note: The returned array may not form a well-formed UTF-16-encoded string.
  */
 internal fun CArrayPointer<WCHARVar>.readChars(length: Int): CharArray {
     require(length >= 0)

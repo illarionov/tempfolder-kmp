@@ -16,9 +16,11 @@ plugins {
     id("at.released.tempfolder.gradle.multiplatform.atomicfu")
     id("at.released.tempfolder.gradle.multiplatform.android")
     id("at.released.tempfolder.gradle.multiplatform.kotlin")
+    id("at.released.tempfolder.gradle.multiplatform.js")
     id("at.released.tempfolder.gradle.multiplatform.publish")
     id("at.released.tempfolder.gradle.multiplatform.test.android-jvm")
     id("at.released.tempfolder.gradle.multiplatform.test.jvm")
+    id("at.released.tempfolder.gradle.multiplatform.test.js")
     id("at.released.tempfolder.gradle.multiplatform.test.native")
 }
 
@@ -63,7 +65,6 @@ kotlin {
         nodejs()
     }
     wasmJs {
-        browser()
         nodejs()
     }
     wasmWasi {

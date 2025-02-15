@@ -25,7 +25,7 @@ interface PlatformFilesystemTestFunctions {
     val pathSeparator: Char
 
     @Throws(TempfolderException::class)
-    fun resolvePath(base: TempfolderPathString, append: String): TempfolderPathString
+    fun joinPath(base: TempfolderPathString, append: String): TempfolderPathString
 
     @Throws(TempfolderException::class)
     fun isDirectory(path: TempfolderPathString, followBasenameSymlink: Boolean = false): Boolean

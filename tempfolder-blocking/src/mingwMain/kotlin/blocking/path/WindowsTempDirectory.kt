@@ -19,7 +19,7 @@ public fun Tempfolder.Companion.createWindowsTempDirectory(
     block: WindowsTempDirectoryConfig.() -> Unit = {},
 ): Tempfolder<TempfolderPathString> {
     val config = WindowsTempDirectoryConfig().apply(block)
-    val tempRoot: WindowsPathString = WindowsPathResolver.resolve(config.base)
+    val tempRoot: WindowsPathString = WindowsTempPathResolver.resolve(config.base)
     val tempDirectory = WindowsTempDirectoryCreator.createDirectory(tempRoot, config.permissions)
     return WindowsTempDirectory(tempDirectory)
 }

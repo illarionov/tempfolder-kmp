@@ -6,4 +6,4 @@
 package at.released.tempfolder
 
 internal actual val testTempDirRoot: String
-    get() = TODO("Not yet implemented")
+    get() = js("globalThis.process.env[\"$ENV_TEST_TMP_DIR\"]") as String? ?: error("$ENV_TEST_TMP_DIR not defined")
