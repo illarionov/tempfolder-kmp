@@ -65,6 +65,9 @@ kotlin {
         nodejs()
     }
     wasmJs {
+        compilerOptions {
+            freeCompilerArgs.add("-Xwasm-attach-js-exception")
+        }
         nodejs()
     }
     wasmWasi {
@@ -104,6 +107,10 @@ kotlin {
                         withAndroidNativeX64()
                     }
                 }
+            }
+            group("nodeJsCommon") {
+                withWasmJs()
+                withJs()
             }
         }
     }

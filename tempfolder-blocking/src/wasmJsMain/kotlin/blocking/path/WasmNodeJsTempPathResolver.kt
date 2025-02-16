@@ -9,8 +9,8 @@ import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.jsapi.nodejs.realpathSync
 import at.released.tempfolder.jsapi.nodejs.tmpdir
 
-// XXX keep in sync with WasmNodeJsTempPathResolver
-internal object NodeJsTempPathResolver {
+// XXX: keep in sync with NodeJsTempPathResolver
+internal object WasmNodeJsTempPathResolver {
     internal fun resolve(parent: NodeJsTempBase): String {
         val path = when (parent) {
             NodeJsTempBase.Auto -> tmpdir()
@@ -18,8 +18,8 @@ internal object NodeJsTempPathResolver {
         }
         try {
             return realpathSync(path)
-        } catch (@Suppress("TooGenericExceptionCaught") ie: Exception) {
-            throw TempfolderIOException("realpathSync() failed", ie)
+        } catch (err: JsException) {
+            throw TempfolderIOException("realpathSync() failed", err)
         }
     }
 }

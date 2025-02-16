@@ -5,8 +5,11 @@
 
 package at.released.tempfolder.blocking.path
 
+import at.released.tempfolder.dsl.CommonTempfolderConfig
 import at.released.tempfolder.dsl.CommonTempfolderConfig.Companion.DEFAULT_PERMISSIONS
 import at.released.tempfolder.dsl.CommonTempfolderConfig.Companion.DEFAULT_PREFIX
+import at.released.tempfolder.dsl.TempfolderBasePath.Auto
+import at.released.tempfolder.dsl.TempfolderBasePath.Path
 import at.released.tempfolder.dsl.TempfolderDsl
 import at.released.tempfolder.dsl.TempfolderFileModeBit
 
@@ -35,5 +38,14 @@ public class NodeJsTempDirectoryConfig {
         public fun NodeJsTempDirectoryConfig.auto(): NodeJsTempBase.Auto = NodeJsTempBase.Auto
 
         public fun NodeJsTempDirectoryConfig.path(path: String): NodeJsTempBase.Path = NodeJsTempBase.Path(path)
+
+        internal fun NodeJsTempDirectoryConfig.setFromCommon(commonConfig: CommonTempfolderConfig) {
+            base = when (val commonBase = commonConfig.base) {
+                is Auto -> NodeJsTempBase.Auto
+                is Path -> NodeJsTempBase.Path(commonBase.path)
+            }
+            prefix = commonConfig.prefix
+            permissions = commonConfig.permissions
+        }
     }
 }

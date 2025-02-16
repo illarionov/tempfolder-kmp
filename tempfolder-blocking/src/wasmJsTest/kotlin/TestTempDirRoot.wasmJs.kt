@@ -5,5 +5,7 @@
 
 package at.released.tempfolder
 
-internal actual val testTempDirRoot: String
-    get() = TODO("Not yet implemented")
+internal actual val testTempDirRoot: String get() = getEnvTempDir(ENV_TEST_TMP_DIR)
+
+@Suppress("UnusedParameter")
+private fun getEnvTempDir(envName: String): String = js("globalThis.process.env[envName]")

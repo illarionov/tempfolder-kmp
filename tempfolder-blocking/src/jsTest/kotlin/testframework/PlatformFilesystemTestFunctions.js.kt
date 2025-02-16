@@ -13,7 +13,7 @@ import at.released.tempfolder.jsapi.nodejs.mkdirSync
 import at.released.tempfolder.jsapi.nodejs.nodeJsErrorCode
 import at.released.tempfolder.jsapi.nodejs.realpathSync
 import at.released.tempfolder.jsapi.nodejs.toNodeJsMode
-import at.released.tempfolder.path.JsNodePathString.Companion.toJsNodePathString
+import at.released.tempfolder.path.NodeJsPathString.Companion.toJsNodePathString
 import at.released.tempfolder.path.TempfolderPathString
 import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.SymlinkType
 import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.SymlinkType.NOT_SPECIFIED

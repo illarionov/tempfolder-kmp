@@ -9,7 +9,6 @@ import at.released.tempfolder.TempfolderClosedException
 import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.blocking.Tempfolder
-import at.released.tempfolder.jsapi.nodejs.RmSyncOptions
 import at.released.tempfolder.jsapi.nodejs.join
 import at.released.tempfolder.jsapi.nodejs.rmSync
 import at.released.tempfolder.path.NodeJsPathString.Companion.toJsNodePathString
@@ -17,18 +16,21 @@ import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.TempfolderPathString
 import kotlinx.atomicfu.atomic
 
-// XXX keep in sync with WasmNodeJsTempDirectory
+// XXX keep in sync with NodeJsTempDirectory
 
-public fun Tempfolder.Companion.createNodeJsTempDirectory(
+public fun Tempfolder.Companion.createWasmNodeJsTempDirectory(
     block: NodeJsTempDirectoryConfig.() -> Unit = {},
 ): Tempfolder<String> {
     val config = NodeJsTempDirectoryConfig().apply(block)
-    val tempRoot: String = NodeJsTempPathResolver.resolve(config.base)
-    val tempDirectory = NodeJsTempDirectoryCreator.createDirectory(tempRoot, config.permissions)
-    return NodeJsTempDirectory(tempDirectory)
+    val tempRoot: String = WasmNodeJsTempPathResolver.resolve(config.base)
+    val tempDirectory = WasmNodeJsTempDirectoryCreator.createDirectory(tempRoot, config.permissions)
+    return WasmNodeJsTempDirectory(tempDirectory)
 }
 
-private class NodeJsTempDirectory(
+@Suppress("UnusedParameter")
+private fun createRmsyncOptions(recursive: Boolean): JsAny = js("({recursive: recursive})")
+
+private class WasmNodeJsTempDirectory(
     absolutePath: String,
 ) : Tempfolder<String> {
     override var deleteOnClose: Boolean by atomic(true)
@@ -45,7 +47,7 @@ private class NodeJsTempDirectory(
     override fun resolve(name: String): TempfolderPathString {
         try {
             return join(root, name).toJsNodePathString()
-        } catch (@Suppress("TooGenericExceptionCaught") err: Exception) {
+        } catch (err: JsException) {
             throw TempfolderInvalidPathException("join(`$root`, `$name`) failed", err)
         }
     }
@@ -68,14 +70,10 @@ private class NodeJsTempDirectory(
     private companion object {
         fun deleteDirectoryRecursively(path: String) {
             try {
-                rmSync(path, RmSyncOptions { recursive = true })
-            } catch (@Suppress("TooGenericExceptionCaught") err: Exception) {
+                rmSync(path, createRmsyncOptions(true))
+            } catch (err: JsException) {
                 throw TempfolderIOException("rmSync() failed", err)
             }
         }
-
-        private inline fun RmSyncOptions(
-            block: RmSyncOptions.() -> Unit,
-        ): RmSyncOptions = js("{}").unsafeCast<RmSyncOptions>().apply(block)
     }
 }

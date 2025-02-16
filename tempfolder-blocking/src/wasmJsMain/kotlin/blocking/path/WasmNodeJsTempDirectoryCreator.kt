@@ -11,11 +11,10 @@ import at.released.tempfolder.blocking.generateTempDirectoryName
 import at.released.tempfolder.dsl.TempfolderFileModeBit
 import at.released.tempfolder.jsapi.nodejs.join
 import at.released.tempfolder.jsapi.nodejs.mkdirSync
-import at.released.tempfolder.jsapi.nodejs.nodeJsErrorCode
 import at.released.tempfolder.jsapi.nodejs.toNodeJsMode
 
-// XXX: keep in sync with WasmNodeJsTempDirectoryCreator
-internal object NodeJsTempDirectoryCreator {
+// XXX: keep in sync with NodeJsTempDirectoryCreator
+internal object WasmNodeJsTempDirectoryCreator {
     internal fun createDirectory(
         root: String,
         mode: Set<TempfolderFileModeBit>,
@@ -32,17 +31,17 @@ internal object NodeJsTempDirectoryCreator {
         }
         throw TempfolderIOException("Can not create directory: max attempts reached")
     }
-}
 
-private fun nodejsCreateDirectory(path: String, mode: Int): Boolean {
-    return try {
-        mkdirSync(path, mode)
-        true
-    } catch (@Suppress("TooGenericExceptionCaught") err: Throwable) {
-        if (err.nodeJsErrorCode == "EEXIST") {
-            false
-        } else {
-            throw TempfolderIOException("mkdirSync() failed", err)
+    private fun nodejsCreateDirectory(path: String, mode: Int): Boolean {
+        return try {
+            mkdirSync(path, mode)
+            true
+        } catch (err: JsException) {
+            if (err.message.contains("EEXIST")) {
+                false
+            } else {
+                throw TempfolderIOException("mkdirSync() failed", err)
+            }
         }
     }
 }

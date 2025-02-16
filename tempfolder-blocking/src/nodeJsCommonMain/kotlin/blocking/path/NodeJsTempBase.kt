@@ -8,7 +8,7 @@ package at.released.tempfolder.blocking.path
 import at.released.tempfolder.dsl.TempfolderDsl
 
 /**
- * Base directory for the temporary folder on NodeJS
+ * Base directory for the temporary folder on Node.JS based File System
  */
 @TempfolderDsl
 public sealed class NodeJsTempBase {

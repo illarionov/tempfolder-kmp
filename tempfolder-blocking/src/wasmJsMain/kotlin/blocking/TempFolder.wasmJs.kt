@@ -5,8 +5,12 @@
 
 package at.released.tempfolder.blocking
 
+import at.released.tempfolder.blocking.path.NodeJsTempDirectoryConfig.Companion.setFromCommon
+import at.released.tempfolder.blocking.path.createWasmNodeJsTempDirectory
 import at.released.tempfolder.dsl.CommonTempfolderConfig
 
 internal actual fun createPlatformTempFolder(config: CommonTempfolderConfig): Tempfolder<*> {
-    TODO("Not yet implemented")
+    return Tempfolder.createWasmNodeJsTempDirectory {
+        setFromCommon(config)
+    }
 }
