@@ -18,13 +18,11 @@ import at.released.tempfolder.testframework.assertions.isDirectory
 import at.released.tempfolder.testframework.assertions.isFile
 import at.released.tempfolder.testframework.assertions.isSymlink
 import at.released.tempfolder.testframework.assertions.posixFileModeIfSupportedIsEqualTo
-import at.released.weh.test.ignore.annotations.IgnoreJs
 import at.released.weh.test.ignore.annotations.IgnoreWasmJs
 import at.released.weh.test.ignore.annotations.IgnoreWasmWasi
 import kotlin.test.Test
 
 class PlatformFilesystemTestFunctionsTest {
-    @IgnoreJs
     @IgnoreWasmJs
     @IgnoreWasmWasi
     @Test

@@ -56,7 +56,7 @@ internal object Posix2009809FilesystemTestFunctions : PlatformFilesystemTestFunc
     override val isSymlinkSupported: Boolean = true
     override val pathSeparator: Char = '/'
 
-    override fun resolvePath(base: TempfolderPathString, append: String): TempfolderPathString {
+    override fun joinPath(base: TempfolderPathString, append: String): TempfolderPathString {
         check(base is MultibytePathString)
         return UnknownEncodingPosixPathString(base.bytes.appendPosixPath(append))
     }

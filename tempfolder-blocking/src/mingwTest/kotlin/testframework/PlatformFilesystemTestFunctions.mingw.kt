@@ -56,7 +56,7 @@ internal object WindowsFilesystemTestFunctions : PlatformFilesystemTestFunctions
             SymlinkType.SYMLINK_TO_DIRECTORY -> platform.windows.SYMBOLIC_LINK_FLAG_DIRECTORY
         }.toUInt()
 
-    override fun resolvePath(base: TempfolderPathString, append: String): TempfolderPathString {
+    override fun joinPath(base: TempfolderPathString, append: String): TempfolderPathString {
         return windowsAppendPath(base.asString(), append).toWindowsPathString()
     }
 

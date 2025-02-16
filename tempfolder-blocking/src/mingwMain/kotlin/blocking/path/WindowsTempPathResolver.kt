@@ -13,7 +13,7 @@ import at.released.tempfolder.path.WindowsPathString.Companion.toWindowsPathStri
 import at.released.tempfolder.winapi.windowsGetFullPathname
 import at.released.tempfolder.winapi.windowsGetTempPath
 
-internal object WindowsPathResolver {
+internal object WindowsTempPathResolver {
     @Throws(TempfolderIOException::class)
     internal fun resolve(parent: WindowsTempBase): WindowsPathString {
         val path = when (parent) {
