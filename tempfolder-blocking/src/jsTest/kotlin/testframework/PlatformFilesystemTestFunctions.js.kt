@@ -32,7 +32,7 @@ import org.khronos.webgl.Int8Array
 internal actual val platformFilesystem: PlatformFilesystemTestFunctions get() = NodeJsFilesystemTestFunctions
 
 private object NodeJsFilesystemTestFunctions : PlatformFilesystemTestFunctions {
-    override val isPosixFileModeSupported: Boolean get() = true
+    override val isPosixFileModeSupported: Boolean get() = js("globalThis.process.platform") as String? != "win32"
     override val isSymlinkSupported: Boolean get() = true
     override val pathSeparator: Char get() = '/'
 
