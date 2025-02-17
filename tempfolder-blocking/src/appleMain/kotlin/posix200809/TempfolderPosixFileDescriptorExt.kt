@@ -5,10 +5,11 @@
 
 package at.released.tempfolder.posix200809
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import platform.posix.AT_FDCWD
 
-internal val TempfolderPosixFileDescriptor.appleFd: Int
-    get() = if (this == TempfolderPosixFileDescriptor.CURRENT_WORKING_DIRECTORY) {
+internal val TempDirectoryDescriptor.appleFd: Int
+    get() = if (this == TempDirectoryDescriptor.CURRENT_WORKING_DIRECTORY) {
         AT_FDCWD
     } else {
         this.fd

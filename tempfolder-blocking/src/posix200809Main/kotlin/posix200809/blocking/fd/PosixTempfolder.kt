@@ -5,6 +5,8 @@
 
 package at.released.tempfolder.posix200809.blocking.fd
 
+import at.released.tempfolder.TempDirectoryDescriptor
+import at.released.tempfolder.TempDirectoryDescriptor.Companion.CURRENT_WORKING_DIRECTORY
 import at.released.tempfolder.TempfolderClosedException
 import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
 import at.released.tempfolder.TempfolderIOException
@@ -15,8 +17,6 @@ import at.released.tempfolder.path.TempfolderPathString
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.path.isAbsolute
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor.Companion.CURRENT_WORKING_DIRECTORY
 import at.released.tempfolder.posix200809.delete.deleteRecursively
 import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.getRealPath
@@ -24,10 +24,10 @@ import at.released.tempfolder.posix200809.platformUnlinkDirectory
 import kotlinx.atomicfu.atomic
 
 internal class PosixTempfolder internal constructor(
-    private val parentDirfd: TempfolderPosixFileDescriptor,
+    private val parentDirfd: TempDirectoryDescriptor,
     private val directoryPathname: PosixPathString,
-    override val root: TempfolderPosixFileDescriptor,
-) : Tempfolder<TempfolderPosixFileDescriptor> {
+    override val root: TempDirectoryDescriptor,
+) : Tempfolder<TempDirectoryDescriptor> {
     private val isClosed = atomic(false)
     override var deleteOnClose: Boolean by atomic(true)
     private val rootPath: Result<PosixPathString> by lazy {
@@ -44,16 +44,8 @@ internal class PosixTempfolder internal constructor(
     }
 
     override fun delete() {
-        // Delete content of directory
-        deleteRecursively(root)
-        // Try to delete directory itself
-        val unlinkDirectoryError = platformUnlinkDirectory(parentDirfd, directoryPathname)
-        if (unlinkDirectoryError != 0) {
-            throw TempfolderNativeIOException(
-                unlinkDirectoryError,
-                "Unable to remove temp directory `${directoryPathname.asStringOrDescription()}`. ${errnoDescription()}",
-            )
-        }
+        throwIfClosed()
+        deleteUnprotected(root)
     }
 
     @Throws(TempfolderIOException::class, TempfolderInvalidPathException::class)
@@ -66,7 +58,20 @@ internal class PosixTempfolder internal constructor(
             return
         }
         if (deleteOnClose) {
-            delete()
+            deleteUnprotected(root)
+        }
+    }
+
+    private fun deleteUnprotected(root: TempDirectoryDescriptor) {
+        // Delete content of directory
+        deleteRecursively(root)
+        // Try to delete directory itself
+        val unlinkDirectoryError = platformUnlinkDirectory(parentDirfd, directoryPathname)
+        if (unlinkDirectoryError != 0) {
+            throw TempfolderNativeIOException(
+                unlinkDirectoryError,
+                "Unable to remove temp directory `${directoryPathname.asStringOrDescription()}`. ${errnoDescription()}",
+            )
         }
     }
 

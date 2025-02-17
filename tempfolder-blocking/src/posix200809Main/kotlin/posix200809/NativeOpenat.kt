@@ -5,6 +5,7 @@
 
 package at.released.tempfolder.posix200809
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.path.PosixPathString
 import platform.posix.O_DIRECTORY
 import platform.posix.O_NOFOLLOW
@@ -12,26 +13,26 @@ import platform.posix.O_NONBLOCK
 
 @Throws(TempfolderNativeIOException::class)
 internal fun nativeOpenDirectoryAt(
-    dirfd: TempfolderPosixFileDescriptor,
+    dirfd: TempDirectoryDescriptor,
     path: PosixPathString,
     resolveBeneath: Boolean = true,
-): TempfolderPosixFileDescriptor {
+): TempDirectoryDescriptor {
     return platformOpenAt(dirfd, path, 0U, (O_DIRECTORY or O_NOFOLLOW or O_NONBLOCK).toULong(), resolveBeneath)
 }
 
 @Throws(TempfolderNativeIOException::class)
 internal expect fun platformOpenAt(
-    dirfd: TempfolderPosixFileDescriptor,
+    dirfd: TempDirectoryDescriptor,
     path: PosixPathString,
     mode: UInt,
     flags: ULong,
     resolveBeneath: Boolean = true,
-): TempfolderPosixFileDescriptor
+): TempDirectoryDescriptor
 
 internal fun interface OpenDirectoryAt {
     operator fun invoke(
-        dirfd: TempfolderPosixFileDescriptor,
+        dirfd: TempDirectoryDescriptor,
         path: PosixPathString,
         resolveBeneath: Boolean,
-    ): TempfolderPosixFileDescriptor
+    ): TempDirectoryDescriptor
 }

@@ -138,7 +138,6 @@ internal object WindowsFilesystemTestFunctions : PlatformFilesystemTestFunctions
     }
 
     override fun createDirectory(path: TempfolderPathString, mode: Set<TempfolderFileModeBit>) {
-        // TODO: mode
         val error = CreateDirectoryW(path.asString(), null)
         if (error == 0) {
             throw TempfolderWindowsIOException("CreateDirectoryW() failed")

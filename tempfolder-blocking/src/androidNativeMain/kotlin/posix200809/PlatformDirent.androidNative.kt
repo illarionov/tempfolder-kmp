@@ -7,13 +7,14 @@
 
 package at.released.tempfolder.posix200809
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import kotlinx.cinterop.CPointer
 import platform.posix.dirent
 
 internal actual val platformDirent: PlatformDirent<*> = AndroidDirent
 
 private object AndroidDirent : PlatformDirent<CPointer<cnames.structs.DIR>> {
-    override fun fdopendir(fd: TempfolderPosixFileDescriptor): CPointer<cnames.structs.DIR>? =
+    override fun fdopendir(fd: TempDirectoryDescriptor): CPointer<cnames.structs.DIR>? =
         platform.posix.fdopendir(fd.androidFd)
 
     override fun rewinddir(dirp: CPointer<cnames.structs.DIR>) = platform.posix.rewinddir(dirp)

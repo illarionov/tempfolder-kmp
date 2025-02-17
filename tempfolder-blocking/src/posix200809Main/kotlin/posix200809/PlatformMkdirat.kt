@@ -5,10 +5,11 @@
 
 package at.released.tempfolder.posix200809
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.path.PosixPathString
 
 internal expect fun platformMkdirat(
-    base: TempfolderPosixFileDescriptor,
+    base: TempDirectoryDescriptor,
     directoryName: PosixPathString,
     mode: UInt,
 ): Int

@@ -5,6 +5,7 @@
 
 package at.released.tempfolder.posix200809
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.posix200809.path.toPosixPathString
@@ -21,7 +22,7 @@ import platform.posix.getcwd
 import platform.posix.open
 
 @Throws(TempfolderIOException::class)
-internal fun TempfolderPosixFileDescriptor.getRealPath(): PosixPathString {
+internal fun TempDirectoryDescriptor.getRealPath(): PosixPathString {
     val targetFd = this.fd
     return openCurrentDirectory().use { currentDir ->
         CurrentDirectoryChanger(

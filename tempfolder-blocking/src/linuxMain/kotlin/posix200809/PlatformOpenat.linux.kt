@@ -5,6 +5,8 @@
 
 package at.released.tempfolder.posix200809
 
+import at.released.tempfolder.TempDirectoryDescriptor
+import at.released.tempfolder.asFileDescriptor
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.platform.linux.RESOLVE_BENEATH
 import at.released.tempfolder.platform.linux.SYS_openat2
@@ -20,12 +22,12 @@ import platform.posix.syscall
 
 @Throws(TempfolderNativeIOException::class)
 internal actual fun platformOpenAt(
-    dirfd: TempfolderPosixFileDescriptor,
+    dirfd: TempDirectoryDescriptor,
     path: PosixPathString,
     mode: UInt,
     flags: ULong,
     resolveBeneath: Boolean,
-): TempfolderPosixFileDescriptor {
+): TempDirectoryDescriptor {
     val resolveFlags = if (resolveBeneath) RESOLVE_BENEATH.toULong() else 0UL
     val newFd = memScoped {
         val pathBytes = allocNullTerminatedPath(path)

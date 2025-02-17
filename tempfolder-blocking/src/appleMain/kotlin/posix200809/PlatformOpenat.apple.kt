@@ -5,6 +5,8 @@
 
 package at.released.tempfolder.posix200809
 
+import at.released.tempfolder.TempDirectoryDescriptor
+import at.released.tempfolder.asFileDescriptor
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.platform.apple.openat
 import at.released.tempfolder.posix200809.path.allocNullTerminatedPath
@@ -14,12 +16,12 @@ import platform.posix.errno
 
 @Throws(TempfolderNativeIOException::class)
 internal actual fun platformOpenAt(
-    dirfd: TempfolderPosixFileDescriptor,
+    dirfd: TempDirectoryDescriptor,
     path: PosixPathString,
     mode: UInt,
     flags: ULong,
     resolveBeneath: Boolean,
-): TempfolderPosixFileDescriptor {
+): TempDirectoryDescriptor {
     val fd = memScoped {
         val pathBytes = allocNullTerminatedPath(path)
         openat(dirfd.appleFd, pathBytes, flags.convert(), mode.toInt())

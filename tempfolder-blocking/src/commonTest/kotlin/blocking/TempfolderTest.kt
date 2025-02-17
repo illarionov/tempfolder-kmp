@@ -23,12 +23,10 @@ import at.released.tempfolder.testframework.assertions.isSamePathAs
 import at.released.tempfolder.testframework.assertions.posixFileModeIfSupportedIsEqualTo
 import at.released.tempfolder.testframework.isSimulatorOrVirtualDevice
 import at.released.tempfolder.testframework.platformFilesystem
-import at.released.weh.test.ignore.annotations.IgnoreWasmWasi
 import kotlinx.io.bytestring.ByteString
 import kotlin.test.Test
 
 class TempfolderTest {
-    @IgnoreWasmWasi
     @Test
     fun tempfolder_test_success_case() {
         val path: TempfolderPathString

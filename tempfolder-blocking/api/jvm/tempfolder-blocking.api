@@ -9,6 +9,24 @@ public final class at/released/tempfolder/DeleteRecursivelyException : at/releas
 public final class at/released/tempfolder/DeleteRecursivelyException$Companion {
 }
 
+public final class at/released/tempfolder/TempDirectoryDescriptor {
+	public static final field Companion Lat/released/tempfolder/TempDirectoryDescriptor$Companion;
+	public static final synthetic fun box-impl (I)Lat/released/tempfolder/TempDirectoryDescriptor;
+	public static fun constructor-impl (I)I
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (ILjava/lang/Object;)Z
+	public static final fun equals-impl0 (II)Z
+	public final fun getFd ()I
+	public fun hashCode ()I
+	public static fun hashCode-impl (I)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (I)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()I
+}
+
+public final class at/released/tempfolder/TempDirectoryDescriptor$Companion {
+}
+
 public final class at/released/tempfolder/TempfolderClosedException : at/released/tempfolder/TempfolderIOException {
 	public static final field Companion Lat/released/tempfolder/TempfolderClosedException$Companion;
 	public fun <init> (Ljava/lang/String;)V

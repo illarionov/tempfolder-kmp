@@ -29,7 +29,5 @@ dependencyResolutionManagement {
 include("documentation")
 include("lint")
 include("multiplatform")
-include("wasi-testsuite-codegen")
-include("wasm-codegen")
 
 rootProject.name = "tempfolder-gradle-project-plugins"

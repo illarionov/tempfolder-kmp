@@ -65,7 +65,13 @@ kotlin {
         nodejs()
     }
     wasmWasi {
-        nodejs()
+        compilations.configureEach {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    optIn.add("kotlin.wasm.unsafe.UnsafeWasmMemoryApi")
+                }
+            }
+        }
     }
     iosSimulatorArm64()
     iosArm64()

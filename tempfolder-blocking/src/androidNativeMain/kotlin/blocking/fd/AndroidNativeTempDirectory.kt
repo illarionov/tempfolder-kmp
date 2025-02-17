@@ -5,20 +5,20 @@
 
 package at.released.tempfolder.blocking.fd
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.TempfolderException
 import at.released.tempfolder.blocking.Tempfolder
 import at.released.tempfolder.blocking.generateTempDirectoryName
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.blocking.fd.PosixTempDirectoryCreator
-import at.released.tempfolder.posix200809.blocking.fd.PosixTempDirectoryCreator.ResolvedTempRoot
 import at.released.tempfolder.posix200809.blocking.fd.PosixTempRootResolver
+import at.released.tempfolder.posix200809.blocking.fd.PosixTempRootResolver.ResolvedTempRoot
 import at.released.tempfolder.posix200809.blocking.fd.PosixTempfolder
 import at.released.tempfolder.posix200809.toPosixMode
 
 @Throws(TempfolderException::class)
 public fun Tempfolder.Companion.createAndroidNativeTempDirectory(
     block: AndroidNativeTempDirectoryConfig.() -> Unit = {},
-): Tempfolder<TempfolderPosixFileDescriptor> {
+): Tempfolder<TempDirectoryDescriptor> {
     val config = AndroidNativeTempDirectoryConfig().apply(block)
     val root: ResolvedTempRoot = PosixTempRootResolver.resolve(config.base)
     val coordinates = PosixTempDirectoryCreator.createDirectory(

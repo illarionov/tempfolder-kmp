@@ -5,15 +5,15 @@
 
 package at.released.tempfolder.blocking.fd
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.TempfolderException
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.blocking.Tempfolder
 import at.released.tempfolder.blocking.generateTempDirectoryName
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.blocking.fd.PosixTempDirectoryCreator
-import at.released.tempfolder.posix200809.blocking.fd.PosixTempDirectoryCreator.ResolvedTempRoot
 import at.released.tempfolder.posix200809.blocking.fd.PosixTempRootResolver
+import at.released.tempfolder.posix200809.blocking.fd.PosixTempRootResolver.ResolvedTempRoot
 import at.released.tempfolder.posix200809.blocking.fd.PosixTempfolder
 import at.released.tempfolder.posix200809.dsl.AdvisoryLockType
 import at.released.tempfolder.posix200809.dsl.AdvisoryLockType.EXCLUSIVE
@@ -30,7 +30,7 @@ import platform.posix.errno
 @Throws(TempfolderException::class)
 public fun Tempfolder.Companion.createLinuxTempDirectory(
     block: LinuxTempDirectoryConfig.() -> Unit,
-): Tempfolder<TempfolderPosixFileDescriptor> {
+): Tempfolder<TempDirectoryDescriptor> {
     val config = LinuxTempDirectoryConfig().apply(block)
     val root: ResolvedTempRoot = PosixTempRootResolver.resolve(config.base)
     val coordinates = PosixTempDirectoryCreator.createDirectory(
@@ -57,7 +57,7 @@ public fun Tempfolder.Companion.createLinuxTempDirectory(
 }
 
 @Throws(TempfolderIOException::class)
-private fun setLock(fd: TempfolderPosixFileDescriptor, type: AdvisoryLockType) {
+private fun setLock(fd: TempDirectoryDescriptor, type: AdvisoryLockType) {
     val lockOp = when (type) {
         NONE -> return
         EXCLUSIVE -> LOCK_EX

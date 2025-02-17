@@ -5,6 +5,8 @@
 
 package at.released.tempfolder.posix200809.blocking.fd
 
+import at.released.tempfolder.TempDirectoryDescriptor
+import at.released.tempfolder.TempDirectoryDescriptor.Companion.CURRENT_WORKING_DIRECTORY
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.blocking.MAX_CREATE_DIRECTORY_ATTEMPTS
 import at.released.tempfolder.blocking.generateTempDirectoryName
@@ -14,13 +16,12 @@ import at.released.tempfolder.path.PosixPathStringComponent.Companion.asPathComp
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.toPosixPathString
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor.Companion.CURRENT_WORKING_DIRECTORY
 import at.released.tempfolder.posix200809.blocking.fd.PosixTempDirectoryCreator.CreateDirectoryResult.DirectoryExists
 import at.released.tempfolder.posix200809.blocking.fd.PosixTempDirectoryCreator.CreateDirectoryResult.Error
 import at.released.tempfolder.posix200809.blocking.fd.PosixTempDirectoryCreator.CreateDirectoryResult.Success
-import at.released.tempfolder.posix200809.blocking.fd.PosixTempDirectoryCreator.ResolvedTempRoot.FileDescriptor
-import at.released.tempfolder.posix200809.blocking.fd.PosixTempDirectoryCreator.ResolvedTempRoot.Path
+import at.released.tempfolder.posix200809.blocking.fd.PosixTempRootResolver.ResolvedTempRoot
+import at.released.tempfolder.posix200809.blocking.fd.PosixTempRootResolver.ResolvedTempRoot.FileDescriptor
+import at.released.tempfolder.posix200809.blocking.fd.PosixTempRootResolver.ResolvedTempRoot.Path
 import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.nativeOpenDirectoryAt
 import at.released.tempfolder.posix200809.platformMkdirat
@@ -47,7 +48,7 @@ internal object PosixTempDirectoryCreator {
         directoryName: PosixPathStringComponent,
         mode: UInt,
     ): TempfolderCoordinates? {
-        val (dirFd: TempfolderPosixFileDescriptor, pathname: PosixPathString) = when (root) {
+        val (dirFd: TempDirectoryDescriptor, pathname: PosixPathString) = when (root) {
             is FileDescriptor -> root.fd to directoryName
             is Path -> CURRENT_WORKING_DIRECTORY to root.path.append(directoryName.asString())
         }
@@ -77,7 +78,7 @@ internal object PosixTempDirectoryCreator {
     }
 
     private fun tryCreateDirectory(
-        base: TempfolderPosixFileDescriptor,
+        base: TempDirectoryDescriptor,
         directoryName: PosixPathString,
         mode: UInt,
     ): CreateDirectoryResult {
@@ -101,14 +102,9 @@ internal object PosixTempDirectoryCreator {
         }
     }
 
-    internal sealed interface ResolvedTempRoot {
-        value class FileDescriptor(val fd: TempfolderPosixFileDescriptor) : ResolvedTempRoot
-        value class Path(val path: PosixPathString) : ResolvedTempRoot
-    }
-
     internal class TempfolderCoordinates(
-        val parentDirfd: TempfolderPosixFileDescriptor,
+        val parentDirfd: TempDirectoryDescriptor,
         val directoryPathname: PosixPathString,
-        val directoryDescriptor: TempfolderPosixFileDescriptor,
+        val directoryDescriptor: TempDirectoryDescriptor,
     )
 }

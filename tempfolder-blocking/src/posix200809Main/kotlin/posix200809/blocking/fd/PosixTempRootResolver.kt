@@ -5,15 +5,15 @@
 
 package at.released.tempfolder.posix200809.blocking.fd
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.TempfolderIOException
+import at.released.tempfolder.asFileDescriptor
 import at.released.tempfolder.dsl.TempfolderSizeEstimate
 import at.released.tempfolder.dsl.TempfolderSizeEstimate.LARGE
 import at.released.tempfolder.dsl.TempfolderSizeEstimate.SMALL
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.toPosixPathString
-import at.released.tempfolder.posix200809.asFileDescriptor
-import at.released.tempfolder.posix200809.blocking.fd.PosixTempDirectoryCreator.ResolvedTempRoot
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath.Auto
 import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath.FileDescriptor
@@ -52,5 +52,10 @@ internal object PosixTempRootResolver {
             SMALL -> "/tmp".toPosixPathString()
             LARGE -> "/var/tmp".toPosixPathString()
         }
+    }
+
+    internal sealed interface ResolvedTempRoot {
+        value class FileDescriptor(val fd: TempDirectoryDescriptor) : ResolvedTempRoot
+        value class Path(val path: PosixPathString) : ResolvedTempRoot
     }
 }
