@@ -26,6 +26,10 @@ class PlatformFilesystemTestFunctionsTest {
         createTempfolder {
             prefix = "platformFilesystemTestFunctionsTest-"
         }.use { tempDirectory ->
+            if (!isReadingDirectorySupported()) {
+                tempDirectory.deleteOnClose = false
+            }
+
             val testFile1: TempfolderPathString = tempDirectory.resolve("file1.txt")
             platformFilesystem.createFile(testFile1, content = TEST_FILE_CONTENT)
 
