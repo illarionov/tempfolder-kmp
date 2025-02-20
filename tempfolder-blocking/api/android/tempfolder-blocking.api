@@ -68,21 +68,8 @@ public final class at/released/tempfolder/blocking/NioTempBase$Path : at/release
 	public final fun setPath (Ljava/nio/file/Path;)V
 }
 
-public final class at/released/tempfolder/blocking/NioTempDirectory : at/released/tempfolder/blocking/Tempfolder {
-	public static final field Companion Lat/released/tempfolder/blocking/NioTempDirectory$Companion;
-	public synthetic fun <init> (Ljava/nio/file/Path;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun append (Ljava/lang/String;)Lat/released/tempfolder/path/TempfolderPathString;
-	public fun close ()V
-	public fun delete ()V
-	public fun getAbsolutePath ()Lat/released/tempfolder/path/TempfolderPathString;
-	public fun getDeleteOnClose ()Z
-	public synthetic fun getRoot ()Ljava/lang/Object;
-	public fun getRoot ()Ljava/nio/file/Path;
-	public fun setDeleteOnClose (Z)V
-}
-
-public final class at/released/tempfolder/blocking/NioTempDirectory$Companion {
-	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lat/released/tempfolder/blocking/NioTempDirectory;
+public final class at/released/tempfolder/blocking/NioTempDirectoryBuilder {
+	public static final fun createJvmTempDirectory (Lat/released/tempfolder/blocking/Tempfolder$Companion;Lkotlin/jvm/functions/Function1;)Lat/released/tempfolder/blocking/Tempfolder;
 }
 
 public final class at/released/tempfolder/blocking/NioTempDirectoryConfig {
@@ -115,7 +102,7 @@ public abstract interface class at/released/tempfolder/blocking/Tempfolder : jav
 public final class at/released/tempfolder/blocking/Tempfolder$Companion {
 }
 
-public final class at/released/tempfolder/blocking/TempfolderKt {
+public final class at/released/tempfolder/blocking/TempfolderBuilder {
 	public static final fun createTempfolder (Lkotlin/jvm/functions/Function1;)Lat/released/tempfolder/blocking/Tempfolder;
 	public static synthetic fun createTempfolder$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lat/released/tempfolder/blocking/Tempfolder;
 }
