@@ -20,7 +20,7 @@ kotlin = "2.1.20-RC"
 kotlinx-binary-compatibility-validator = "0.17.0"
 kotlinx-io ="0.6.0"
 spotless = "7.0.2"
-nodejs = "23.6.0"
+nodejs = "23.8.0"
 
 [libraries]
 assertk = { group = "com.willowtreeapps.assertk", name = "assertk", version.ref = "assertk" }
