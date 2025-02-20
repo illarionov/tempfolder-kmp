@@ -31,7 +31,7 @@ public interface Tempfolder<out FH : Any> : AutoCloseable {
     public fun delete()
 
     @Throws(TempfolderIOException::class, TempfolderInvalidPathException::class)
-    public fun resolve(name: String): TempfolderPathString
+    public fun append(name: String): TempfolderPathString
 
     override fun close()
 

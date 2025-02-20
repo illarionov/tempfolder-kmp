@@ -65,7 +65,7 @@ internal class WasiP1TempDirectory internal constructor(
         deleteUnprotected(root)
     }
 
-    override fun resolve(name: String): TempfolderPathString {
+    override fun append(name: String): TempfolderPathString {
         return fullPath.append(name)
     }
 

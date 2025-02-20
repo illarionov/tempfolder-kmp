@@ -52,7 +52,7 @@ private class NsurlTempDirectory(
         deleteRecursively(fileManager, root)
     }
 
-    override fun resolve(name: String): TempfolderPathString {
+    override fun append(name: String): TempfolderPathString {
         return root.URLByAppendingPathComponent(name)?.path?.toPosixPathString()
             ?: throw TempfolderInvalidPathException("Can not resolve `$root` with appended path `$name`")
     }

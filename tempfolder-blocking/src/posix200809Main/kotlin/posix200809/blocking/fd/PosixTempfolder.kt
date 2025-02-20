@@ -49,7 +49,7 @@ internal class PosixTempfolder internal constructor(
     }
 
     @Throws(TempfolderIOException::class, TempfolderInvalidPathException::class)
-    override fun resolve(name: String): TempfolderPathString {
+    override fun append(name: String): TempfolderPathString {
         return rootPath.getOrThrow().append(name)
     }
 
