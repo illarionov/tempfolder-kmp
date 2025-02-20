@@ -41,7 +41,7 @@ public class NioTempDirectory private constructor(
     }
 
     @Throws(TempfolderIOException::class, CharacterCodingException::class)
-    override fun resolve(name: String): TempfolderPathString {
+    override fun append(name: String): TempfolderPathString {
         return try {
             root.resolve(name).toString().toPosixPathString()
         } catch (ipe: InvalidPathException) {

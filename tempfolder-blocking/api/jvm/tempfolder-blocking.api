@@ -71,13 +71,13 @@ public final class at/released/tempfolder/blocking/NioTempBase$Path : at/release
 public final class at/released/tempfolder/blocking/NioTempDirectory : at/released/tempfolder/blocking/Tempfolder {
 	public static final field Companion Lat/released/tempfolder/blocking/NioTempDirectory$Companion;
 	public synthetic fun <init> (Ljava/nio/file/Path;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun append (Ljava/lang/String;)Lat/released/tempfolder/path/TempfolderPathString;
 	public fun close ()V
 	public fun delete ()V
 	public fun getAbsolutePath ()Lat/released/tempfolder/path/TempfolderPathString;
 	public fun getDeleteOnClose ()Z
 	public synthetic fun getRoot ()Ljava/lang/Object;
 	public fun getRoot ()Ljava/nio/file/Path;
-	public fun resolve (Ljava/lang/String;)Lat/released/tempfolder/path/TempfolderPathString;
 	public fun setDeleteOnClose (Z)V
 }
 
@@ -103,12 +103,12 @@ public final class at/released/tempfolder/blocking/NioTempDirectoryConfig$Compan
 
 public abstract interface class at/released/tempfolder/blocking/Tempfolder : java/lang/AutoCloseable {
 	public static final field Companion Lat/released/tempfolder/blocking/Tempfolder$Companion;
+	public abstract fun append (Ljava/lang/String;)Lat/released/tempfolder/path/TempfolderPathString;
 	public abstract fun close ()V
 	public abstract fun delete ()V
 	public abstract fun getAbsolutePath ()Lat/released/tempfolder/path/TempfolderPathString;
 	public abstract fun getDeleteOnClose ()Z
 	public abstract fun getRoot ()Ljava/lang/Object;
-	public abstract fun resolve (Ljava/lang/String;)Lat/released/tempfolder/path/TempfolderPathString;
 	public abstract fun setDeleteOnClose (Z)V
 }
 

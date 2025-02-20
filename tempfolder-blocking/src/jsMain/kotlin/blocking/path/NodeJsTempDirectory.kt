@@ -40,7 +40,7 @@ private class NodeJsTempDirectory(
         deleteDirectoryRecursively(root)
     }
 
-    override fun resolve(name: String): TempfolderPathString {
+    override fun append(name: String): TempfolderPathString {
         try {
             return join(root, name).toJsNodePathString()
         } catch (@Suppress("TooGenericExceptionCaught") err: Exception) {

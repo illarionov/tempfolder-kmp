@@ -38,7 +38,7 @@ private class WindowsTempDirectory(
         deleteDirectoryRecursively(absolutePath)
     }
 
-    override fun resolve(name: String): TempfolderPathString {
+    override fun append(name: String): TempfolderPathString {
         return absolutePath.append(name)
     }
 

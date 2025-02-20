@@ -62,15 +62,15 @@ class TempfolderTest {
 
         fun bootstrapSimpleSuccessTestTestHierarchy(tempDirectory: Tempfolder<*>) {
             platformFilesystem.createFile(
-                tempDirectory.resolve("file1.txt"),
+                tempDirectory.append("file1.txt"),
                 content = TEST_FILE_CONTENT,
             )
             platformFilesystem.createSymlink(
                 "../../../../build",
-                tempDirectory.resolve("build.link"),
+                tempDirectory.append("build.link"),
             )
 
-            tempDirectory.resolve("dir1").also { dir1Path ->
+            tempDirectory.append("dir1").also { dir1Path ->
                 platformFilesystem.createDirectory(dir1Path)
                 platformFilesystem.createFile(
                     platformFilesystem.joinPath(dir1Path, "file2.txt"),

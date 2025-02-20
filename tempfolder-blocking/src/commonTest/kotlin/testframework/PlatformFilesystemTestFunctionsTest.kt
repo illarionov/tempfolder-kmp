@@ -30,7 +30,7 @@ class PlatformFilesystemTestFunctionsTest {
                 tempDirectory.deleteOnClose = false
             }
 
-            val testFile1: TempfolderPathString = tempDirectory.resolve("file1.txt")
+            val testFile1: TempfolderPathString = tempDirectory.append("file1.txt")
             platformFilesystem.createFile(testFile1, content = TEST_FILE_CONTENT)
 
             assertThat(testFile1).all {
@@ -38,11 +38,11 @@ class PlatformFilesystemTestFunctionsTest {
                 posixFileModeIfSupportedIsEqualTo(USER_READ, USER_WRITE, GROUP_READ, OTHER_READ)
             }
 
-            val testDirectory1 = tempDirectory.resolve("dir1")
+            val testDirectory1 = tempDirectory.append("dir1")
             platformFilesystem.createDirectory(testDirectory1)
             assertThat(testDirectory1).isDirectory()
 
-            val testSymlink = tempDirectory.resolve("build.link")
+            val testSymlink = tempDirectory.append("build.link")
             platformFilesystem.createSymlink("../../../../build", testSymlink)
             assertThat(testSymlink).isSymlink()
         }
