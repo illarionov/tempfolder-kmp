@@ -34,5 +34,5 @@ tasks.register<Sync>("buildWebsite") {
 }
 
 dependencies {
-    dokka(projects.tempfolderBlocking)
+    dokka(projects.tempfolderSync)
 }
