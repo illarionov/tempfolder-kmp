@@ -12,16 +12,13 @@ import org.jetbrains.kotlin.gradle.targets.js.KotlinJsPlatformTestRun
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 
 /*
- * Convention plugin that configures Node JS tests in Kotlin Multiplatform project
+ * Convention plugin that configures Node JS tests for JS target in Kotlin Multiplatform project
  */
 plugins.withId("org.jetbrains.kotlin.multiplatform") {
     extensions.configure<KotlinMultiplatformExtension> {
-        targets.withType<KotlinJsIrTarget>().all {
+        targets.matching { it.name == "js" }.withType<KotlinJsIrTarget> {
             nodejs {
                 testRuns.configureEach {
-                    executionTask {
-                        nodeJsArgs += "--experimental-wasm-exnref"
-                    }
                     setupNodejsTestRun()
                 }
             }
@@ -38,29 +35,5 @@ private fun KotlinJsPlatformTestRun.setupNodejsTestRun() {
         environment("TEMP", tempRoot)
         environment(ENV_TEST_TMP_DIR, tempRoot)
         dependsOn(prepareTempRootTask)
-    }
-    if (target.name == "wasmWasi") {
-        val driverFile = layout.buildDirectory.file(
-            "compileSync/wasmWasi/test/testDevelopmentExecutable/kotlin/" +
-                    "tempfolder-kmp-tempfolder-blocking-wasm-wasi-test.mjs",
-        )
-        executionTask {
-            doFirst(ModifyWasiDriverAction(driverFile, tempRoot))
-        }
-    }
-}
-
-// Workaround https://youtrack.jetbrains.com/issue/KT-65179
-class ModifyWasiDriverAction(
-    private val driverFile: Provider<RegularFile>,
-    private val tempRoot: String,
-) : Action<Task> {
-    override fun execute(task: Task) {
-        val driverContent = driverFile.get().asFile.readText()
-        val newContent = driverContent.replace(
-            "const wasi = new WASI({ version: 'preview1', args: argv, env, });",
-            "const wasi = new WASI({ version: 'preview1', args: argv, env, preopens: { '$tempRoot': '$tempRoot' }});",
-        )
-        driverFile.get().asFile.writeText(newContent)
     }
 }
