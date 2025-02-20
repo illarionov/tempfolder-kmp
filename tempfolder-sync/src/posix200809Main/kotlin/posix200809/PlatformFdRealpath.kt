@@ -6,9 +6,9 @@
 package at.released.tempfolder.posix200809
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.path.PosixPathString
-import at.released.tempfolder.posix200809.path.toPosixPathString
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.path.PosixPath
+import at.released.tempfolder.posix200809.path.toPosixPath
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.UnsafeNumber
@@ -21,8 +21,8 @@ import platform.posix.free
 import platform.posix.getcwd
 import platform.posix.open
 
-@Throws(TempfolderIOException::class)
-internal fun TempDirectoryDescriptor.getRealPath(): PosixPathString {
+@Throws(TempDirectoryIOException::class)
+internal fun TempDirectoryDescriptor.getRealPath(): PosixPath {
     val targetFd = this.fd
     return openCurrentDirectory().use { currentDir ->
         CurrentDirectoryChanger(
@@ -37,7 +37,7 @@ internal fun TempDirectoryDescriptor.getRealPath(): PosixPathString {
 private fun openCurrentDirectory(): CloseableFileDescriptor {
     val currentDirFd = open(".", O_DIRECTORY or O_NOFOLLOW or O_NONBLOCK)
     if (currentDirFd == -1) {
-        throw TempfolderNativeIOException(errno, "Can not open current directory. ${errnoDescription()}")
+        throw TempDirectoryNativeIOException(errno, "Can not open current directory. ${errnoDescription()}")
     }
     return CloseableFileDescriptor(currentDirFd)
 }
@@ -50,32 +50,32 @@ private class CurrentDirectoryChanger private constructor(
     }
 
     public companion object {
-        @Throws(TempfolderIOException::class)
+        @Throws(TempDirectoryIOException::class)
         operator fun invoke(initialDirectoryFd: Int, newDirectoryFd: Int): CurrentDirectoryChanger {
             changeCurrentDirectory(newDirectoryFd)
             return CurrentDirectoryChanger(initialDirectoryFd)
         }
 
-        @Throws(TempfolderIOException::class)
+        @Throws(TempDirectoryIOException::class)
         private fun changeCurrentDirectory(
             newDirectory: Int,
             onErrorText: String = "Can not change current directory.",
         ) {
             if (fchdir(newDirectory) == -1) {
-                throw TempfolderNativeIOException(errno, "$onErrorText ${errnoDescription()}")
+                throw TempDirectoryNativeIOException(errno, "$onErrorText ${errnoDescription()}")
             }
         }
     }
 }
 
-@Throws(TempfolderIOException::class)
-private fun getCurrentWorkingDirectory(): PosixPathString {
+@Throws(TempDirectoryIOException::class)
+private fun getCurrentWorkingDirectory(): PosixPath {
     @OptIn(UnsafeNumber::class)
     val cwd: CPointer<ByteVar> = getcwd(null, 0U)
-        ?: throw TempfolderNativeIOException(errno, "Can not get current working directory. ${errnoDescription()}")
+        ?: throw TempDirectoryNativeIOException(errno, "Can not get current working directory. ${errnoDescription()}")
 
     val cwdString = try {
-        cwd.toPosixPathString()
+        cwd.toPosixPath()
     } finally {
         free(cwd)
     }

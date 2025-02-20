@@ -7,7 +7,7 @@ package at.released.tempfolder.posix200809
 
 import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.asFileDescriptor
-import at.released.tempfolder.path.PosixPathString
+import at.released.tempfolder.path.PosixPath
 import at.released.tempfolder.platform.androidnative.RESOLVE_BENEATH
 import at.released.tempfolder.platform.androidnative.SYS_openat2
 import at.released.tempfolder.platform.androidnative.open_how
@@ -21,11 +21,11 @@ import platform.posix.errno
 import platform.posix.memset
 import platform.posix.syscall
 
-@Throws(TempfolderNativeIOException::class)
+@Throws(TempDirectoryNativeIOException::class)
 @OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 internal actual fun platformOpenAt(
     dirfd: TempDirectoryDescriptor,
-    path: PosixPathString,
+    path: PosixPath,
     mode: UInt,
     flags: ULong,
     resolveBeneath: Boolean,
@@ -50,6 +50,6 @@ internal actual fun platformOpenAt(
     if (newFd != -1) {
         return newFd.asFileDescriptor()
     } else {
-        throw TempfolderNativeIOException(errno, "openat2() failed. ${errnoDescription()}")
+        throw TempDirectoryNativeIOException(errno, "openat2() failed. ${errnoDescription()}")
     }
 }

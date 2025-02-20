@@ -5,12 +5,12 @@
 
 package at.released.tempfolder.sync.delete
 
-import at.released.tempfolder.TempfolderException
-import at.released.tempfolder.path.WasiPathString
+import at.released.tempfolder.TempDirectoryException
+import at.released.tempfolder.path.WasiPath
 import kotlinx.io.bytestring.ByteString
 
 internal sealed interface DirStream : AutoCloseable {
-    val basename: WasiPathString.Component
+    val basename: WasiPath.Component
 
     fun addIgnore(name: ByteString)
 
@@ -19,6 +19,6 @@ internal sealed interface DirStream : AutoCloseable {
     sealed class DirStreamItem {
         data object EndOfStream : DirStreamItem()
         data class Entry(val name: ByteString, val isDirectory: Boolean) : DirStreamItem()
-        data class Error(val error: TempfolderException) : DirStreamItem()
+        data class Error(val error: TempDirectoryException) : DirStreamItem()
     }
 }

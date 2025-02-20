@@ -7,7 +7,7 @@
 
 package at.released.tempfolder.wasip1
 
-import at.released.tempfolder.TempfolderException
+import at.released.tempfolder.TempDirectoryException
 import kotlin.wasm.unsafe.Pointer
 import kotlin.wasm.unsafe.UnsafeWasmMemoryApi
 import kotlin.wasm.unsafe.withScopedMemoryAllocator
@@ -22,14 +22,14 @@ internal fun wasiLoadEnv(name: String): String? = withScopedMemoryAllocator { al
     val numArgs = expectedNumArgs.loadInt()
     when {
         numArgs == 0 -> return null
-        numArgs > 1024 -> throw TempfolderException("the number of environment variables is too large")
+        numArgs > 1024 -> throw TempDirectoryException("the number of environment variables is too large")
     }
 
     val bufSize = expectedSize.loadInt().toUInt()
     when {
         bufSize < 3U -> return null
         bufSize > 2U * 1024U * 1024U ->
-            throw TempfolderException("buffer for environment variables is suspiciously large")
+            throw TempDirectoryException("buffer for environment variables is suspiciously large")
     }
 
     val envPointers = allocator.allocate(numArgs * WASM_POINTER_SIZE)
@@ -51,7 +51,7 @@ private fun readEnvVariable(
     name: String,
 ): String? {
     if (envPointer.address !in buffer.address until buffer.address + bufferSize) {
-        throw TempfolderException("pointer outside of buffer")
+        throw TempDirectoryException("pointer outside of buffer")
     }
 
     val stringSize = getNullTerminatedStringSize(
@@ -76,5 +76,5 @@ private fun getNullTerminatedStringSize(pointer: Pointer, maxSize: Int): Int {
             return index
         }
     }
-    throw TempfolderException("String is not null-terminated")
+    throw TempDirectoryException("String is not null-terminated")
 }

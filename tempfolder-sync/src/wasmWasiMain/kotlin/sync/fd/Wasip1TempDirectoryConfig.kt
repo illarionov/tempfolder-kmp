@@ -5,15 +5,15 @@
 
 package at.released.tempfolder.sync.fd
 
-import at.released.tempfolder.dsl.CommonTempfolderConfig.Companion.DEFAULT_PREFIX
-import at.released.tempfolder.dsl.TempfolderDsl
+import at.released.tempfolder.dsl.CommonTempDirectoryConfig.Companion.DEFAULT_PREFIX
+import at.released.tempfolder.dsl.TempDirectoryDsl
 
-@TempfolderDsl
+@TempDirectoryDsl
 public class Wasip1TempDirectoryConfig internal constructor() {
     /**
      * Base path for the temporary directory
      */
-    public var base: WasiP1TempBase = WasiP1TempBase.Auto
+    public var base: TempDirectoryWasip1TempBase = TempDirectoryWasip1TempBase.Auto
 
     /**
      * Prefix for the directory name.

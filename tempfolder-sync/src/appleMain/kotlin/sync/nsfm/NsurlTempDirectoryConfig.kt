@@ -5,10 +5,10 @@
 
 package at.released.tempfolder.sync.nsfm
 
-import at.released.tempfolder.dsl.TempfolderDsl
+import at.released.tempfolder.dsl.TempDirectoryDsl
 import platform.Foundation.NSFileManager
 
-@TempfolderDsl
+@TempDirectoryDsl
 public class NsurlTempDirectoryConfig internal constructor() {
     /**
      * The NSFileManager file manager used for file system operations.

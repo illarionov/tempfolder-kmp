@@ -5,8 +5,8 @@
 
 package at.released.tempfolder.path
 
-import at.released.tempfolder.path.PosixPathStringComponent.Companion.asPathComponent
-import at.released.tempfolder.path.TempfolderPathEmptyException.Companion.PATH_IS_EMPTY_MESSAGE
+import at.released.tempfolder.path.PosixPathComponent.Companion.asPathComponent
+import at.released.tempfolder.path.TempDirectoryPathEmptyException.Companion.PATH_IS_EMPTY_MESSAGE
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.append
 import kotlinx.io.bytestring.buildByteString
@@ -16,34 +16,34 @@ import kotlinx.io.bytestring.indices
 import kotlinx.io.bytestring.isEmpty
 
 internal const val UNIX_PATH_SEPARATOR = '/'.code.toByte()
-internal val PATH_CURRENT_DIRECTORY = ".".toPosixPathString().asPathComponent()
-internal val PATH_PARENT_DIRECTORY = "..".toPosixPathString().asPathComponent()
+internal val PATH_CURRENT_DIRECTORY = ".".toPosixPath().asPathComponent()
+internal val PATH_PARENT_DIRECTORY = "..".toPosixPath().asPathComponent()
 
 internal fun ByteString.isUtfSpecialDirectory(): Boolean =
     this == PATH_CURRENT_DIRECTORY.bytes || this == PATH_PARENT_DIRECTORY.bytes
 
-internal fun PosixPathString.isSpecialDirectory(): Boolean = isCurrentDirectory() || isParentDirectory()
-internal fun PosixPathString.isCurrentDirectory(): Boolean = bytes == PATH_CURRENT_DIRECTORY.bytes
-internal fun PosixPathString.isParentDirectory(): Boolean = bytes == PATH_PARENT_DIRECTORY.bytes
-internal fun PosixPathString.isAbsolute(): Boolean = bytes[0] == UNIX_PATH_SEPARATOR
+internal fun PosixPath.isSpecialDirectory(): Boolean = isCurrentDirectory() || isParentDirectory()
+internal fun PosixPath.isCurrentDirectory(): Boolean = bytes == PATH_CURRENT_DIRECTORY.bytes
+internal fun PosixPath.isParentDirectory(): Boolean = bytes == PATH_PARENT_DIRECTORY.bytes
+internal fun PosixPath.isAbsolute(): Boolean = bytes[0] == UNIX_PATH_SEPARATOR
 
-@Throws(TempfolderInvalidPathException::class)
+@Throws(TempDirectoryInvalidPathException::class)
 internal fun validateBasicPosixPath(path: ByteString) {
     if (path.isEmpty()) {
-        throw TempfolderPathEmptyException(PATH_IS_EMPTY_MESSAGE)
+        throw TempDirectoryPathEmptyException(PATH_IS_EMPTY_MESSAGE)
     }
     if (path.indexOf(0) != -1) {
-        throw (TempfolderInvalidCharacterException("Null character is not allowed in path"))
+        throw (TempDirectoryInvalidCharacterException("Null character is not allowed in path"))
     }
 }
 
 internal fun validatePosixPathComponent(component: ByteString) {
     if (component.indexOf(UNIX_PATH_SEPARATOR) != -1) {
-        throw (TempfolderInvalidCharacterException("A Unix path component must not contain a path separator"))
+        throw (TempDirectoryInvalidCharacterException("A Unix path component must not contain a path separator"))
     }
 }
 
-@Throws(TempfolderInvalidPathException::class)
+@Throws(TempDirectoryInvalidPathException::class)
 internal fun ByteString.appendPosixPath(
     path: String,
 ): ByteString {

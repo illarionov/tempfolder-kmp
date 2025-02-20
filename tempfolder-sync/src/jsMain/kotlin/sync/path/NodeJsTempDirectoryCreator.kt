@@ -5,8 +5,8 @@
 
 package at.released.tempfolder.sync.path
 
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.dsl.TempfolderFileModeBit
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit
 import at.released.tempfolder.jsapi.nodejs.join
 import at.released.tempfolder.jsapi.nodejs.mkdirSync
 import at.released.tempfolder.jsapi.nodejs.nodeJsErrorCode
@@ -17,7 +17,7 @@ import at.released.tempfolder.sync.generateTempDirectoryName
 internal object NodeJsTempDirectoryCreator {
     internal fun createDirectory(
         root: String,
-        mode: Set<TempfolderFileModeBit>,
+        mode: Set<TempDirectoryFileModeBit>,
         nameGenerator: () -> String = { generateTempDirectoryName("tempfolder-") },
     ): String {
         val intMode = mode.toNodeJsMode()
@@ -29,7 +29,7 @@ internal object NodeJsTempDirectoryCreator {
                 return tempDirectoryPath
             }
         }
-        throw TempfolderIOException("Can not create directory: max attempts reached")
+        throw TempDirectoryIOException("Can not create directory: max attempts reached")
     }
 }
 
@@ -41,7 +41,7 @@ private fun nodejsCreateDirectory(path: String, mode: Int): Boolean {
         if (err.nodeJsErrorCode == "EEXIST") {
             false
         } else {
-            throw TempfolderIOException("mkdirSync() failed", err)
+            throw TempDirectoryIOException("mkdirSync() failed", err)
         }
     }
 }

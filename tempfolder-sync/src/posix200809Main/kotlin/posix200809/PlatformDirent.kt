@@ -26,14 +26,14 @@ internal interface PlatformDirent<D> {
     fun rewinddir(dirp: D)
 }
 
-@Throws(TempfolderNativeIOException::class)
+@Throws(TempDirectoryNativeIOException::class)
 internal fun <D> PlatformDirent<D>.openDirectoryStreamOrCloseFd(dirfd: TempDirectoryDescriptor): D {
     val dir: D? = fdopendir(dirfd)
     if (dir == null) {
-        val opendirException = TempfolderNativeIOException(errno, "Can not open directory. ${errnoDescription()}`")
+        val opendirException = TempDirectoryNativeIOException(errno, "Can not open directory. ${errnoDescription()}`")
         if (close(dirfd.fd) == -1) {
             opendirException.addSuppressed(
-                TempfolderNativeIOException(errno, "Can not close descriptor. ${errnoDescription()}`"),
+                TempDirectoryNativeIOException(errno, "Can not close descriptor. ${errnoDescription()}`"),
             )
         }
         throw opendirException

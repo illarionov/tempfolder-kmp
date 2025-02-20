@@ -5,10 +5,10 @@
 
 package at.released.tempfolder.sync.nsfm
 
-import at.released.tempfolder.dsl.TempfolderDsl
+import at.released.tempfolder.dsl.TempDirectoryDsl
 import platform.Foundation.NSURL
 
-@TempfolderDsl
+@TempDirectoryDsl
 public sealed class NsurlTempBase {
     public enum class SearchPathDomain {
         USER,
@@ -26,7 +26,7 @@ public sealed class NsurlTempBase {
      *
      * See [URLForDirectory:inDomain:appropriateForURL:create:error:](https://developer.apple.com/documentation/foundation/nsfilemanager/1407693-urlfordirectory)
      */
-    @TempfolderDsl
+    @TempDirectoryDsl
     public class Auto internal constructor(
         public var appropriateForUrl: NSURL? = null,
         public var inDomain: SearchPathDomain = SearchPathDomain.USER,

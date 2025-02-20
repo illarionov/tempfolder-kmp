@@ -5,7 +5,7 @@
 
 package at.released.tempfolder.testframework.winapi
 
-import at.released.tempfolder.TempfolderWindowsIOException
+import at.released.tempfolder.TempDirectoryWindowsIOException
 import at.released.tempfolder.testframework.winapi.model.FileAttributes
 import at.released.tempfolder.testframework.winapi.model.ReparseTag
 import kotlinx.cinterop.alloc
@@ -36,7 +36,7 @@ internal fun HANDLE.getFileAttributeTagInfo(): FileAttributeTagInfo = memScoped 
             ReparseTag(fileAttributeTagInfo.ReparseTag),
         )
     } else {
-        throw TempfolderWindowsIOException("GetFileInformationByName(FILE_ATTRIBUTE_TAG_INFO) failed")
+        throw TempDirectoryWindowsIOException("GetFileInformationByName(FILE_ATTRIBUTE_TAG_INFO) failed")
     }
 }
 

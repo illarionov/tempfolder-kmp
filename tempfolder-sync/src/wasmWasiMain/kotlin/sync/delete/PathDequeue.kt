@@ -6,13 +6,13 @@
 package at.released.tempfolder.sync.delete
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.TempfolderException
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.path.TempfolderPathString.MultibytePathString
+import at.released.tempfolder.TempDirectoryException
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.path.TempDirectoryPath.MultibytePath
 import at.released.tempfolder.path.UNIX_PATH_SEPARATOR
-import at.released.tempfolder.path.WasiPathString
-import at.released.tempfolder.path.WasiPathString.Companion.WASI_PATH_CURRENT_DIRECTORY
-import at.released.tempfolder.path.WasiPathString.Companion.toWasiPathString
+import at.released.tempfolder.path.WasiPath
+import at.released.tempfolder.path.WasiPath.Companion.WASI_PATH_CURRENT_DIRECTORY
+import at.released.tempfolder.path.WasiPath.Companion.toWasiPathString
 import at.released.tempfolder.sync.delete.DirStream.DirStreamItem
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.append
@@ -44,7 +44,7 @@ internal class PathDequeue(
 
     fun addLast(
         dirfd: TempDirectoryDescriptor,
-        basename: WasiPathString.Component,
+        basename: WasiPath.Component,
     ) {
         check(openDirs.size < maxFileDescriptors) { "No free file descriptor" }
 
@@ -67,7 +67,7 @@ internal class PathDequeue(
     fun getPathFromRoot(
         dirStream: DirStream,
         basename: ByteString? = null,
-    ): WasiPathString {
+    ): WasiPath {
         val dirStreamIndex = path.indexOfFirst { it.stream === dirStream }
         check(dirStreamIndex >= 0) { "No ${dirStream.basename} directory stream in deque" }
         val subpath = path.subList(1, dirStreamIndex + 1)
@@ -94,12 +94,12 @@ internal class PathDequeue(
             try {
                 dirStream.close()
                 null
-            } catch (closeDirException: TempfolderException) {
+            } catch (closeDirException: TempDirectoryException) {
                 closeDirException
             }
         }
         if (exceptions.isNotEmpty()) {
-            val ex = TempfolderIOException("Can not close directories")
+            val ex = TempDirectoryIOException("Can not close directories")
             exceptions.take(3).forEach { ex.addSuppressed(it) }
             throw ex
         }
@@ -108,7 +108,7 @@ internal class PathDequeue(
     class StreamHolder(
         var stream: DirStream,
     ) : AutoCloseable {
-        val name: MultibytePathString get() = stream.basename
+        val name: MultibytePath get() = stream.basename
         override fun close() = stream.close()
     }
 }

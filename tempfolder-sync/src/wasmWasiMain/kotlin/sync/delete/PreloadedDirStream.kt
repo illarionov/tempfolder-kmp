@@ -5,14 +5,14 @@
 
 package at.released.tempfolder.sync.delete
 
-import at.released.tempfolder.TempfolderClosedException
-import at.released.tempfolder.path.WasiPathString
+import at.released.tempfolder.TempDirectoryClosedException
+import at.released.tempfolder.path.WasiPath
 import at.released.tempfolder.sync.delete.DirStream.DirStreamItem
 import kotlinx.atomicfu.atomic
 import kotlinx.io.bytestring.ByteString
 
 internal class PreloadedDirStream(
-    override val basename: WasiPathString.Component,
+    override val basename: WasiPath.Component,
     items: List<DirStreamItem.Entry>,
 ) : DirStream {
     private val items: ArrayDeque<DirStreamItem.Entry> = ArrayDeque(items)
@@ -22,7 +22,7 @@ internal class PreloadedDirStream(
 
     override fun readNext(): DirStreamItem {
         if (isClosed.value) {
-            throw TempfolderClosedException("Stream is closed")
+            throw TempDirectoryClosedException("Stream is closed")
         }
         return when (val item = items.removeFirstOrNull()) {
             null -> DirStreamItem.EndOfStream.also {

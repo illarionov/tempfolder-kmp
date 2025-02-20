@@ -10,7 +10,7 @@ package at.released.tempfolder.wasip1
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.path.WasiPathString.Companion.toWasiPathString
+import at.released.tempfolder.path.WasiPath.Companion.toWasiPathString
 import at.released.tempfolder.wasip1.WasiPreopens.Companion.COMPARATOR_LONGEST_THEN_FD_COMPARATOR
 import kotlin.test.Test
 

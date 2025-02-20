@@ -6,37 +6,37 @@
 package at.released.tempfolder.posix200809.sync.fd
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.TempfolderIOException
+import at.released.tempfolder.TempDirectoryIOException
 import at.released.tempfolder.asFileDescriptor
-import at.released.tempfolder.dsl.TempfolderSizeEstimate
-import at.released.tempfolder.dsl.TempfolderSizeEstimate.LARGE
-import at.released.tempfolder.dsl.TempfolderSizeEstimate.SMALL
-import at.released.tempfolder.path.PosixPathString
-import at.released.tempfolder.path.TempfolderInvalidPathException
-import at.released.tempfolder.path.toPosixPathString
-import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath
-import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath.Auto
-import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath.FileDescriptor
-import at.released.tempfolder.posix200809.dsl.TempfolderPosixBasePath.Path
-import at.released.tempfolder.posix200809.path.toPosixPathString
+import at.released.tempfolder.dsl.TempDirectorySizeEstimate
+import at.released.tempfolder.dsl.TempDirectorySizeEstimate.LARGE
+import at.released.tempfolder.dsl.TempDirectorySizeEstimate.SMALL
+import at.released.tempfolder.path.PosixPath
+import at.released.tempfolder.path.TempDirectoryInvalidPathException
+import at.released.tempfolder.path.toPosixPath
+import at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase
+import at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase.Auto
+import at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase.FileDescriptor
+import at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase.Path
+import at.released.tempfolder.posix200809.path.toPosixPath
 import at.released.tempfolder.posix200809.platformRealpath
 import platform.posix.getenv
 
 internal object PosixTempRootResolver {
-    @Throws(TempfolderIOException::class)
-    internal fun resolve(parent: TempfolderPosixBasePath): ResolvedTempRoot {
+    @Throws(TempDirectoryIOException::class)
+    internal fun resolve(parent: TempDirectoryPosixBase): ResolvedTempRoot {
         return when (parent) {
             is Auto -> ResolvedTempRoot.Path(getDefaultPath(parent.sizeEstimate))
-            is Path -> ResolvedTempRoot.Path(platformRealpath(parent.path.toPosixPathString()))
+            is Path -> ResolvedTempRoot.Path(platformRealpath(parent.path.toPosixPath()))
             is FileDescriptor -> ResolvedTempRoot.FileDescriptor(parent.fd.asFileDescriptor())
         }
     }
 
-    @Throws(TempfolderIOException::class)
-    private fun getDefaultPath(sizeEstimate: TempfolderSizeEstimate): PosixPathString {
+    @Throws(TempDirectoryIOException::class)
+    private fun getDefaultPath(sizeEstimate: TempDirectorySizeEstimate): PosixPath {
         val tmpdir = try {
-            getenv("TMPDIR")?.toPosixPathString()
-        } catch (_: TempfolderInvalidPathException) {
+            getenv("TMPDIR")?.toPosixPath()
+        } catch (_: TempDirectoryInvalidPathException) {
             null
         }
 
@@ -47,15 +47,15 @@ internal object PosixTempRootResolver {
         }
     }
 
-    private fun getDefaultTempRoot(sizeEstimate: TempfolderSizeEstimate): PosixPathString {
+    private fun getDefaultTempRoot(sizeEstimate: TempDirectorySizeEstimate): PosixPath {
         return when (sizeEstimate) {
-            SMALL -> "/tmp".toPosixPathString()
-            LARGE -> "/var/tmp".toPosixPathString()
+            SMALL -> "/tmp".toPosixPath()
+            LARGE -> "/var/tmp".toPosixPath()
         }
     }
 
     internal sealed interface ResolvedTempRoot {
         value class FileDescriptor(val fd: TempDirectoryDescriptor) : ResolvedTempRoot
-        value class Path(val path: PosixPathString) : ResolvedTempRoot
+        value class Path(val path: PosixPath) : ResolvedTempRoot
     }
 }

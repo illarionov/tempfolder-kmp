@@ -6,14 +6,14 @@
 package at.released.tempfolder.sync.fd
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.TempfolderWasiIOException
-import at.released.tempfolder.path.TempfolderInvalidPathException
-import at.released.tempfolder.path.WasiPathString
-import at.released.tempfolder.path.WasiPathString.Companion.toWasiPathString
-import at.released.tempfolder.sync.fd.WasiP1TempBase.Auto
-import at.released.tempfolder.sync.fd.WasiP1TempBase.FileDescriptor
-import at.released.tempfolder.sync.fd.WasiP1TempBase.Path
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.TempDirectoryWasiIOException
+import at.released.tempfolder.path.TempDirectoryInvalidPathException
+import at.released.tempfolder.path.WasiPath
+import at.released.tempfolder.path.WasiPath.Companion.toWasiPathString
+import at.released.tempfolder.sync.fd.TempDirectoryWasip1TempBase.Auto
+import at.released.tempfolder.sync.fd.TempDirectoryWasip1TempBase.FileDescriptor
+import at.released.tempfolder.sync.fd.TempDirectoryWasip1TempBase.Path
 import at.released.tempfolder.wasip1.WasiPreopens
 import at.released.tempfolder.wasip1.type.Errno
 import at.released.tempfolder.wasip1.wasiCloseOrThrow
@@ -24,7 +24,7 @@ import kotlin.LazyThreadSafetyMode.NONE
 internal class WasiTempRootResolver {
     private val preopens: WasiPreopens by lazy(NONE) { WasiPreopens.load() }
 
-    internal fun resolve(parent: WasiP1TempBase): WasiP1TempRoot {
+    internal fun resolve(parent: TempDirectoryWasip1TempBase): WasiP1TempRoot {
         return when (parent) {
             Auto -> resolveAutoPath()
             is FileDescriptor -> WasiP1TempRoot(
@@ -34,14 +34,14 @@ internal class WasiTempRootResolver {
             )
 
             is Path -> tryResolvePath(parent.path.toWasiPathString())
-                ?: throw TempfolderIOException("Path `${parent.path}` not resolvable")
+                ?: throw TempDirectoryIOException("Path `${parent.path}` not resolvable")
         }
     }
 
     private fun resolveAutoPath(): WasiP1TempRoot {
         val tmpdir = try {
             wasiLoadEnv("TMPDIR")?.toWasiPathString()
-        } catch (_: TempfolderInvalidPathException) {
+        } catch (_: TempDirectoryInvalidPathException) {
             null
         }
 
@@ -59,11 +59,11 @@ internal class WasiTempRootResolver {
             val (preopenFd, preopenPath) = preopens.single()
             return WasiP1TempRoot(preopenFd, false, preopenPath)
         }
-        throw TempfolderIOException("Can not resolve temp root. No suitable pre-opened directories")
+        throw TempDirectoryIOException("Can not resolve temp root. No suitable pre-opened directories")
     }
 
     private fun tryResolvePath(
-        path: WasiPathString,
+        path: WasiPath,
     ): WasiP1TempRoot? {
         val pathString = path.asString()
         return preopens.rootForPath(path).firstNotNullOfOrNull { preopen ->
@@ -79,7 +79,7 @@ internal class WasiTempRootResolver {
                     needClose = true,
                     fullpath = path,
                 )
-            } catch (ioException: TempfolderWasiIOException) {
+            } catch (ioException: TempDirectoryWasiIOException) {
                 when (ioException.wasiErrno) {
                     Errno.NOENT.code, Errno.NOTDIR.code -> null
                     else -> throw ioException
@@ -91,7 +91,7 @@ internal class WasiTempRootResolver {
     internal class WasiP1TempRoot(
         val fd: TempDirectoryDescriptor,
         private var needClose: Boolean,
-        val fullpath: WasiPathString,
+        val fullpath: WasiPath,
     ) : AutoCloseable {
         override fun close() {
             if (!needClose) {

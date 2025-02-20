@@ -5,22 +5,22 @@
 
 package at.released.tempfolder.sync.path
 
-import at.released.tempfolder.TempfolderClosedException
-import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
-import at.released.tempfolder.TempfolderIOException
+import at.released.tempfolder.TempDirectoryClosedException
+import at.released.tempfolder.TempDirectoryClosedException.Companion.TEMP_DIRECTORY_CLOSED_MESSAGE
+import at.released.tempfolder.TempDirectoryIOException
 import at.released.tempfolder.jsapi.nodejs.RmSyncOptions
 import at.released.tempfolder.jsapi.nodejs.join
 import at.released.tempfolder.jsapi.nodejs.rmSync
-import at.released.tempfolder.path.JsNodePathString.Companion.toJsNodePathString
-import at.released.tempfolder.path.TempfolderInvalidPathException
-import at.released.tempfolder.path.TempfolderPathString
-import at.released.tempfolder.sync.Tempfolder
+import at.released.tempfolder.path.JsNodePath.Companion.toJsNodePathString
+import at.released.tempfolder.path.TempDirectoryInvalidPathException
+import at.released.tempfolder.path.TempDirectoryPath
+import at.released.tempfolder.sync.TempDirectory
 import kotlinx.atomicfu.atomic
 
-public fun Tempfolder.Companion.createNodeJsTempDirectory(
-    block: NodeJsTempDirectoryConfig.() -> Unit = {},
-): Tempfolder<String> {
-    val config = NodeJsTempDirectoryConfig().apply(block)
+public fun TempDirectory.Companion.createNodeJsTempDirectory(
+    block: NodeTempDirectoryConfig.() -> Unit = {},
+): TempDirectory<String> {
+    val config = NodeTempDirectoryConfig().apply(block)
     val tempRoot: String = NodeJsTempPathResolver.resolve(config.base)
     val tempDirectory = NodeJsTempDirectoryCreator.createDirectory(tempRoot, config.permissions)
     return NodeJsTempDirectory(tempDirectory)
@@ -28,23 +28,23 @@ public fun Tempfolder.Companion.createNodeJsTempDirectory(
 
 private class NodeJsTempDirectory(
     absolutePath: String,
-) : Tempfolder<String> {
+) : TempDirectory<String> {
     override var deleteOnClose: Boolean by atomic(true)
     override val root: String = absolutePath
     private val isClosed = atomic(false)
 
-    override fun getAbsolutePath(): TempfolderPathString = root.toJsNodePathString()
+    override fun getAbsolutePath(): TempDirectoryPath = root.toJsNodePathString()
 
     override fun delete() {
         throwIfClosed()
         deleteDirectoryRecursively(root)
     }
 
-    override fun append(name: String): TempfolderPathString {
+    override fun append(name: String): TempDirectoryPath {
         try {
             return join(root, name).toJsNodePathString()
         } catch (@Suppress("TooGenericExceptionCaught") err: Exception) {
-            throw TempfolderInvalidPathException("join(`$root`, `$name`) failed", err)
+            throw TempDirectoryInvalidPathException("join(`$root`, `$name`) failed", err)
         }
     }
 
@@ -59,7 +59,7 @@ private class NodeJsTempDirectory(
 
     private fun throwIfClosed() {
         if (isClosed.value) {
-            throw TempfolderClosedException(TEMPFOLDER_CLOSED_MESSAGE)
+            throw TempDirectoryClosedException(TEMP_DIRECTORY_CLOSED_MESSAGE)
         }
     }
 
@@ -68,7 +68,7 @@ private class NodeJsTempDirectory(
             try {
                 rmSync(path, RmSyncOptions { recursive = true })
             } catch (@Suppress("TooGenericExceptionCaught") err: Exception) {
-                throw TempfolderIOException("rmSync() failed", err)
+                throw TempDirectoryIOException("rmSync() failed", err)
             }
         }
 

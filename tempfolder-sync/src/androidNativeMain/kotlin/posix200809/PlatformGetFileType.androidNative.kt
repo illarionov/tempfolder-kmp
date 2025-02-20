@@ -6,8 +6,8 @@
 package at.released.tempfolder.posix200809
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.path.PosixPathString
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.path.PosixPath
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.platform.androidnative.fstatat
 import at.released.tempfolder.posix200809.path.allocNullTerminatedPath
@@ -22,10 +22,10 @@ import platform.posix.S_IFREG
 import platform.posix.errno
 import platform.posix.stat
 
-@Throws(TempfolderIOException::class)
+@Throws(TempDirectoryIOException::class)
 internal actual fun platformGetFileType(
     dirFd: TempDirectoryDescriptor,
-    path: PosixPathString,
+    path: PosixPath,
     followBaseSymlink: Boolean,
 ): PosixFileType = memScoped {
     val statbuf: stat = alloc()
@@ -37,7 +37,7 @@ internal actual fun platformGetFileType(
         if (followBaseSymlink) 0 else AT_SYMLINK_NOFOLLOW,
     )
     if (resultCode == -1) {
-        throw TempfolderNativeIOException(errno, "Can not stat `${path.asStringOrDescription()}`")
+        throw TempDirectoryNativeIOException(errno, "Can not stat `${path.asStringOrDescription()}`")
     }
     return when (statbuf.st_mode.toInt() and S_IFMT) {
         S_IFREG -> PosixFileType.FILE

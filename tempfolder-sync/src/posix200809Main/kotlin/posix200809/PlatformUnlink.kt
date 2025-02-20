@@ -6,7 +6,7 @@
 package at.released.tempfolder.posix200809
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.path.PosixPathString
+import at.released.tempfolder.path.PosixPath
 import at.released.tempfolder.posix200809.path.allocNullTerminatedPath
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
@@ -15,15 +15,15 @@ import platform.posix.errno
 
 internal expect fun platformUnlinkat(dirfd: Int, path: CPointer<ByteVar>, removeDirectory: Boolean): Int
 
-internal fun platformUnlinkFile(dirfd: TempDirectoryDescriptor, path: PosixPathString): Int =
+internal fun platformUnlinkFile(dirfd: TempDirectoryDescriptor, path: PosixPath): Int =
     unlink(dirfd, path, false)
 
-internal fun platformUnlinkDirectory(dirfd: TempDirectoryDescriptor, path: PosixPathString): Int =
+internal fun platformUnlinkDirectory(dirfd: TempDirectoryDescriptor, path: PosixPath): Int =
     unlink(dirfd, path, true)
 
 private fun unlink(
     dirfd: TempDirectoryDescriptor,
-    path: PosixPathString,
+    path: PosixPath,
     removeDirectory: Boolean,
 ): Int {
     val resultCode = memScoped {

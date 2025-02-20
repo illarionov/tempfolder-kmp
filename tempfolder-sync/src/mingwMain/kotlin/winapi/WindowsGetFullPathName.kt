@@ -5,26 +5,26 @@
 
 package at.released.tempfolder.winapi
 
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.TempfolderWindowsIOException
-import at.released.tempfolder.path.WindowsPathString
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.TempDirectoryWindowsIOException
+import at.released.tempfolder.path.WindowsPath
 import at.released.tempfolder.winapi.errcode.Win32ErrorCode
 import platform.windows.GetFullPathNameW
 
-@Throws(TempfolderWindowsIOException::class)
-internal fun windowsGetFullPathname(path: WindowsPathString): WindowsPathString {
+@Throws(TempDirectoryWindowsIOException::class)
+internal fun windowsGetFullPathname(path: WindowsPath): WindowsPath {
     val pathStr = path.asString()
     return readPathPickBufferSize { length, buffer ->
         GetFullPathNameW(pathStr, length, buffer, null)
     }.getOrElse { exception ->
-        if (exception is TempfolderWindowsIOException) {
-            throw TempfolderWindowsIOException(
+        if (exception is TempDirectoryWindowsIOException) {
+            throw TempDirectoryWindowsIOException(
                 "Can not get full path",
                 Win32ErrorCode(exception.lastError),
                 exception,
             )
         } else {
-            throw TempfolderIOException("Can not get full path", exception)
+            throw TempDirectoryIOException("Can not get full path", exception)
         }
     }
 }

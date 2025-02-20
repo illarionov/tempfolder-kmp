@@ -6,10 +6,10 @@
 package at.released.tempfolder.sync.delete
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.path.WasiPathString
-import at.released.tempfolder.path.WasiPathString.Companion.WASI_PATH_CURRENT_DIRECTORY
-import at.released.tempfolder.path.WasiPathString.Companion.WASI_PATH_PARENT_DIRECTORY
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.path.WasiPath
+import at.released.tempfolder.path.WasiPath.Companion.WASI_PATH_CURRENT_DIRECTORY
+import at.released.tempfolder.path.WasiPath.Companion.WASI_PATH_PARENT_DIRECTORY
 import at.released.tempfolder.sync.delete.DirStream.DirStreamItem
 import at.released.tempfolder.wasip1.DEFAULT_READ_DIR_BUFFER_SIZE
 import at.released.tempfolder.wasip1.DIRENT_PACKED_SIZE
@@ -20,7 +20,7 @@ import kotlinx.io.bytestring.ByteString
 
 internal class OpenDirStream(
     val dirfd: TempDirectoryDescriptor,
-    override val basename: WasiPathString.Component,
+    override val basename: WasiPath.Component,
     private val readDirOrThrow: (dirfd: TempDirectoryDescriptor, size: Int) -> ReadDirPage = ::wasiReadDirOrThrow,
     private val closeOrThrow: (dirfd: TempDirectoryDescriptor) -> Unit = ::wasiCloseOrThrow,
 ) : DirStream {
@@ -49,7 +49,7 @@ internal class OpenDirStream(
         val bufferSize = defaultReadDirSize + ignoredEntrySize
         val page = try {
             readDirOrThrow(dirfd, bufferSize)
-        } catch (ioe: TempfolderIOException) {
+        } catch (ioe: TempDirectoryIOException) {
             loadComplete = true
             return DirStreamItem.Error(ioe)
         }

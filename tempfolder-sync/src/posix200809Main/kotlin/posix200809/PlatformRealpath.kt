@@ -5,10 +5,10 @@
 
 package at.released.tempfolder.posix200809
 
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.path.PosixPathString
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.path.PosixPath
 import at.released.tempfolder.posix200809.path.allocNullTerminatedPath
-import at.released.tempfolder.posix200809.path.toPosixPathString
+import at.released.tempfolder.posix200809.path.toPosixPath
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.ByteVarOf
 import kotlinx.cinterop.CPointer
@@ -17,12 +17,12 @@ import platform.posix.free
 
 internal expect fun platformRealpath(pathNative: CPointer<ByteVar>): CPointer<ByteVar>?
 
-@Throws(TempfolderIOException::class)
-internal fun platformRealpath(path: PosixPathString): PosixPathString = memScoped {
+@Throws(TempDirectoryIOException::class)
+internal fun platformRealpath(path: PosixPath): PosixPath = memScoped {
     val pathNative: CPointer<ByteVarOf<Byte>> = allocNullTerminatedPath(path)
     val nativePath = platformRealpath(pathNative)
-        ?: throw TempfolderIOException("Can not expand path. ${errnoDescription()}")
-    val pathString = nativePath.toPosixPathString()
+        ?: throw TempDirectoryIOException("Can not expand path. ${errnoDescription()}")
+    val pathString = nativePath.toPosixPath()
     free(nativePath)
     return pathString
 }

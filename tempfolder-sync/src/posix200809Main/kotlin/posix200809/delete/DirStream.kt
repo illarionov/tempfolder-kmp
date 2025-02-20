@@ -5,17 +5,17 @@
 
 package at.released.tempfolder.posix200809.delete
 
-import at.released.tempfolder.TempfolderException
-import at.released.tempfolder.path.PosixPathStringComponent
+import at.released.tempfolder.TempDirectoryException
+import at.released.tempfolder.path.PosixPathComponent
 
 internal sealed interface DirStream : AutoCloseable {
-    val basename: PosixPathStringComponent
+    val basename: PosixPathComponent
 
     fun readNext(): DirStreamItem
     sealed class DirStreamItem {
         data object EndOfStream : DirStreamItem()
-        data class Entry(val name: PosixPathStringComponent, val type: DirEntryType) : DirStreamItem()
-        data class Error(val error: TempfolderException) : DirStreamItem()
+        data class Entry(val name: PosixPathComponent, val type: DirEntryType) : DirStreamItem()
+        data class Error(val error: TempDirectoryException) : DirStreamItem()
     }
 
     enum class DirEntryType {

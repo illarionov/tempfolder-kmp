@@ -5,9 +5,9 @@
 
 package at.released.tempfolder.winapi
 
-import at.released.tempfolder.TempfolderWindowsIOException
-import at.released.tempfolder.path.WindowsPathString
-import at.released.tempfolder.path.WindowsPathString.Companion.readWindowsPath
+import at.released.tempfolder.TempDirectoryWindowsIOException
+import at.released.tempfolder.path.WindowsPath
+import at.released.tempfolder.path.WindowsPath.Companion.readWindowsPath
 import kotlinx.cinterop.CArrayPointer
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.memScoped
@@ -20,18 +20,18 @@ private const val WIN32_ERROR_BUFFER_OVERFLOW = 0x6FU
 
 internal inline fun readPathPickBufferSize(
     crossinline readPathFunc: (length: UInt, buffer: CArrayPointer<WCHARVar>) -> UInt,
-): Result<WindowsPathString> {
+): Result<WindowsPath> {
     var length = MAX_PATH
     repeat(MAX_ATTEMPTS) {
         memScoped {
             val buffer: CArrayPointer<WCHARVar> = allocArray(length)
             val charsRequired: Int = readPathFunc(length.toUInt(), buffer).toInt()
             when {
-                charsRequired == 0 -> return failure(TempfolderWindowsIOException("Read path failed"))
+                charsRequired == 0 -> return failure(TempDirectoryWindowsIOException("Read path failed"))
                 charsRequired <= length -> return kotlin.runCatching { buffer.readWindowsPath(charsRequired) }
                 else -> length = charsRequired + 1
             }
         }
     }
-    return failure(TempfolderWindowsIOException(WIN32_ERROR_BUFFER_OVERFLOW))
+    return failure(TempDirectoryWindowsIOException(WIN32_ERROR_BUFFER_OVERFLOW))
 }

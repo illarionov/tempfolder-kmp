@@ -5,7 +5,7 @@
 
 package at.released.tempfolder.testframework.winapi
 
-import at.released.tempfolder.TempfolderWindowsIOException
+import at.released.tempfolder.TempDirectoryWindowsIOException
 import kotlinx.cinterop.convert
 import platform.windows.CloseHandle
 import platform.windows.CreateFileW
@@ -40,7 +40,7 @@ internal fun <R> withOpenFileHandle(
         hTemplateFile = null,
     )
     if (handle == null || handle == INVALID_HANDLE_VALUE) {
-        throw TempfolderWindowsIOException("CreateFileW() failed")
+        throw TempDirectoryWindowsIOException("CreateFileW() failed")
     }
 
     try {

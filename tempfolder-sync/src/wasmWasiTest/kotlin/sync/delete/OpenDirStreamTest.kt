@@ -8,8 +8,8 @@ package at.released.tempfolder.sync.delete
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.path.WasiPathString.Companion.asWasiPathComponent
-import at.released.tempfolder.path.WasiPathString.Companion.toWasiPathString
+import at.released.tempfolder.path.WasiPath.Companion.asWasiPathComponent
+import at.released.tempfolder.path.WasiPath.Companion.toWasiPathString
 import at.released.tempfolder.sync.delete.DirStream.DirStreamItem
 import at.released.tempfolder.wasip1.ReadDirPage
 import kotlinx.io.bytestring.encodeToByteString

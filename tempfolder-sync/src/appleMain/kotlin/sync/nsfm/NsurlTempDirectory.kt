@@ -7,14 +7,14 @@
 
 package at.released.tempfolder.sync.nsfm
 
-import at.released.tempfolder.TempfolderClosedException
-import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.path.TempfolderCharacterCodingException
-import at.released.tempfolder.path.TempfolderInvalidPathException
-import at.released.tempfolder.path.TempfolderPathString
-import at.released.tempfolder.path.toPosixPathString
-import at.released.tempfolder.sync.Tempfolder
+import at.released.tempfolder.TempDirectoryClosedException
+import at.released.tempfolder.TempDirectoryClosedException.Companion.TEMP_DIRECTORY_CLOSED_MESSAGE
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.path.TempDirectoryCharacterCodingException
+import at.released.tempfolder.path.TempDirectoryInvalidPathException
+import at.released.tempfolder.path.TempDirectoryPath
+import at.released.tempfolder.path.toPosixPath
+import at.released.tempfolder.sync.TempDirectory
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ObjCObjectVar
@@ -26,10 +26,10 @@ import platform.Foundation.NSError
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 
-@Throws(TempfolderIOException::class)
-public fun Tempfolder.Companion.createNsurlTempDirectory(
+@Throws(TempDirectoryIOException::class)
+public fun TempDirectory.Companion.createNsurlTempDirectory(
     block: NsurlTempDirectoryConfig.() -> Unit = {},
-): Tempfolder<NSURL> {
+): TempDirectory<NSURL> {
     val config = NsurlTempDirectoryConfig().apply(block)
     val tempDirectoryUrl = createAppleNsurlTempDirectory(config.fileManager, config.base)
     return NsurlTempDirectory(config.fileManager, tempDirectoryUrl)
@@ -38,13 +38,13 @@ public fun Tempfolder.Companion.createNsurlTempDirectory(
 private class NsurlTempDirectory(
     private val fileManager: NSFileManager,
     absolutePath: NSURL,
-) : Tempfolder<NSURL> {
+) : TempDirectory<NSURL> {
     override var deleteOnClose: Boolean by atomic(true)
     override val root: NSURL = absolutePath
     private val isClosed = atomic(false)
 
-    override fun getAbsolutePath(): TempfolderPathString {
-        return root.path?.toPosixPathString() ?: throw TempfolderCharacterCodingException("Can not convert url")
+    override fun getAbsolutePath(): TempDirectoryPath {
+        return root.path?.toPosixPath() ?: throw TempDirectoryCharacterCodingException("Can not convert url")
     }
 
     override fun delete() {
@@ -52,9 +52,9 @@ private class NsurlTempDirectory(
         deleteRecursively(fileManager, root)
     }
 
-    override fun append(name: String): TempfolderPathString {
-        return root.URLByAppendingPathComponent(name)?.path?.toPosixPathString()
-            ?: throw TempfolderInvalidPathException("Can not resolve `$root` with appended path `$name`")
+    override fun append(name: String): TempDirectoryPath {
+        return root.URLByAppendingPathComponent(name)?.path?.toPosixPath()
+            ?: throw TempDirectoryInvalidPathException("Can not resolve `$root` with appended path `$name`")
     }
 
     override fun close() {
@@ -68,12 +68,12 @@ private class NsurlTempDirectory(
 
     private fun throwIfClosed() {
         if (isClosed.value) {
-            throw TempfolderClosedException(TEMPFOLDER_CLOSED_MESSAGE)
+            throw TempDirectoryClosedException(TEMP_DIRECTORY_CLOSED_MESSAGE)
         }
     }
 
     companion object {
-        @Throws(TempfolderIOException::class)
+        @Throws(TempDirectoryIOException::class)
         private fun deleteRecursively(fileManager: NSFileManager, root: NSURL) {
             val error = memScoped {
                 val cError: ObjCObjectVar<NSError?> = alloc()
@@ -87,7 +87,7 @@ private class NsurlTempDirectory(
             }
 
             if (error != null) {
-                throw TempfolderIOException("Can not remove $root: $error")
+                throw TempDirectoryIOException("Can not remove $root: $error")
             }
         }
     }

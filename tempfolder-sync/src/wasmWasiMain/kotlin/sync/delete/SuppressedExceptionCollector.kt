@@ -5,26 +5,26 @@
 
 package at.released.tempfolder.sync.delete
 
-import at.released.tempfolder.TempfolderException
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.TempfolderWasiIOException
-import at.released.tempfolder.path.TempfolderPathString.MultibytePathString
+import at.released.tempfolder.TempDirectoryException
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.TempDirectoryWasiIOException
+import at.released.tempfolder.path.TempDirectoryPath.MultibytePath
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.wasip1.type.Errno
 
 internal class SuppressedExceptionCollector(
     private val maxSuppressedExceptions: Int = 8,
 ) {
-    private val exceptions: MutableList<TempfolderException> = ArrayList(maxSuppressedExceptions)
+    private val exceptions: MutableList<TempDirectoryException> = ArrayList(maxSuppressedExceptions)
 
     @Suppress("NOTHING_TO_INLINE")
     inline fun addOrThrowNativeIOException(
         errorText: String,
-        filePath: MultibytePathString,
+        filePath: MultibytePath,
         errno: Int,
-        parent: TempfolderIOException? = null,
+        parent: TempDirectoryIOException? = null,
     ) {
-        val exception = TempfolderWasiIOException(
+        val exception = TempDirectoryWasiIOException(
             errno,
             "$errorText `${filePath.asStringOrDescription()}`. ${Errno.nameFromCode(errno)}",
             parent,
@@ -36,7 +36,7 @@ internal class SuppressedExceptionCollector(
         }
     }
 
-    fun removeFirstOrNull(): TempfolderException? = exceptions.removeFirstOrNull()
+    fun removeFirstOrNull(): TempDirectoryException? = exceptions.removeFirstOrNull()
 
     fun addSuppressedToThrowable(throwable: Throwable) {
         exceptions.forEach { throwable.addSuppressed(it) }
