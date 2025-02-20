@@ -3,12 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+@file:JvmName("TempfolderBuilder")
+
 package at.released.tempfolder.blocking
 
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.dsl.CommonTempfolderConfig
 import at.released.tempfolder.path.TempfolderInvalidPathException
 import at.released.tempfolder.path.TempfolderPathString
+import kotlin.jvm.JvmName
 
 internal expect fun createPlatformTempFolder(config: CommonTempfolderConfig): Tempfolder<*>
 

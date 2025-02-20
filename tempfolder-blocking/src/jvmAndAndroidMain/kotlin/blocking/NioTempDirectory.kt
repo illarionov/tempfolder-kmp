@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+@file:JvmName("NioTempDirectoryBuilder")
+
 package at.released.tempfolder.blocking
 
 import at.released.tempfolder.DeleteRecursivelyException
@@ -22,7 +24,20 @@ import kotlin.LazyThreadSafetyMode.PUBLICATION
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.deleteRecursively
 
-public class NioTempDirectory private constructor(
+@Throws(TempfolderException::class)
+public fun Tempfolder.Companion.createJvmTempDirectory(
+    block: NioTempDirectoryConfig.() -> Unit,
+): Tempfolder<Path> {
+    val config = NioTempDirectoryConfig().apply(block)
+    val path = createNioTempDirectory(
+        base = config.base,
+        mode = config.permissions,
+        nameGenerator = { generateTempDirectoryName(config.prefix) },
+    )
+    return NioTempDirectory(path)
+}
+
+private class NioTempDirectory(
     absolutePath: Path,
 ) : Tempfolder<Path> {
     override val root: Path = absolutePath
@@ -40,7 +55,7 @@ public class NioTempDirectory private constructor(
         deleteRecursively(root)
     }
 
-    @Throws(TempfolderIOException::class, CharacterCodingException::class)
+    @Throws(TempfolderIOException::class)
     override fun append(name: String): TempfolderPathString {
         return try {
             root.resolve(name).toString().toPosixPathString()
@@ -64,20 +79,7 @@ public class NioTempDirectory private constructor(
         }
     }
 
-    public companion object {
-        @Throws(TempfolderException::class)
-        public operator fun invoke(
-            block: NioTempDirectoryConfig.() -> Unit,
-        ): NioTempDirectory {
-            val config = NioTempDirectoryConfig().apply(block)
-            val path = createNioTempDirectory(
-                base = config.base,
-                mode = config.permissions,
-                nameGenerator = { generateTempDirectoryName(config.prefix) },
-            )
-            return NioTempDirectory(path)
-        }
-
+    companion object {
         @OptIn(ExperimentalPathApi::class)
         private fun deleteRecursively(root: Path) {
             try {

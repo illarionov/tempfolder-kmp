@@ -11,7 +11,7 @@ import at.released.tempfolder.dsl.TempfolderBasePath.Path
 import java.nio.file.Path as NioPath
 
 internal actual fun createPlatformTempFolder(config: CommonTempfolderConfig): Tempfolder<*> {
-    return NioTempDirectory {
+    return Tempfolder.createJvmTempDirectory {
         setFromCommon(config)
     }
 }
