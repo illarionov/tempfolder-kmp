@@ -43,7 +43,7 @@ private fun KotlinJsPlatformTestRun.setupNodeWasiTestRun() {
     }
     val driverFile = layout.buildDirectory.file(
         "compileSync/wasmWasi/test/testDevelopmentExecutable/kotlin/" +
-                "tempfolder-kmp-tempfolder-blocking-wasm-wasi-test.mjs",
+                "tempfolder-kmp-tempfolder-sync-wasm-wasi-test.mjs",
     )
     executionTask {
         doFirst(ModifyWasiDriverAction(driverFile, virtualTempRoot, tempRoot))

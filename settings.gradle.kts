@@ -37,6 +37,6 @@ rootProject.name = "tempfolder-kmp"
 
 // include("aggregate-documentation")
 include("aggregate-distribution")
-include("tempfolder-blocking")
+include("tempfolder-sync")
 include("test-ignore-annotations")
 include("doc:aggregate-documentation")

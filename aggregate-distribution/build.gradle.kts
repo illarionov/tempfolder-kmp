@@ -8,5 +8,5 @@ plugins {
 }
 
 dependencies {
-    mavenSnapshotAggregation(projects.tempfolderBlocking)
+    mavenSnapshotAggregation(projects.tempfolderSync)
 }
