@@ -5,5 +5,8 @@
 
 package at.released.tempfolder.testframework
 
+internal actual val testTempDirRoot: String
+    get() = System.getenv(ENV_TEST_TMP_DIR) ?: error("$ENV_TEST_TMP_DIR environment variable not set")
+
 actual fun isSimulatorOrVirtualDevice(): Boolean = false
 actual fun isReadingDirectorySupported(): Boolean = true

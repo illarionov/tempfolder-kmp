@@ -5,5 +5,9 @@
 
 package at.released.tempfolder.testframework
 
-actual fun isSimulatorOrVirtualDevice(): Boolean = false
-actual fun isReadingDirectorySupported(): Boolean = true
+internal actual val testTempDirRoot: String
+    get() = js("globalThis.process.env[\"$ENV_TEST_TMP_DIR\"]") as String? ?: error("$ENV_TEST_TMP_DIR not defined")
+
+internal actual fun isSimulatorOrVirtualDevice(): Boolean = false
+
+internal actual fun isReadingDirectorySupported(): Boolean = true
