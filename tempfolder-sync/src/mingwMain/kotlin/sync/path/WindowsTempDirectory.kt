@@ -7,24 +7,13 @@ package at.released.tempfolder.sync.path
 
 import at.released.tempfolder.TempDirectoryClosedException
 import at.released.tempfolder.TempDirectoryClosedException.Companion.TEMP_DIRECTORY_CLOSED_MESSAGE
-import at.released.tempfolder.TempDirectoryException
 import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.path.WindowsPath
 import at.released.tempfolder.sync.TempDirectory
 import at.released.tempfolder.winapi.delete.deleteDirectoryRecursively
 import kotlinx.atomicfu.atomic
 
-@Throws(TempDirectoryException::class)
-public fun TempDirectory.Companion.createWindowsTempDirectory(
-    block: WindowsTempDirectoryConfig.() -> Unit = {},
-): TempDirectory<TempDirectoryPath> {
-    val config = WindowsTempDirectoryConfig().apply(block)
-    val tempRoot: WindowsPath = WindowsTempPathResolver.resolve(config.base)
-    val tempDirectory = WindowsTempDirectoryCreator.createDirectory(tempRoot, config.permissions)
-    return WindowsTempDirectory(tempDirectory)
-}
-
-private class WindowsTempDirectory(
+internal class WindowsTempDirectory(
     private val absolutePath: WindowsPath,
 ) : TempDirectory<TempDirectoryPath> {
     override var deleteOnClose: Boolean by atomic(true)

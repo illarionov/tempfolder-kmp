@@ -1,8 +1,61 @@
 # Tempfolder KMP
 
-WIP
+[![Maven Central](https://img.shields.io/maven-central/v/at.released.tempfolder/tempfolder-sync)][Maven Central]
+[![build](https://github.com/illarionov/tempfolder-kmp/actions/workflows/Build.yml/badge.svg)](https://github.com/illarionov/tempfolder-kmp/actions/workflows/Build.yml)
+[![kdoc](https://img.shields.io/badge/API_reference-KDoc-blue)](https://tempfolder.released.at)
 
-Utilities for creating temporary directories in Kotlin Multiplatform projects. 
+
+A library for creating temporary directories in Kotlin Multiplatform projects.
+
+## Installation
+
+The latest release is available on [Maven Central]. Add the dependency:
+
+```kotlin
+dependencies {
+    implementation("at.released.tempfolder:tempfolder-sync:<not yet released>")
+}
+```
+
+## Usage
+
+Below is an example of how to use the library with [kotlinx-io] in the `commonMain` source set:
+
+```kotlin
+import at.released.tempfolder.sync.createTempDirectory
+import kotlinx.io.buffered
+import kotlinx.io.files.Path
+import kotlinx.io.files.SystemFileSystem
+import kotlinx.io.writeString
+
+fun main() {
+    createTempDirectory().use { tempDirectory ->
+        val absolutePath = tempDirectory.getAbsolutePath().asString()
+        SystemFileSystem.sink(Path(absolutePath, "temp.txt")).buffered().use {
+            it.writeString("Temp file")
+        }
+    }
+}
+
+```
+
+## Features
+
+* Provides a unified API for temporary directory creation across most Kotlin Multiplatform targets.
+* The *TempDirectory* extends *AutoCloseable* and requires calling `close()` after use.
+* By default, the temporary directory is recursively deleted upon closing. This can be disabled by setting 
+  `tempDirectory.deleteOnClose=false`.
+* We intentionally expose the native file descriptor of the opened directory to simplify usage with native
+  filesystem functions. For example, to use with addressing scheme relative to the open directory (`openat2()` on Linux)
+* Error handling is strict: all errors and exceptions are rethrown, including during close if files cannot be deleted.
+  This helps identify open file descriptor leaks.
+* Supports platform-specific implementations that offer further configuration options for Android, iOS, Linux, macOS,
+  and more.
+
+For more information, check the project API reference: [tempfolder.released.at](https://tempfolder.released.at)
+
+[Maven Central]: https://central.sonatype.com/artifact/at.released.tempfolder/tempfolder-sync
+[kotlinx-io]: https://github.com/Kotlin/kotlinx-io
 
 ## License
 

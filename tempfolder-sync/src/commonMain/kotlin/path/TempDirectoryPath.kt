@@ -8,9 +8,16 @@ package at.released.tempfolder.path
 import kotlinx.io.bytestring.ByteString
 
 /**
- * An entity representing a system-dependent path in a file system or a relative path segment with no specified base.
+ * Represents a system-dependent file system path or a relative path segment without a specified base.
+ *
+ * Use [asString] to get a string representation. Note that it may throw an exception if the path cannot be
+ * properly decoded.
  */
 public sealed interface TempDirectoryPath {
+    /**
+     * Raw byte sequence of the path as returned by system calls to the file system.
+     * Consider the [encoding] when converting to other formats.
+     */
     public val bytes: ByteString
 
     /**

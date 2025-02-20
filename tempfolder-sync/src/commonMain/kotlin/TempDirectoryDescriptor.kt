@@ -9,6 +9,9 @@ import kotlin.jvm.JvmInline
 
 internal fun Int.asFileDescriptor(): TempDirectoryDescriptor = TempDirectoryDescriptor(this)
 
+/**
+ * Encapsulates a native file descriptor.
+ */
 @JvmInline
 public value class TempDirectoryDescriptor(
     public val fd: Int,

@@ -24,6 +24,16 @@ import kotlin.LazyThreadSafetyMode.PUBLICATION
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.deleteRecursively
 
+/**
+ * Creates a temporary directory on the file system with JVM-specific configuration [block].
+ *
+ * This implementation is based on the use of [Java NIO][java.nio.file.FileSystems]
+ *
+ * [TempDirectory.root] property represents a real [Path] of the temp directory.
+ *
+ * @throws TempDirectoryIOException on errors during directory creation.
+ * @see [createTempDirectory]
+ */
 @Throws(TempDirectoryException::class)
 public fun TempDirectory.Companion.createJvmTempDirectory(
     block: TempDirectoryNioConfig.() -> Unit,

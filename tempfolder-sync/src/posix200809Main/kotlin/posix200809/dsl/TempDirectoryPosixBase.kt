@@ -13,7 +13,7 @@ import at.released.tempfolder.dsl.TempDirectorySizeEstimate
 import at.released.tempfolder.dsl.TempDirectorySizeEstimate.SMALL
 
 /**
- * Base directory for the temporary folder on POSIX file systems
+ * Base directory for the temporary directory on POSIX file systems
  */
 @TempDirectoryDsl
 public sealed interface TempDirectoryPosixBase {

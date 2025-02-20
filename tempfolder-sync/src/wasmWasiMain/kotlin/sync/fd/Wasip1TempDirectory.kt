@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+@file:Suppress("KDOC_WITHOUT_THROWS_TAG")
+
 package at.released.tempfolder.sync.fd
 
 import at.released.tempfolder.TempDirectoryClosedException
@@ -19,28 +21,7 @@ import at.released.tempfolder.wasip1.wasiUnlinkDirectoryOrThrow
 import kotlinx.atomicfu.atomic
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 
-public fun TempDirectory.Companion.createWasip1TempDirectory(
-    block: Wasip1TempDirectoryConfig.() -> Unit,
-): TempDirectory<TempDirectoryDescriptor> {
-    val config = Wasip1TempDirectoryConfig().apply(block)
-    val root: WasiP1TempRoot = WasiTempRootResolver().resolve(config.base)
-    try {
-        val coordinates = Wasip1TempDirectoryCreator.createDirectory(
-            root = root.fd,
-            nameGenerator = { generateTempDirectoryName(config.prefix) },
-        )
-        return Wasip1TempDirectory(root, coordinates.pathnameFromTempRoot, coordinates.descriptor)
-    } catch (err: TempDirectoryException) {
-        try {
-            root.close()
-        } catch (closeErr: TempDirectoryException) {
-            err.addSuppressed(closeErr)
-        }
-        throw err
-    }
-}
-
-internal class Wasip1TempDirectory internal constructor(
+internal class Wasip1TempDirectory private constructor(
     private val tempRoot: WasiP1TempRoot,
     private val directoryPathname: WasiPath.Component,
     override val root: TempDirectoryDescriptor,
@@ -105,6 +86,29 @@ internal class Wasip1TempDirectory internal constructor(
     private fun throwIfClosed() {
         if (isClosed.value) {
             throw TempDirectoryClosedException(TEMP_DIRECTORY_CLOSED_MESSAGE)
+        }
+    }
+
+    internal companion object {
+        fun create(
+            block: Wasip1TempDirectoryConfig.() -> Unit,
+        ): TempDirectory<TempDirectoryDescriptor> {
+            val config = Wasip1TempDirectoryConfig().apply(block)
+            val root: WasiP1TempRoot = WasiTempRootResolver().resolve(config.base)
+            try {
+                val coordinates = Wasip1TempDirectoryCreator.createDirectory(
+                    root = root.fd,
+                    nameGenerator = { generateTempDirectoryName(config.prefix) },
+                )
+                return Wasip1TempDirectory(root, coordinates.pathnameFromTempRoot, coordinates.descriptor)
+            } catch (err: TempDirectoryException) {
+                try {
+                    root.close()
+                } catch (closeErr: TempDirectoryException) {
+                    err.addSuppressed(closeErr)
+                }
+                throw err
+            }
         }
     }
 }
