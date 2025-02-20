@@ -6,6 +6,7 @@
 package at.released.tempfolder.posix200809.delete
 
 import at.released.tempfolder.DeleteRecursivelyException
+import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.TempfolderException
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.path.PATH_CURRENT_DIRECTORY
@@ -16,7 +17,6 @@ import at.released.tempfolder.path.isSpecialDirectory
 import at.released.tempfolder.posix200809.OpenDirectoryAt
 import at.released.tempfolder.posix200809.PlatformDirent
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.delete.DirStream.DirEntryType
 import at.released.tempfolder.posix200809.delete.DirStream.DirEntryType.DIRECTORY
 import at.released.tempfolder.posix200809.delete.DirStream.DirEntryType.OTHER
@@ -43,7 +43,7 @@ import platform.posix.errno
  */
 @Throws(DeleteRecursivelyException::class)
 internal fun deleteRecursively(
-    root: TempfolderPosixFileDescriptor,
+    root: TempDirectoryDescriptor,
     maxFileDescriptors: Int = 64,
 ) {
     BottomUpFileTreeRemover(
@@ -56,7 +56,7 @@ internal fun deleteRecursively(
 
 @Suppress("TooManyFunctions")
 private class BottomUpFileTreeRemover<D>(
-    private val root: TempfolderPosixFileDescriptor,
+    private val root: TempDirectoryDescriptor,
     private val openDirectoryAt: OpenDirectoryAt,
     private val direntApi: PlatformDirent<D>,
     maxFileDescriptors: Int = 64,
@@ -151,7 +151,7 @@ private class BottomUpFileTreeRemover<D>(
 
         @Suppress("UNCHECKED_CAST")
         when (val stream = pathDequeue.last()) {
-            is OpenDirStream<*> -> (stream as OpenDirStream<D>).handleOpenDirStreamEntry(basename, type) {
+            is OpenDirStream<*> -> handleOpenDirStreamEntry(stream as OpenDirStream<D>, basename, type) {
                 try {
                     enterDirectoryOrThrow(stream.dirfd, basename, basename)
                 } catch (tne: TempfolderNativeIOException) {
@@ -185,7 +185,7 @@ private class BottomUpFileTreeRemover<D>(
 
     @Throws(TempfolderNativeIOException::class)
     private fun enterDirectoryOrThrow(
-        dirFd: TempfolderPosixFileDescriptor,
+        dirFd: TempDirectoryDescriptor,
         pathFromDirFd: PosixPathString,
         basename: PosixPathStringComponent,
     ) {
@@ -205,7 +205,7 @@ private class BottomUpFileTreeRemover<D>(
         val directories: MutableList<Entry> = mutableListOf()
         while (true) {
             when (val entry = stream.readNext()) {
-                is Entry -> stream.handleOpenDirStreamEntry(entry.name, entry.type) {
+                is Entry -> handleOpenDirStreamEntry(stream, entry.name, entry.type) {
                     directories.add(entry)
                 }
 
@@ -216,7 +216,8 @@ private class BottomUpFileTreeRemover<D>(
         return directories
     }
 
-    private inline fun OpenDirStream<D>.handleOpenDirStreamEntry(
+    private inline fun handleOpenDirStreamEntry(
+        stream: OpenDirStream<D>,
         name: PosixPathStringComponent,
         type: DirEntryType,
         crossinline onDirectory: (PosixPathStringComponent) -> Unit,
@@ -224,11 +225,11 @@ private class BottomUpFileTreeRemover<D>(
         when (type) {
             DIRECTORY -> onDirectory(name)
             OTHER -> {
-                val errno = platformUnlinkFile(dirfd, name)
+                val errno = platformUnlinkFile(stream.dirfd, name)
                 if (errno != 0) {
                     suppressedExceptions.addOrThrowNativeIOException(
                         errorText = "Failed to delete file",
-                        filePath = pathDequeue.getPathFromRoot(this, name),
+                        filePath = pathDequeue.getPathFromRoot(stream, name),
                         errno = errno,
                     )
                 }
@@ -236,34 +237,34 @@ private class BottomUpFileTreeRemover<D>(
 
             UNKNOWN -> {
                 // Try to delete as a file
-                val errno = platformUnlinkFile(dirfd, name)
+                val errno = platformUnlinkFile(stream.dirfd, name)
                 when (errno) {
                     0 -> Unit
                     ENOENT -> Unit // Ignore
                     EISDIR -> onDirectory(name) // EISDIR is Linux-specific
                     EPERM -> try {
-                        if (isDirectory(dirfd, name)) {
+                        if (isDirectory(stream.dirfd, name)) {
                             onDirectory(name)
                         } else {
                             suppressedExceptions.addOrThrowNativeIOException(
                                 errorText = "Failed to delete file or directory",
-                                filePath = pathDequeue.getPathFromRoot(this, name),
+                                filePath = pathDequeue.getPathFromRoot(stream, name),
                                 errno = EPERM,
                             )
                         }
                     } catch (isDirectoryException: TempfolderNativeIOException) {
                         suppressedExceptions.addOrThrowNativeIOException(
                             errorText = "Unable to determine the file type",
-                            filePath = pathDequeue.getPathFromRoot(this, name),
+                            filePath = pathDequeue.getPathFromRoot(stream, name),
                             errno = isDirectoryException.errno,
                             parent = isDirectoryException,
                         )
-                        platformUnlinkDirectory(dirfd, name) // Try to unlink directory, ignore errors
+                        platformUnlinkDirectory(stream.dirfd, name) // Try to unlink directory, ignore errors
                     }
 
                     else -> suppressedExceptions.addOrThrowNativeIOException(
                         errorText = "Failed to delete file or directory",
-                        filePath = pathDequeue.getPathFromRoot(this, name),
+                        filePath = pathDequeue.getPathFromRoot(stream, name),
                         errno = EPERM,
                     )
                 }

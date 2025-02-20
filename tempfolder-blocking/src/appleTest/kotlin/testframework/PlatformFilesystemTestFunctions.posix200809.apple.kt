@@ -5,11 +5,11 @@
 
 package at.released.tempfolder.testframework
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.platform.apple.fstatat
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.path.allocNullTerminatedPath
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
@@ -19,7 +19,7 @@ import platform.posix.errno
 import platform.posix.stat
 
 internal actual fun nativeGetFileMode(
-    dirFd: TempfolderPosixFileDescriptor,
+    dirFd: TempDirectoryDescriptor,
     path: PosixPathString,
     followBaseSymlink: Boolean,
 ): UInt = memScoped {

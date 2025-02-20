@@ -18,16 +18,18 @@ import at.released.tempfolder.testframework.assertions.isDirectory
 import at.released.tempfolder.testframework.assertions.isFile
 import at.released.tempfolder.testframework.assertions.isSymlink
 import at.released.tempfolder.testframework.assertions.posixFileModeIfSupportedIsEqualTo
-import at.released.weh.test.ignore.annotations.IgnoreWasmWasi
 import kotlin.test.Test
 
 class PlatformFilesystemTestFunctionsTest {
-    @IgnoreWasmWasi
     @Test
     fun platformTestFunctions_test_filesystem_functions() {
         createTempfolder {
             prefix = "platformFilesystemTestFunctionsTest-"
         }.use { tempDirectory ->
+            if (!isReadingDirectorySupported()) {
+                tempDirectory.deleteOnClose = false
+            }
+
             val testFile1: TempfolderPathString = tempDirectory.resolve("file1.txt")
             platformFilesystem.createFile(testFile1, content = TEST_FILE_CONTENT)
 

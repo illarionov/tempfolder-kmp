@@ -5,5 +5,9 @@
 
 package at.released.tempfolder
 
-internal actual val testTempDirRoot: String
-    get() = TODO("Not yet implemented")
+import at.released.tempfolder.wasip1.wasiLoadEnv
+import kotlin.LazyThreadSafetyMode.NONE
+
+internal actual val testTempDirRoot: String by lazy(NONE) {
+    wasiLoadEnv(ENV_TEST_TMP_DIR) ?: error("$ENV_TEST_TMP_DIR not defined")
+}

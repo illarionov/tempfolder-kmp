@@ -5,12 +5,12 @@
 
 package at.released.tempfolder.posix200809.delete
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.path.PosixPathStringComponent
 import at.released.tempfolder.path.PosixPathStringComponent.Companion.asPathComponent
 import at.released.tempfolder.path.TempfolderInvalidCharacterException
 import at.released.tempfolder.posix200809.PlatformDirent
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem
 import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.path.toPosixPathString
@@ -25,7 +25,7 @@ import platform.posix.set_posix_errno
 internal class OpenDirStream<D>(
     private val direntApi: PlatformDirent<D>,
     private val dirHandle: D,
-    val dirfd: TempfolderPosixFileDescriptor,
+    val dirfd: TempDirectoryDescriptor,
     override val basename: PosixPathStringComponent,
 ) : DirStream {
     override fun close() {

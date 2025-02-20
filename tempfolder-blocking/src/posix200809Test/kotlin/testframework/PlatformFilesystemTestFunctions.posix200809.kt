@@ -5,6 +5,8 @@
 
 package at.released.tempfolder.testframework
 
+import at.released.tempfolder.TempDirectoryDescriptor
+import at.released.tempfolder.TempDirectoryDescriptor.Companion.CURRENT_WORKING_DIRECTORY
 import at.released.tempfolder.dsl.TempfolderFileModeBit
 import at.released.tempfolder.dsl.TempfolderFileModeBit.Companion
 import at.released.tempfolder.path.PosixPathString
@@ -16,8 +18,6 @@ import at.released.tempfolder.path.appendPosixPath
 import at.released.tempfolder.path.toPosixPathString
 import at.released.tempfolder.posix200809.PosixFileType
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor.Companion.CURRENT_WORKING_DIRECTORY
 import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.fromPosixMode
 import at.released.tempfolder.posix200809.platformGetFileType
@@ -45,7 +45,7 @@ import platform.posix.write
 internal actual val platformFilesystem: PlatformFilesystemTestFunctions = Posix2009809FilesystemTestFunctions
 
 internal expect fun nativeGetFileMode(
-    dirFd: TempfolderPosixFileDescriptor,
+    dirFd: TempDirectoryDescriptor,
     path: PosixPathString,
     followBaseSymlink: Boolean = false,
 ): UInt
@@ -98,7 +98,7 @@ internal object Posix2009809FilesystemTestFunctions : PlatformFilesystemTestFunc
     }
 
     override fun createFile(path: TempfolderPathString, mode: Set<TempfolderFileModeBit>, content: ByteString) {
-        val fd: TempfolderPosixFileDescriptor = platformOpenAt(
+        val fd: TempDirectoryDescriptor = platformOpenAt(
             CURRENT_WORKING_DIRECTORY,
             path.toPosixPathString(),
             mode.toPosixMode(),
@@ -133,7 +133,7 @@ internal object Posix2009809FilesystemTestFunctions : PlatformFilesystemTestFunc
 
     @OptIn(UnsafeNumber::class)
     @Throws(TempfolderNativeIOException::class)
-    private fun writeToFile(fd: TempfolderPosixFileDescriptor, content: ByteString) {
+    private fun writeToFile(fd: TempDirectoryDescriptor, content: ByteString) {
         if (content.isEmpty()) {
             return
         }

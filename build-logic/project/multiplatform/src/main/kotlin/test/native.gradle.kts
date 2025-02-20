@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.konan.target.Family.MINGW
 import org.jetbrains.kotlin.konan.target.KonanTarget
 
 /*
- * Convention plugin that configures tests for native targets in projects with the Kotlin Multiplatform plugin
+ * Convention plugin that configures tests for wasmWasi target in projects with the Kotlin Multiplatform plugin
  */
 plugins.withId("org.jetbrains.kotlin.multiplatform") {
     extensions.configure<KotlinMultiplatformExtension> {

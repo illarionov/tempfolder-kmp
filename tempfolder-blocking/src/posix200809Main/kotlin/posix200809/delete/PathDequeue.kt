@@ -5,6 +5,7 @@
 
 package at.released.tempfolder.posix200809.delete
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.path.PATH_CURRENT_DIRECTORY
 import at.released.tempfolder.path.PosixPathString
@@ -14,7 +15,6 @@ import at.released.tempfolder.path.UnknownEncodingPosixPathString
 import at.released.tempfolder.path.isCurrentDirectory
 import at.released.tempfolder.posix200809.PlatformDirent
 import at.released.tempfolder.posix200809.TempfolderNativeIOException
-import at.released.tempfolder.posix200809.TempfolderPosixFileDescriptor
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem
 import kotlinx.io.bytestring.append
 import kotlinx.io.bytestring.buildByteString
@@ -47,7 +47,7 @@ internal class PathDequeue<D>(
 
     fun addLast(
         dir: D,
-        dirfd: TempfolderPosixFileDescriptor,
+        dirfd: TempDirectoryDescriptor,
         basename: PosixPathStringComponent,
     ) {
         check(openDirs.size < maxFileDescriptors) { "No free file descriptor" }

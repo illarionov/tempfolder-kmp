@@ -6,3 +6,4 @@
 package at.released.tempfolder.testframework
 
 actual fun isSimulatorOrVirtualDevice(): Boolean = false
+actual fun isReadingDirectorySupported(): Boolean = true

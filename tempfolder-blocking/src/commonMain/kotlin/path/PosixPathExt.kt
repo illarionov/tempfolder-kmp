@@ -19,6 +19,9 @@ internal const val UNIX_PATH_SEPARATOR = '/'.code.toByte()
 internal val PATH_CURRENT_DIRECTORY = ".".toPosixPathString().asPathComponent()
 internal val PATH_PARENT_DIRECTORY = "..".toPosixPathString().asPathComponent()
 
+internal fun ByteString.isUtfSpecialDirectory(): Boolean =
+    this == PATH_CURRENT_DIRECTORY.bytes || this == PATH_PARENT_DIRECTORY.bytes
+
 internal fun PosixPathString.isSpecialDirectory(): Boolean = isCurrentDirectory() || isParentDirectory()
 internal fun PosixPathString.isCurrentDirectory(): Boolean = bytes == PATH_CURRENT_DIRECTORY.bytes
 internal fun PosixPathString.isParentDirectory(): Boolean = bytes == PATH_PARENT_DIRECTORY.bytes
@@ -35,7 +38,6 @@ internal fun validateBasicPosixPath(path: ByteString) {
 }
 
 internal fun validatePosixPathComponent(component: ByteString) {
-    validateBasicPosixPath(component)
     if (component.indexOf(UNIX_PATH_SEPARATOR) != -1) {
         throw (TempfolderInvalidCharacterException("A Unix path component must not contain a path separator"))
     }

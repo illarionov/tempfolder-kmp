@@ -70,7 +70,7 @@ internal class Utf8PosixPathString(
  */
 internal class PosixPathStringComponent private constructor(
     delegate: PosixPathString,
-) : MultibytePathString, PosixPathString by delegate {
+) : PosixPathString by delegate {
     init {
         validatePosixPathComponent(delegate.bytes)
     }

@@ -5,6 +5,7 @@
 
 package at.released.tempfolder.posix200809
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.TempfolderIOException
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.path.asStringOrDescription
@@ -23,7 +24,7 @@ import platform.posix.stat
 
 @Throws(TempfolderIOException::class)
 internal actual fun platformGetFileType(
-    dirFd: TempfolderPosixFileDescriptor,
+    dirFd: TempDirectoryDescriptor,
     path: PosixPathString,
     followBaseSymlink: Boolean,
 ): PosixFileType = memScoped {

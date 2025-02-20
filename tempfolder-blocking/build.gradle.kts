@@ -22,6 +22,7 @@ plugins {
     id("at.released.tempfolder.gradle.multiplatform.test.jvm")
     id("at.released.tempfolder.gradle.multiplatform.test.js")
     id("at.released.tempfolder.gradle.multiplatform.test.native")
+    id("at.released.tempfolder.gradle.multiplatform.test.wasmWasi")
 }
 
 group = "at.released.tempfolder"
@@ -65,7 +66,13 @@ kotlin {
         nodejs()
     }
     wasmWasi {
-        nodejs()
+        compilations.configureEach {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    optIn.add("kotlin.wasm.unsafe.UnsafeWasmMemoryApi")
+                }
+            }
+        }
     }
     iosSimulatorArm64()
     iosArm64()

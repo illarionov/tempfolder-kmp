@@ -6,3 +6,5 @@
 package at.released.tempfolder.testframework
 
 public expect fun isSimulatorOrVirtualDevice(): Boolean
+
+public expect fun isReadingDirectorySupported(): Boolean

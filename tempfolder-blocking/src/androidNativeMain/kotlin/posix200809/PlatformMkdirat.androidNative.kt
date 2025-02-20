@@ -5,6 +5,7 @@
 
 package at.released.tempfolder.posix200809
 
+import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.path.PosixPathString
 import at.released.tempfolder.platform.androidnative.mkdirat
 import at.released.tempfolder.posix200809.path.allocNullTerminatedPath
@@ -15,7 +16,7 @@ import platform.posix.errno
 
 @OptIn(UnsafeNumber::class)
 internal actual fun platformMkdirat(
-    base: TempfolderPosixFileDescriptor,
+    base: TempDirectoryDescriptor,
     directoryName: PosixPathString,
     mode: UInt,
 ): Int = memScoped {
