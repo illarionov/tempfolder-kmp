@@ -6,31 +6,31 @@
 package at.released.tempfolder.sync.fd
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.TempfolderException
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.posix200809.TempfolderNativeIOException
-import at.released.tempfolder.posix200809.dsl.AdvisoryLockType
-import at.released.tempfolder.posix200809.dsl.AdvisoryLockType.EXCLUSIVE
-import at.released.tempfolder.posix200809.dsl.AdvisoryLockType.NONE
-import at.released.tempfolder.posix200809.dsl.AdvisoryLockType.SHARED
+import at.released.tempfolder.TempDirectoryException
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.posix200809.TempDirectoryNativeIOException
+import at.released.tempfolder.posix200809.dsl.TempDirectoryAdvisoryLockType
+import at.released.tempfolder.posix200809.dsl.TempDirectoryAdvisoryLockType.EXCLUSIVE
+import at.released.tempfolder.posix200809.dsl.TempDirectoryAdvisoryLockType.NONE
+import at.released.tempfolder.posix200809.dsl.TempDirectoryAdvisoryLockType.SHARED
 import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.platformUnlinkDirectory
+import at.released.tempfolder.posix200809.sync.fd.PosixTempDirectory
 import at.released.tempfolder.posix200809.sync.fd.PosixTempDirectoryCreator
 import at.released.tempfolder.posix200809.sync.fd.PosixTempRootResolver
 import at.released.tempfolder.posix200809.sync.fd.PosixTempRootResolver.ResolvedTempRoot
-import at.released.tempfolder.posix200809.sync.fd.PosixTempfolder
 import at.released.tempfolder.posix200809.toPosixMode
-import at.released.tempfolder.sync.Tempfolder
+import at.released.tempfolder.sync.TempDirectory
 import at.released.tempfolder.sync.generateTempDirectoryName
 import platform.linux.flock
 import platform.posix.LOCK_EX
 import platform.posix.LOCK_SH
 import platform.posix.errno
 
-@Throws(TempfolderException::class)
-public fun Tempfolder.Companion.createLinuxTempDirectory(
+@Throws(TempDirectoryException::class)
+public fun TempDirectory.Companion.createLinuxTempDirectory(
     block: LinuxTempDirectoryConfig.() -> Unit,
-): Tempfolder<TempDirectoryDescriptor> {
+): TempDirectory<TempDirectoryDescriptor> {
     val config = LinuxTempDirectoryConfig().apply(block)
     val root: ResolvedTempRoot = PosixTempRootResolver.resolve(config.base)
     val coordinates = PosixTempDirectoryCreator.createDirectory(
@@ -40,24 +40,24 @@ public fun Tempfolder.Companion.createLinuxTempDirectory(
     )
     try {
         setLock(coordinates.directoryDescriptor, type = config.advisoryLock)
-    } catch (ie: TempfolderIOException) {
+    } catch (ie: TempDirectoryIOException) {
         val errno = platformUnlinkDirectory(coordinates.parentDirfd, coordinates.directoryPathname)
         if (errno != 0) {
             ie.addSuppressed(
-                TempfolderNativeIOException(errno, "Can not remove temp directory. ${errnoDescription()}"),
+                TempDirectoryNativeIOException(errno, "Can not remove temp directory. ${errnoDescription()}"),
             )
         }
         throw ie
     }
-    return PosixTempfolder(
+    return PosixTempDirectory(
         parentDirfd = coordinates.parentDirfd,
         directoryPathname = coordinates.directoryPathname,
         root = coordinates.directoryDescriptor,
     )
 }
 
-@Throws(TempfolderIOException::class)
-private fun setLock(fd: TempDirectoryDescriptor, type: AdvisoryLockType) {
+@Throws(TempDirectoryIOException::class)
+private fun setLock(fd: TempDirectoryDescriptor, type: TempDirectoryAdvisoryLockType) {
     val lockOp = when (type) {
         NONE -> return
         EXCLUSIVE -> LOCK_EX
@@ -65,6 +65,6 @@ private fun setLock(fd: TempDirectoryDescriptor, type: AdvisoryLockType) {
     }
     val resultCode = flock(fd.fd, lockOp)
     if (resultCode == -1) {
-        throw TempfolderNativeIOException(errno, "Can not set advisory lock on directory. ${errnoDescription()}")
+        throw TempDirectoryNativeIOException(errno, "Can not set advisory lock on directory. ${errnoDescription()}")
     }
 }

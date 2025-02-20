@@ -5,20 +5,20 @@
 
 package at.released.tempfolder.sync.path
 
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.dsl.TempfolderFileModeBit
-import at.released.tempfolder.path.WindowsPathString
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit
+import at.released.tempfolder.path.WindowsPath
 import at.released.tempfolder.sync.MAX_CREATE_DIRECTORY_ATTEMPTS
 import at.released.tempfolder.sync.generateTempDirectoryName
 import at.released.tempfolder.winapi.windowsCreateDirectory
 
 internal object WindowsTempDirectoryCreator {
-    @Throws(TempfolderIOException::class)
+    @Throws(TempDirectoryIOException::class)
     internal fun createDirectory(
-        root: WindowsPathString,
-        @Suppress("UnusedParameter") mode: Set<TempfolderFileModeBit>,
+        root: WindowsPath,
+        @Suppress("UnusedParameter") mode: Set<TempDirectoryFileModeBit>,
         nameGenerator: () -> String = { generateTempDirectoryName("tempfolder-") },
-    ): WindowsPathString {
+    ): WindowsPath {
         repeat(MAX_CREATE_DIRECTORY_ATTEMPTS) {
             val directoryName = nameGenerator()
             val tempDirectoryPath = root.append(directoryName)
@@ -27,6 +27,6 @@ internal object WindowsTempDirectoryCreator {
                 return tempDirectoryPath
             }
         }
-        throw TempfolderIOException("Can not create directory: max attempts reached")
+        throw TempDirectoryIOException("Can not create directory: max attempts reached")
     }
 }

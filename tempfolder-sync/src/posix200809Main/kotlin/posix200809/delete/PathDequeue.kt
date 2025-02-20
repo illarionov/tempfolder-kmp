@@ -6,15 +6,15 @@
 package at.released.tempfolder.posix200809.delete
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.TempfolderIOException
+import at.released.tempfolder.TempDirectoryIOException
 import at.released.tempfolder.path.PATH_CURRENT_DIRECTORY
-import at.released.tempfolder.path.PosixPathString
-import at.released.tempfolder.path.PosixPathStringComponent
+import at.released.tempfolder.path.PosixPath
+import at.released.tempfolder.path.PosixPathComponent
 import at.released.tempfolder.path.UNIX_PATH_SEPARATOR
-import at.released.tempfolder.path.UnknownEncodingPosixPathString
+import at.released.tempfolder.path.UnknownEncodingPosixPath
 import at.released.tempfolder.path.isCurrentDirectory
 import at.released.tempfolder.posix200809.PlatformDirent
-import at.released.tempfolder.posix200809.TempfolderNativeIOException
+import at.released.tempfolder.posix200809.TempDirectoryNativeIOException
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem
 import kotlinx.io.bytestring.append
 import kotlinx.io.bytestring.buildByteString
@@ -48,7 +48,7 @@ internal class PathDequeue<D>(
     fun addLast(
         dir: D,
         dirfd: TempDirectoryDescriptor,
-        basename: PosixPathStringComponent,
+        basename: PosixPathComponent,
     ) {
         check(openDirs.size < maxFileDescriptors) { "No free file descriptor" }
 
@@ -70,8 +70,8 @@ internal class PathDequeue<D>(
 
     fun getPathFromRoot(
         dirStream: DirStream,
-        basename: PosixPathStringComponent = PATH_CURRENT_DIRECTORY,
-    ): PosixPathString {
+        basename: PosixPathComponent = PATH_CURRENT_DIRECTORY,
+    ): PosixPath {
         val dirStreamIndex = path.indexOfFirst { it.stream === dirStream }
         check(dirStreamIndex >= 0) { "No ${dirStream.basename} directory stream in deque" }
         val subpath = path.subList(1, dirStreamIndex + 1)
@@ -87,7 +87,7 @@ internal class PathDequeue<D>(
             }
         }
         return if (newBytes.isNotEmpty()) {
-            UnknownEncodingPosixPathString(newBytes)
+            UnknownEncodingPosixPath(newBytes)
         } else {
             PATH_CURRENT_DIRECTORY
         }
@@ -99,12 +99,12 @@ internal class PathDequeue<D>(
             try {
                 dirStream.close()
                 null
-            } catch (closeDirException: TempfolderNativeIOException) {
+            } catch (closeDirException: TempDirectoryNativeIOException) {
                 closeDirException
             }
         }
         if (exceptions.isNotEmpty()) {
-            val ex = TempfolderIOException("Can not close directories")
+            val ex = TempDirectoryIOException("Can not close directories")
             exceptions.take(3).forEach { ex.addSuppressed(it) }
             throw ex
         }
@@ -113,7 +113,7 @@ internal class PathDequeue<D>(
     class StreamHolder(
         var stream: DirStream,
     ) : AutoCloseable {
-        val name: PosixPathString get() = stream.basename
+        val name: PosixPath get() = stream.basename
         override fun close() = stream.close()
     }
 }

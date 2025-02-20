@@ -5,25 +5,25 @@
 
 package at.released.tempfolder.posix200809.delete
 
-import at.released.tempfolder.TempfolderException
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.path.PosixPathString
+import at.released.tempfolder.TempDirectoryException
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.path.PosixPath
 import at.released.tempfolder.path.asStringOrDescription
-import at.released.tempfolder.posix200809.TempfolderNativeIOException
+import at.released.tempfolder.posix200809.TempDirectoryNativeIOException
 import at.released.tempfolder.posix200809.errnoDescription
 
 internal class SuppressedExceptionCollector(
     private val maxSuppressedExceptions: Int = 8,
 ) {
-    private val exceptions: MutableList<TempfolderException> = ArrayList(maxSuppressedExceptions)
+    private val exceptions: MutableList<TempDirectoryException> = ArrayList(maxSuppressedExceptions)
 
     inline fun addOrThrowNativeIOException(
         errorText: String,
-        filePath: PosixPathString,
+        filePath: PosixPath,
         errno: Int = platform.posix.errno,
-        parent: TempfolderIOException? = null,
+        parent: TempDirectoryIOException? = null,
     ) {
-        val exception = TempfolderNativeIOException(
+        val exception = TempDirectoryNativeIOException(
             errno,
             "$errorText `${filePath.asStringOrDescription()}`. ${errnoDescription(errno)}",
             parent,
@@ -35,7 +35,7 @@ internal class SuppressedExceptionCollector(
         }
     }
 
-    fun removeFirstOrNull(): TempfolderException? = exceptions.removeFirstOrNull()
+    fun removeFirstOrNull(): TempDirectoryException? = exceptions.removeFirstOrNull()
 
     fun addSuppressedToThrowable(throwable: Throwable) {
         exceptions.forEach { throwable.addSuppressed(it) }

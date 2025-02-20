@@ -6,10 +6,10 @@
 package at.released.tempfolder.wasip1
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.TempfolderWasiIOException
-import at.released.tempfolder.path.WasiPathString
-import at.released.tempfolder.path.WasiPathString.Companion.toWasiPathString
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.TempDirectoryWasiIOException
+import at.released.tempfolder.path.WasiPath
+import at.released.tempfolder.path.WasiPath.Companion.toWasiPathString
 import at.released.tempfolder.wasip1.type.Errno
 import at.released.tempfolder.wasip1.type.LookupflagsFlag
 import at.released.tempfolder.wasip1.type.OflagsFlag
@@ -28,7 +28,7 @@ internal fun wasiCloseOrThrow(fd: TempDirectoryDescriptor) {
 
 internal fun wasiOpenDirectoryOrThrow(
     fd: TempDirectoryDescriptor,
-    path: WasiPathString,
+    path: WasiPath,
     followSymlinks: Boolean = false,
 ): TempDirectoryDescriptor = withScopedMemoryAllocator { allocator ->
     val fdPtr = allocator.allocateS32()
@@ -49,7 +49,7 @@ internal fun wasiOpenDirectoryOrThrow(
 
 internal fun wasiCreateDirectoryOrThrow(
     fd: TempDirectoryDescriptor,
-    path: WasiPathString,
+    path: WasiPath,
 ): Unit = withScopedMemoryAllocator { allocator ->
     val (pathBytes, pathBytesSize) = allocator.allocateString(path)
     wasiPathCreateDirectory(fd.fd, pathBytes.address, pathBytesSize)
@@ -80,9 +80,9 @@ internal fun wasiUnlinkFileOrThrow(
     }
 }
 
-internal fun Pointer.loadPathString(length: Int): WasiPathString {
+internal fun Pointer.loadPathString(length: Int): WasiPath {
     if (length <= 0) {
-        throw TempfolderIOException("Incorrect string length $length")
+        throw TempDirectoryIOException("Incorrect string length $length")
     }
     return loadByteString(length).toWasiPathString()
 }
@@ -93,7 +93,7 @@ internal fun Pointer.loadByteString(length: Int): ByteString {
     }
 }
 
-internal fun MemoryAllocator.allocateString(string: WasiPathString): Pair<Pointer, Int> = allocateString(string.bytes)
+internal fun MemoryAllocator.allocateString(string: WasiPath): Pair<Pointer, Int> = allocateString(string.bytes)
 
 internal fun MemoryAllocator.allocateString(bytes: ByteString): Pair<Pointer, Int> {
     val ptr = allocate(bytes.size)
@@ -105,6 +105,6 @@ internal fun MemoryAllocator.allocateString(bytes: ByteString): Pair<Pointer, In
 
 internal fun Int.throwIoExceptionOnError(messagePrefix: String) {
     if (this != Errno.SUCCESS.code) {
-        throw TempfolderWasiIOException.prefixed(this, messagePrefix)
+        throw TempDirectoryWasiIOException.prefixed(this, messagePrefix)
     }
 }

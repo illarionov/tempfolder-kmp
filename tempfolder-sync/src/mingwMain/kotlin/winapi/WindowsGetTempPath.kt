@@ -5,25 +5,25 @@
 
 package at.released.tempfolder.winapi
 
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.TempfolderWindowsIOException
-import at.released.tempfolder.path.WindowsPathString
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.TempDirectoryWindowsIOException
+import at.released.tempfolder.path.WindowsPath
 import at.released.tempfolder.winapi.errcode.Win32ErrorCode
 import platform.windows.GetTempPathW
 
-@Throws(TempfolderWindowsIOException::class)
-internal fun windowsGetTempPath(): WindowsPathString {
+@Throws(TempDirectoryWindowsIOException::class)
+internal fun windowsGetTempPath(): WindowsPath {
     return readPathPickBufferSize { length, buffer ->
         GetTempPathW(length, buffer)
     }.getOrElse { exception ->
-        if (exception is TempfolderWindowsIOException) {
-            throw TempfolderWindowsIOException(
+        if (exception is TempDirectoryWindowsIOException) {
+            throw TempDirectoryWindowsIOException(
                 "Can not get temp path",
                 Win32ErrorCode(exception.lastError),
                 exception,
             )
         } else {
-            throw TempfolderIOException("Can not get temp path", exception)
+            throw TempDirectoryIOException("Can not get temp path", exception)
         }
     }
 }

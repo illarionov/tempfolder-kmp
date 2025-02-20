@@ -5,9 +5,9 @@
 
 package at.released.tempfolder.testframework
 
-import at.released.tempfolder.dsl.TempfolderFileModeBit
-import at.released.tempfolder.path.TempfolderPathString
-import at.released.tempfolder.path.toPosixPathString
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit
+import at.released.tempfolder.path.TempDirectoryPath
+import at.released.tempfolder.path.toPosixPath
 import at.released.tempfolder.sync.linkOptions
 import at.released.tempfolder.sync.toNioPosixPermissions
 import at.released.tempfolder.sync.toTempfolderPermissions
@@ -43,52 +43,52 @@ internal class NioFilesystemTestFunctions(
     override val isSymlinkSupported: Boolean = true
     override val pathSeparator: Char = fileSystem.separator[0]
 
-    private val TempfolderPathString.nioPath: Path get() = fileSystem.getPath(this.asString())
+    private val TempDirectoryPath.nioPath: Path get() = fileSystem.getPath(this.asString())
 
-    override fun joinPath(base: TempfolderPathString, append: String): TempfolderPathString {
-        return fileSystem.getPath(base.asString(), append).absolutePathString().toPosixPathString()
+    override fun joinPath(base: TempDirectoryPath, append: String): TempDirectoryPath {
+        return fileSystem.getPath(base.asString(), append).absolutePathString().toPosixPath()
     }
 
-    override fun isDirectory(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
+    override fun isDirectory(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
         return path.nioPath.isDirectory(options = linkOptions(followBasenameSymlink))
     }
 
-    override fun isFile(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
+    override fun isFile(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
         return path.nioPath.isRegularFile(options = linkOptions(followBasenameSymlink))
     }
 
-    override fun isSymlink(path: TempfolderPathString): Boolean {
+    override fun isSymlink(path: TempDirectoryPath): Boolean {
         return path.nioPath.isSymbolicLink()
     }
 
-    override fun isExists(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
+    override fun isExists(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
         return path.nioPath.exists(options = linkOptions(followBasenameSymlink))
     }
 
-    override fun isSamePathAs(path1: TempfolderPathString, path2: TempfolderPathString): Boolean {
+    override fun isSamePathAs(path1: TempDirectoryPath, path2: TempDirectoryPath): Boolean {
         return path1.nioPath.isSameFileAs(path2.nioPath)
     }
 
-    override fun getFileMode(path: TempfolderPathString, followBasenameSymlink: Boolean): Set<TempfolderFileModeBit> {
+    override fun getFileMode(path: TempDirectoryPath, followBasenameSymlink: Boolean): Set<TempDirectoryFileModeBit> {
         return path.nioPath.fileAttributesView<PosixFileAttributeView>().readAttributes().permissions()
             .toTempfolderPermissions()
     }
 
-    override fun createFile(path: TempfolderPathString, mode: Set<TempfolderFileModeBit>, content: ByteString) {
+    override fun createFile(path: TempDirectoryPath, mode: Set<TempDirectoryFileModeBit>, content: ByteString) {
         path.nioPath.createFile(attributes = mode.asFileAttributes()).outputStream().buffered().use {
             it.write(content.toByteArray())
         }
     }
 
-    override fun createDirectory(path: TempfolderPathString, mode: Set<TempfolderFileModeBit>) {
+    override fun createDirectory(path: TempDirectoryPath, mode: Set<TempDirectoryFileModeBit>) {
         path.nioPath.createDirectory(attributes = mode.asFileAttributes())
     }
 
-    override fun createSymlink(oldPath: String, newPath: TempfolderPathString, type: SymlinkType) {
+    override fun createSymlink(oldPath: String, newPath: TempDirectoryPath, type: SymlinkType) {
         newPath.nioPath.createSymbolicLinkPointingTo(Path.of(oldPath))
     }
 
-    private fun Set<TempfolderFileModeBit>.asFileAttributes() = if (isPosixFileModeSupported) {
+    private fun Set<TempDirectoryFileModeBit>.asFileAttributes() = if (isPosixFileModeSupported) {
         arrayOf(PosixFilePermissions.asFileAttribute(this.toNioPosixPermissions()))
     } else {
         emptyArray()

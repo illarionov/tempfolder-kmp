@@ -5,17 +5,17 @@
 
 package at.released.tempfolder.sync.path
 
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.path.WindowsPathString
-import at.released.tempfolder.path.WindowsPathString.Companion.toWindowsPathString
-import at.released.tempfolder.sync.path.WindowsTempBase.Auto
-import at.released.tempfolder.sync.path.WindowsTempBase.Path
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.path.WindowsPath
+import at.released.tempfolder.path.WindowsPath.Companion.toWindowsPathString
+import at.released.tempfolder.sync.path.TempDirectoryWindowsBase.Auto
+import at.released.tempfolder.sync.path.TempDirectoryWindowsBase.Path
 import at.released.tempfolder.winapi.windowsGetFullPathname
 import at.released.tempfolder.winapi.windowsGetTempPath
 
 internal object WindowsTempPathResolver {
-    @Throws(TempfolderIOException::class)
-    internal fun resolve(parent: WindowsTempBase): WindowsPathString {
+    @Throws(TempDirectoryIOException::class)
+    internal fun resolve(parent: TempDirectoryWindowsBase): WindowsPath {
         val path = when (parent) {
             Auto -> windowsGetTempPath()
             is Path -> parent.path.toWindowsPathString()

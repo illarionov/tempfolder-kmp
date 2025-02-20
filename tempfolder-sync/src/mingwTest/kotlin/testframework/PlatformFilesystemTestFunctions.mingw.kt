@@ -5,12 +5,12 @@
 
 package at.released.tempfolder.testframework
 
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.TempfolderWindowsIOException
-import at.released.tempfolder.dsl.TempfolderFileModeBit
-import at.released.tempfolder.path.TempfolderPathString
-import at.released.tempfolder.path.WindowsPathString
-import at.released.tempfolder.path.WindowsPathString.Companion.toWindowsPathString
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.TempDirectoryWindowsIOException
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit
+import at.released.tempfolder.path.TempDirectoryPath
+import at.released.tempfolder.path.WindowsPath
+import at.released.tempfolder.path.WindowsPath.Companion.toWindowsPathString
 import at.released.tempfolder.path.windowsAppendPath
 import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.SymlinkType
 import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.SymlinkType.NOT_SPECIFIED
@@ -56,31 +56,31 @@ internal object WindowsFilesystemTestFunctions : PlatformFilesystemTestFunctions
             SymlinkType.SYMLINK_TO_DIRECTORY -> platform.windows.SYMBOLIC_LINK_FLAG_DIRECTORY
         }.toUInt()
 
-    override fun joinPath(base: TempfolderPathString, append: String): TempfolderPathString {
+    override fun joinPath(base: TempDirectoryPath, append: String): TempDirectoryPath {
         return windowsAppendPath(base.asString(), append).toWindowsPathString()
     }
 
-    override fun isDirectory(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
+    override fun isDirectory(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
         return windowsGetFileAttributeTagInfo(path.asString(), followBasenameSymlink).let {
             it.fileAttributes.isDirectory && !it.fileAttributes.isSymlinkOrReparsePoint
         }
     }
 
-    override fun isFile(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
+    override fun isFile(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
         return windowsGetFileAttributeTagInfo(path.asString(), followBasenameSymlink).let {
             !it.fileAttributes.isDirectory && !it.fileAttributes.isSymlinkOrReparsePoint
         }
     }
 
-    override fun isSymlink(path: TempfolderPathString): Boolean {
+    override fun isSymlink(path: TempDirectoryPath): Boolean {
         return windowsGetFileAttributeTagInfo(path.asString()).isSymlink
     }
 
-    override fun isExists(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
+    override fun isExists(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
         return try {
             windowsGetFileAttributeTagInfo(path.asString(), followBasenameSymlink)
             true
-        } catch (iw: TempfolderWindowsIOException) {
+        } catch (iw: TempDirectoryWindowsIOException) {
             if (iw.lastError == ERROR_FILE_NOT_FOUND.toUInt()) {
                 false
             } else {
@@ -89,17 +89,17 @@ internal object WindowsFilesystemTestFunctions : PlatformFilesystemTestFunctions
         }
     }
 
-    override fun isSamePathAs(path1: TempfolderPathString, path2: TempfolderPathString): Boolean {
+    override fun isSamePathAs(path1: TempDirectoryPath, path2: TempDirectoryPath): Boolean {
         val fullPath1 = windowsGetFullPathname(path1.toWindowsPathString())
         val fullPath2 = windowsGetFullPathname(path2.toWindowsPathString())
         return fullPath1 == fullPath2
     }
 
-    override fun getFileMode(path: TempfolderPathString, followBasenameSymlink: Boolean): Set<TempfolderFileModeBit> {
+    override fun getFileMode(path: TempDirectoryPath, followBasenameSymlink: Boolean): Set<TempDirectoryFileModeBit> {
         error("Not yet implemented")
     }
 
-    override fun createFile(path: TempfolderPathString, mode: Set<TempfolderFileModeBit>, content: ByteString) {
+    override fun createFile(path: TempDirectoryPath, mode: Set<TempDirectoryFileModeBit>, content: ByteString) {
         val handle = CreateFileW(
             lpFileName = path.asString(),
             dwDesiredAccess = GENERIC_WRITE.convert(),
@@ -110,7 +110,7 @@ internal object WindowsFilesystemTestFunctions : PlatformFilesystemTestFunctions
             hTemplateFile = null,
         )
         if (handle == null || handle == INVALID_HANDLE_VALUE) {
-            throw TempfolderWindowsIOException("CreateFileW() failed")
+            throw TempDirectoryWindowsIOException("CreateFileW() failed")
         }
         try {
             writeContentToFile(handle, content)
@@ -129,37 +129,37 @@ internal object WindowsFilesystemTestFunctions : PlatformFilesystemTestFunctions
                 WriteFile(handle, it.addressOf(0), content.size.convert(), bytesWritten.ptr, null)
             }
             if (writeResult == 0) {
-                throw TempfolderWindowsIOException("WriteFile() failed")
+                throw TempDirectoryWindowsIOException("WriteFile() failed")
             }
             if (bytesWritten.value.toInt() != content.size) {
-                throw TempfolderIOException("Failed to write ${content.size} bytes. Written: ${bytesWritten.value}")
+                throw TempDirectoryIOException("Failed to write ${content.size} bytes. Written: ${bytesWritten.value}")
             }
         }
     }
 
-    override fun createDirectory(path: TempfolderPathString, mode: Set<TempfolderFileModeBit>) {
+    override fun createDirectory(path: TempDirectoryPath, mode: Set<TempDirectoryFileModeBit>) {
         val error = CreateDirectoryW(path.asString(), null)
         if (error == 0) {
-            throw TempfolderWindowsIOException("CreateDirectoryW() failed")
+            throw TempDirectoryWindowsIOException("CreateDirectoryW() failed")
         }
     }
 
-    override fun createSymlink(oldPath: String, newPath: TempfolderPathString, type: SymlinkType) {
+    override fun createSymlink(oldPath: String, newPath: TempDirectoryPath, type: SymlinkType) {
         val flags: UInt = type.mask
         if (CreateSymbolicLinkW(newPath.asString(), oldPath, type.mask).toInt() == 0) {
             val lastError = GetLastError()
             if (lastError == ERROR_PRIVILEGE_NOT_HELD.toUInt()) {
                 val newFlags = flags or SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE.toUInt()
                 if (CreateSymbolicLinkW(newPath.asString(), oldPath, newFlags).toInt() == 0) {
-                    throw TempfolderWindowsIOException("CreateSymbolicLinkW() failed")
+                    throw TempDirectoryWindowsIOException("CreateSymbolicLinkW() failed")
                 }
             } else {
-                throw TempfolderWindowsIOException("CreateSymbolicLinkW() failed")
+                throw TempDirectoryWindowsIOException("CreateSymbolicLinkW() failed")
             }
         }
     }
 
-    private fun TempfolderPathString.toWindowsPathString(): WindowsPathString = if (this is WindowsPathString) {
+    private fun TempDirectoryPath.toWindowsPathString(): WindowsPath = if (this is WindowsPath) {
         this
     } else {
         this.asString().toWindowsPathString()

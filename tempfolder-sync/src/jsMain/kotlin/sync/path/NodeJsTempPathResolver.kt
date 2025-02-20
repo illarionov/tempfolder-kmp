@@ -5,20 +5,20 @@
 
 package at.released.tempfolder.sync.path
 
-import at.released.tempfolder.TempfolderIOException
+import at.released.tempfolder.TempDirectoryIOException
 import at.released.tempfolder.jsapi.nodejs.realpathSync
 import at.released.tempfolder.jsapi.nodejs.tmpdir
 
 internal object NodeJsTempPathResolver {
-    internal fun resolve(parent: NodeJsTempBase): String {
+    internal fun resolve(parent: TempDirectoryNodeBase): String {
         val path = when (parent) {
-            NodeJsTempBase.Auto -> tmpdir()
-            is NodeJsTempBase.Path -> parent.path
+            TempDirectoryNodeBase.Auto -> tmpdir()
+            is TempDirectoryNodeBase.Path -> parent.path
         }
         try {
             return realpathSync(path)
         } catch (@Suppress("TooGenericExceptionCaught") ie: Exception) {
-            throw TempfolderIOException("realpathSync() failed", ie)
+            throw TempDirectoryIOException("realpathSync() failed", ie)
         }
     }
 }

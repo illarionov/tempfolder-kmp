@@ -6,10 +6,10 @@
 package at.released.tempfolder.sync.nsfm
 
 import assertk.assertThat
-import at.released.tempfolder.path.TempfolderPathString
+import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.path.asStringOrDescription
-import at.released.tempfolder.sync.Tempfolder
-import at.released.tempfolder.sync.TempfolderTest.Companion.bootstrapSimpleSuccessTestTestHierarchy
+import at.released.tempfolder.sync.TempDirectory
+import at.released.tempfolder.sync.TempDirectoryTest.Companion.bootstrapSimpleSuccessTestTestHierarchy
 import at.released.tempfolder.testframework.assertions.isDirectory
 import at.released.tempfolder.testframework.assertions.isNotExists
 import kotlin.test.Test
@@ -17,8 +17,8 @@ import kotlin.test.Test
 class NsurlTempDirectoryTest {
     @Test
     fun nsurlTempfolder_test_success_case() {
-        val path: TempfolderPathString
-        Tempfolder.createNsurlTempDirectory().use { tempDirectory ->
+        val path: TempDirectoryPath
+        TempDirectory.createNsurlTempDirectory().use { tempDirectory ->
             path = tempDirectory.getAbsolutePath()
             assertThat(path).isDirectory()
             bootstrapSimpleSuccessTestTestHierarchy(tempDirectory)

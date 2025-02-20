@@ -6,14 +6,14 @@
 package at.released.tempfolder.posix200809.delete
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.path.PosixPathStringComponent
-import at.released.tempfolder.path.PosixPathStringComponent.Companion.asPathComponent
-import at.released.tempfolder.path.TempfolderInvalidCharacterException
+import at.released.tempfolder.path.PosixPathComponent
+import at.released.tempfolder.path.PosixPathComponent.Companion.asPathComponent
+import at.released.tempfolder.path.TempDirectoryInvalidCharacterException
 import at.released.tempfolder.posix200809.PlatformDirent
-import at.released.tempfolder.posix200809.TempfolderNativeIOException
+import at.released.tempfolder.posix200809.TempDirectoryNativeIOException
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem
 import at.released.tempfolder.posix200809.errnoDescription
-import at.released.tempfolder.posix200809.path.toPosixPathString
+import at.released.tempfolder.posix200809.path.toPosixPath
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.get
 import platform.posix.DT_DIR
@@ -26,11 +26,11 @@ internal class OpenDirStream<D>(
     private val direntApi: PlatformDirent<D>,
     private val dirHandle: D,
     val dirfd: TempDirectoryDescriptor,
-    override val basename: PosixPathStringComponent,
+    override val basename: PosixPathComponent,
 ) : DirStream {
     override fun close() {
         if (direntApi.closedir(dirHandle) == -1) {
-            throw TempfolderNativeIOException(
+            throw TempDirectoryNativeIOException(
                 errno,
                 "Can not close directory descriptor. ${errnoDescription()}`",
             )
@@ -43,20 +43,20 @@ internal class OpenDirStream<D>(
         return when {
             dirent != null -> try {
                 DirStreamItem.Entry(
-                    name = dirent[0].d_name.toPosixPathString().asPathComponent(),
+                    name = dirent[0].d_name.toPosixPath().asPathComponent(),
                     type = when (dirent[0].d_type.toInt()) {
                         DT_DIR -> DirStream.DirEntryType.DIRECTORY
                         DT_UNKNOWN -> DirStream.DirEntryType.UNKNOWN
                         else -> DirStream.DirEntryType.OTHER
                     },
                 )
-            } catch (ce: TempfolderInvalidCharacterException) {
+            } catch (ce: TempDirectoryInvalidCharacterException) {
                 DirStreamItem.Error(ce)
             }
 
             errno == 0 -> DirStreamItem.EndOfStream
             else -> DirStreamItem.Error(
-                TempfolderNativeIOException(errno, "Can not read directory. ${errnoDescription(errno)}"),
+                TempDirectoryNativeIOException(errno, "Can not read directory. ${errnoDescription(errno)}"),
             )
         }
     }

@@ -5,16 +5,16 @@
 
 package at.released.tempfolder.testframework
 
-import at.released.tempfolder.TempfolderException
-import at.released.tempfolder.dsl.TempfolderFileModeBit
-import at.released.tempfolder.dsl.TempfolderFileModeBit.GROUP_EXECUTE
-import at.released.tempfolder.dsl.TempfolderFileModeBit.GROUP_READ
-import at.released.tempfolder.dsl.TempfolderFileModeBit.OTHER_EXECUTE
-import at.released.tempfolder.dsl.TempfolderFileModeBit.OTHER_READ
-import at.released.tempfolder.dsl.TempfolderFileModeBit.USER_EXECUTE
-import at.released.tempfolder.dsl.TempfolderFileModeBit.USER_READ
-import at.released.tempfolder.dsl.TempfolderFileModeBit.USER_WRITE
-import at.released.tempfolder.path.TempfolderPathString
+import at.released.tempfolder.TempDirectoryException
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit.GROUP_EXECUTE
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit.GROUP_READ
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit.OTHER_EXECUTE
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit.OTHER_READ
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit.USER_EXECUTE
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit.USER_READ
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit.USER_WRITE
+import at.released.tempfolder.path.TempDirectoryPath
 import kotlinx.io.bytestring.ByteString
 
 internal expect val platformFilesystem: PlatformFilesystemTestFunctions
@@ -24,37 +24,37 @@ interface PlatformFilesystemTestFunctions {
     val isSymlinkSupported: Boolean
     val pathSeparator: Char
 
-    @Throws(TempfolderException::class)
-    fun joinPath(base: TempfolderPathString, append: String): TempfolderPathString
+    @Throws(TempDirectoryException::class)
+    fun joinPath(base: TempDirectoryPath, append: String): TempDirectoryPath
 
-    @Throws(TempfolderException::class)
-    fun isDirectory(path: TempfolderPathString, followBasenameSymlink: Boolean = false): Boolean
+    @Throws(TempDirectoryException::class)
+    fun isDirectory(path: TempDirectoryPath, followBasenameSymlink: Boolean = false): Boolean
 
-    @Throws(TempfolderException::class)
-    fun isFile(path: TempfolderPathString, followBasenameSymlink: Boolean = false): Boolean
+    @Throws(TempDirectoryException::class)
+    fun isFile(path: TempDirectoryPath, followBasenameSymlink: Boolean = false): Boolean
 
-    @Throws(TempfolderException::class)
-    fun isSymlink(path: TempfolderPathString): Boolean
+    @Throws(TempDirectoryException::class)
+    fun isSymlink(path: TempDirectoryPath): Boolean
 
-    @Throws(TempfolderException::class)
-    fun isExists(path: TempfolderPathString, followBasenameSymlink: Boolean = false): Boolean
+    @Throws(TempDirectoryException::class)
+    fun isExists(path: TempDirectoryPath, followBasenameSymlink: Boolean = false): Boolean
 
-    @Throws(TempfolderException::class)
-    fun isSamePathAs(path1: TempfolderPathString, path2: TempfolderPathString): Boolean
+    @Throws(TempDirectoryException::class)
+    fun isSamePathAs(path1: TempDirectoryPath, path2: TempDirectoryPath): Boolean
 
-    @Throws(TempfolderException::class)
-    fun getFileMode(path: TempfolderPathString, followBasenameSymlink: Boolean = false): Set<TempfolderFileModeBit>
+    @Throws(TempDirectoryException::class)
+    fun getFileMode(path: TempDirectoryPath, followBasenameSymlink: Boolean = false): Set<TempDirectoryFileModeBit>
 
-    @Throws(TempfolderException::class)
+    @Throws(TempDirectoryException::class)
     fun createFile(
-        path: TempfolderPathString,
-        mode: Set<TempfolderFileModeBit> = setOf(USER_READ, USER_WRITE, GROUP_READ, OTHER_READ),
+        path: TempDirectoryPath,
+        mode: Set<TempDirectoryFileModeBit> = setOf(USER_READ, USER_WRITE, GROUP_READ, OTHER_READ),
         content: ByteString = ByteString(),
     )
 
     fun createDirectory(
-        path: TempfolderPathString,
-        mode: Set<TempfolderFileModeBit> = setOf(
+        path: TempDirectoryPath,
+        mode: Set<TempDirectoryFileModeBit> = setOf(
             USER_READ,
             USER_WRITE,
             USER_EXECUTE,
@@ -65,7 +65,7 @@ interface PlatformFilesystemTestFunctions {
         ),
     )
 
-    fun createSymlink(oldPath: String, newPath: TempfolderPathString, type: SymlinkType = SymlinkType.NOT_SPECIFIED)
+    fun createSymlink(oldPath: String, newPath: TempDirectoryPath, type: SymlinkType = SymlinkType.NOT_SPECIFIED)
 
     enum class SymlinkType {
         NOT_SPECIFIED,

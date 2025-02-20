@@ -13,7 +13,7 @@ internal class CloseableFileDescriptor(
 ) : AutoCloseable {
     override fun close() {
         if (close(fd) == -1) {
-            throw TempfolderNativeIOException(
+            throw TempDirectoryNativeIOException(
                 errno,
                 "Can not close descriptor. ${errnoDescription()}`",
             )

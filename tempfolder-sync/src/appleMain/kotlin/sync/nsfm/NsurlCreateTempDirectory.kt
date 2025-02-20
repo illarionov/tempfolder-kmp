@@ -7,7 +7,7 @@
 
 package at.released.tempfolder.sync.nsfm
 
-import at.released.tempfolder.TempfolderIOException
+import at.released.tempfolder.TempDirectoryIOException
 import at.released.tempfolder.sync.nsfm.NsurlTempBase.SearchPathDomain
 import at.released.tempfolder.sync.nsfm.NsurlTempBase.SearchPathDomain.LOCAL
 import at.released.tempfolder.sync.nsfm.NsurlTempBase.SearchPathDomain.NETWORK
@@ -47,7 +47,7 @@ internal fun createAppleNsurlTempDirectory(
             appropriateForURL = forDirectory,
             create = true,
             error = error.ptr,
-        ) ?: throw TempfolderIOException(
+        ) ?: throw TempDirectoryIOException(
             "Can not create temporarily directory: ${error.value?.localizedDescription}",
         )
     }
@@ -63,7 +63,7 @@ private fun NativePlacement.getDefaultCacheDirectory(
         appropriateForURL = null,
         create = false,
         error = error.ptr,
-    ) ?: throw TempfolderIOException("Can not get cache directory: ${error.value?.localizedDescription}")
+    ) ?: throw TempDirectoryIOException("Can not get cache directory: ${error.value?.localizedDescription}")
 }
 
 private val SearchPathDomain.mask: NSSearchPathDomainMask

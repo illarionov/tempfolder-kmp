@@ -5,11 +5,11 @@
 
 package at.released.tempfolder.sync
 
-import at.released.tempfolder.TempfolderException
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.dsl.TempfolderFileModeBit
-import at.released.tempfolder.path.TempfolderInvalidPathException
-import at.released.tempfolder.sync.NioTempBase.Auto
+import at.released.tempfolder.TempDirectoryException
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit
+import at.released.tempfolder.path.TempDirectoryInvalidPathException
+import at.released.tempfolder.sync.TempDirectoryNioBase.Auto
 import java.io.IOException
 import java.nio.file.FileSystem
 import java.nio.file.InvalidPathException
@@ -20,10 +20,10 @@ import java.nio.file.attribute.PosixFilePermissions
 import kotlin.io.path.createDirectory
 import kotlin.io.path.isDirectory
 
-@Throws(TempfolderException::class)
+@Throws(TempDirectoryException::class)
 internal fun createNioTempDirectory(
-    base: NioTempBase,
-    mode: Set<TempfolderFileModeBit>,
+    base: TempDirectoryNioBase,
+    mode: Set<TempDirectoryFileModeBit>,
     nameGenerator: () -> String,
 ): Path {
     val tempRoot = resolveBase(base)
@@ -31,23 +31,23 @@ internal fun createNioTempDirectory(
         val name = nameGenerator()
         tryCreateTempfolder(tempRoot, name, mode.toNioPosixPermissions())
     }
-    return tempDirectoryPath ?: throw TempfolderIOException("Can not create temp folder: max attempts reached")
+    return tempDirectoryPath ?: throw TempDirectoryIOException("Can not create temp folder: max attempts reached")
 }
 
-private fun resolveBase(base: NioTempBase): Path {
+private fun resolveBase(base: TempDirectoryNioBase): Path {
     return when (base) {
         is Auto -> getDefaultPath(base.fileSystem)
         is Path -> try {
             base.toRealPath()
         } catch (ioe: IOException) {
-            throw TempfolderIOException("Failed to resolve temp dir root", ioe)
+            throw TempDirectoryIOException("Failed to resolve temp dir root", ioe)
         }
 
         else -> error("Not expected")
     }
 }
 
-@Throws(TempfolderIOException::class)
+@Throws(TempDirectoryIOException::class)
 private fun getDefaultPath(
     fileSystem: FileSystem,
 ): Path {
@@ -55,14 +55,14 @@ private fun getDefaultPath(
     return try {
         fileSystem.getPath(tmpDir).toRealPath()
     } catch (ie: InvalidPathException) {
-        throw TempfolderInvalidPathException(ie)
+        throw TempDirectoryInvalidPathException(ie)
     } catch (ioe: IOException) {
-        throw TempfolderIOException("Failed to resolve temp dir root", ioe)
+        throw TempDirectoryIOException("Failed to resolve temp dir root", ioe)
     }
 }
 
 @Suppress("ThrowsCount")
-@Throws(TempfolderIOException::class)
+@Throws(TempDirectoryIOException::class)
 private fun tryCreateTempfolder(
     base: Path,
     directoryName: String,
@@ -77,7 +77,7 @@ private fun tryCreateTempfolder(
     val path = try {
         base.resolve(directoryName)
     } catch (ie: InvalidPathException) {
-        throw TempfolderInvalidPathException(ie)
+        throw TempDirectoryInvalidPathException(ie)
     }
 
     return try {
@@ -88,9 +88,9 @@ private fun tryCreateTempfolder(
         if (path.isDirectory(NOFOLLOW_LINKS)) {
             null
         } else {
-            throw TempfolderIOException("Failed to create temp directory", ioe)
+            throw TempDirectoryIOException("Failed to create temp directory", ioe)
         }
     } catch (uoe: UnsupportedOperationException) {
-        throw TempfolderIOException("DFailed to create temp directory", uoe)
+        throw TempDirectoryIOException("DFailed to create temp directory", uoe)
     }
 }

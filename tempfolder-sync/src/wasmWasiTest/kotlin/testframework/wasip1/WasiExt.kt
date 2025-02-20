@@ -6,7 +6,7 @@
 package at.released.tempfolder.testframework.wasip1
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.path.WasiPathString
+import at.released.tempfolder.path.WasiPath
 import at.released.tempfolder.testframework.wasip1.type.Ciovec
 import at.released.tempfolder.testframework.wasip1.type.Filestat
 import at.released.tempfolder.wasip1.allocateS32
@@ -22,7 +22,7 @@ import kotlin.wasm.unsafe.withScopedMemoryAllocator
 
 internal fun wasiCreateFileOrThrow(
     fd: TempDirectoryDescriptor,
-    path: WasiPathString,
+    path: WasiPath,
     followSymlinks: Boolean = false,
 ): TempDirectoryDescriptor = withScopedMemoryAllocator { allocator ->
     val fdPtr = allocator.allocateS32()
@@ -44,7 +44,7 @@ internal fun wasiCreateFileOrThrow(
 internal fun wasiPathSymlinkOrThrow(
     oldPath: ByteString,
     fd: TempDirectoryDescriptor,
-    newPath: WasiPathString,
+    newPath: WasiPath,
 ) = withScopedMemoryAllocator { allocator ->
     val (oldPathBytes, oldPathBytesSize) = allocator.allocateString(oldPath)
     val (newPathBytes, newPathBytesSize) = allocator.allocateString(newPath)
@@ -54,7 +54,7 @@ internal fun wasiPathSymlinkOrThrow(
 
 internal fun wasiPathFilestatGet(
     fd: TempDirectoryDescriptor,
-    path: WasiPathString,
+    path: WasiPath,
     followSymlinks: Boolean,
 ): Filestat = withScopedMemoryAllocator { allocator ->
     val (pathBytes, pathBytesSize) = allocator.allocateString(path)

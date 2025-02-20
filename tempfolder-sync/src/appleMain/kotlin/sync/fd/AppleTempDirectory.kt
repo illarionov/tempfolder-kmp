@@ -6,19 +6,19 @@
 package at.released.tempfolder.sync.fd
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.TempfolderException
+import at.released.tempfolder.TempDirectoryException
+import at.released.tempfolder.posix200809.sync.fd.PosixTempDirectory
 import at.released.tempfolder.posix200809.sync.fd.PosixTempDirectoryCreator
 import at.released.tempfolder.posix200809.sync.fd.PosixTempRootResolver
 import at.released.tempfolder.posix200809.sync.fd.PosixTempRootResolver.ResolvedTempRoot
-import at.released.tempfolder.posix200809.sync.fd.PosixTempfolder
 import at.released.tempfolder.posix200809.toPosixMode
-import at.released.tempfolder.sync.Tempfolder
+import at.released.tempfolder.sync.TempDirectory
 import at.released.tempfolder.sync.generateTempDirectoryName
 
-@Throws(TempfolderException::class)
-public fun Tempfolder.Companion.createAppleTempDirectory(
+@Throws(TempDirectoryException::class)
+public fun TempDirectory.Companion.createAppleTempDirectory(
     block: AppleTempDirectoryConfig.() -> Unit = {},
-): Tempfolder<TempDirectoryDescriptor> {
+): TempDirectory<TempDirectoryDescriptor> {
     val config = AppleTempDirectoryConfig().apply(block)
     val root: ResolvedTempRoot = PosixTempRootResolver.resolve(config.base)
     val coordinates = PosixTempDirectoryCreator.createDirectory(
@@ -26,7 +26,7 @@ public fun Tempfolder.Companion.createAppleTempDirectory(
         mode = config.permissions.toPosixMode(),
         nameGenerator = { generateTempDirectoryName(config.prefix) },
     )
-    return PosixTempfolder(
+    return PosixTempDirectory(
         parentDirfd = coordinates.parentDirfd,
         directoryPathname = coordinates.directoryPathname,
         root = coordinates.directoryDescriptor,

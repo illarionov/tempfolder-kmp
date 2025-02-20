@@ -7,13 +7,13 @@ package at.released.tempfolder.testframework
 
 import assertk.all
 import assertk.assertThat
-import at.released.tempfolder.dsl.TempfolderFileModeBit.GROUP_READ
-import at.released.tempfolder.dsl.TempfolderFileModeBit.OTHER_READ
-import at.released.tempfolder.dsl.TempfolderFileModeBit.USER_READ
-import at.released.tempfolder.dsl.TempfolderFileModeBit.USER_WRITE
-import at.released.tempfolder.path.TempfolderPathString
-import at.released.tempfolder.sync.TempfolderTest.Companion.TEST_FILE_CONTENT
-import at.released.tempfolder.sync.createTempfolder
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit.GROUP_READ
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit.OTHER_READ
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit.USER_READ
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit.USER_WRITE
+import at.released.tempfolder.path.TempDirectoryPath
+import at.released.tempfolder.sync.TempDirectoryTest.Companion.TEST_FILE_CONTENT
+import at.released.tempfolder.sync.createTempDirectory
 import at.released.tempfolder.testframework.assertions.isDirectory
 import at.released.tempfolder.testframework.assertions.isFile
 import at.released.tempfolder.testframework.assertions.isSymlink
@@ -23,14 +23,14 @@ import kotlin.test.Test
 class PlatformFilesystemTestFunctionsTest {
     @Test
     fun platformTestFunctions_test_filesystem_functions() {
-        createTempfolder {
+        createTempDirectory {
             prefix = "platformFilesystemTestFunctionsTest-"
         }.use { tempDirectory ->
             if (!isReadingDirectorySupported()) {
                 tempDirectory.deleteOnClose = false
             }
 
-            val testFile1: TempfolderPathString = tempDirectory.append("file1.txt")
+            val testFile1: TempDirectoryPath = tempDirectory.append("file1.txt")
             platformFilesystem.createFile(testFile1, content = TEST_FILE_CONTENT)
 
             assertThat(testFile1).all {

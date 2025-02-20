@@ -7,17 +7,17 @@ package at.released.tempfolder.testframework
 
 import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.TempDirectoryDescriptor.Companion.CURRENT_WORKING_DIRECTORY
-import at.released.tempfolder.dsl.TempfolderFileModeBit
-import at.released.tempfolder.dsl.TempfolderFileModeBit.Companion
-import at.released.tempfolder.path.PosixPathString
-import at.released.tempfolder.path.TempfolderPathString
-import at.released.tempfolder.path.TempfolderPathString.MultibytePathString
-import at.released.tempfolder.path.TempfolderPathString.WideCharPathString
-import at.released.tempfolder.path.UnknownEncodingPosixPathString
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit.Companion
+import at.released.tempfolder.path.PosixPath
+import at.released.tempfolder.path.TempDirectoryPath
+import at.released.tempfolder.path.TempDirectoryPath.MultibytePath
+import at.released.tempfolder.path.TempDirectoryPath.WideCharPath
+import at.released.tempfolder.path.UnknownEncodingPosixPath
 import at.released.tempfolder.path.appendPosixPath
-import at.released.tempfolder.path.toPosixPathString
+import at.released.tempfolder.path.toPosixPath
 import at.released.tempfolder.posix200809.PosixFileType
-import at.released.tempfolder.posix200809.TempfolderNativeIOException
+import at.released.tempfolder.posix200809.TempDirectoryNativeIOException
 import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.fromPosixMode
 import at.released.tempfolder.posix200809.platformGetFileType
@@ -46,7 +46,7 @@ internal actual val platformFilesystem: PlatformFilesystemTestFunctions = Posix2
 
 internal expect fun nativeGetFileMode(
     dirFd: TempDirectoryDescriptor,
-    path: PosixPathString,
+    path: PosixPath,
     followBaseSymlink: Boolean = false,
 ): UInt
 
@@ -56,28 +56,28 @@ internal object Posix2009809FilesystemTestFunctions : PlatformFilesystemTestFunc
     override val isSymlinkSupported: Boolean = true
     override val pathSeparator: Char = '/'
 
-    override fun joinPath(base: TempfolderPathString, append: String): TempfolderPathString {
-        check(base is MultibytePathString)
-        return UnknownEncodingPosixPathString(base.bytes.appendPosixPath(append))
+    override fun joinPath(base: TempDirectoryPath, append: String): TempDirectoryPath {
+        check(base is MultibytePath)
+        return UnknownEncodingPosixPath(base.bytes.appendPosixPath(append))
     }
 
-    override fun isDirectory(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
+    override fun isDirectory(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
         return platformGetFileType(CURRENT_WORKING_DIRECTORY, path.toPosixPathString()) == PosixFileType.DIRECTORY
     }
 
-    override fun isFile(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
+    override fun isFile(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
         return platformGetFileType(CURRENT_WORKING_DIRECTORY, path.toPosixPathString()) == PosixFileType.FILE
     }
 
-    override fun isSymlink(path: TempfolderPathString): Boolean {
+    override fun isSymlink(path: TempDirectoryPath): Boolean {
         return platformGetFileType(CURRENT_WORKING_DIRECTORY, path.toPosixPathString()) == PosixFileType.SYMLINK
     }
 
-    override fun isExists(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
+    override fun isExists(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
         return try {
             platformGetFileType(CURRENT_WORKING_DIRECTORY, path.toPosixPathString())
             true
-        } catch (nfe: TempfolderNativeIOException) {
+        } catch (nfe: TempDirectoryNativeIOException) {
             if (nfe.errno != ENOENT) {
                 throw nfe
             } else {
@@ -86,18 +86,18 @@ internal object Posix2009809FilesystemTestFunctions : PlatformFilesystemTestFunc
         }
     }
 
-    override fun isSamePathAs(path1: TempfolderPathString, path2: TempfolderPathString): Boolean {
+    override fun isSamePathAs(path1: TempDirectoryPath, path2: TempDirectoryPath): Boolean {
         val path1realPath = platformRealpath(path1.toPosixPathString())
         val path2realPath = platformRealpath(path2.toPosixPathString())
         return path1realPath == path2realPath
     }
 
-    override fun getFileMode(path: TempfolderPathString, followBasenameSymlink: Boolean): Set<TempfolderFileModeBit> {
+    override fun getFileMode(path: TempDirectoryPath, followBasenameSymlink: Boolean): Set<TempDirectoryFileModeBit> {
         return nativeGetFileMode(CURRENT_WORKING_DIRECTORY, path.toPosixPathString(), followBasenameSymlink)
             .let(Companion::fromPosixMode)
     }
 
-    override fun createFile(path: TempfolderPathString, mode: Set<TempfolderFileModeBit>, content: ByteString) {
+    override fun createFile(path: TempDirectoryPath, mode: Set<TempDirectoryFileModeBit>, content: ByteString) {
         val fd: TempDirectoryDescriptor = platformOpenAt(
             CURRENT_WORKING_DIRECTORY,
             path.toPosixPathString(),
@@ -112,27 +112,27 @@ internal object Posix2009809FilesystemTestFunctions : PlatformFilesystemTestFunc
         }
     }
 
-    override fun createDirectory(path: TempfolderPathString, mode: Set<TempfolderFileModeBit>) {
+    override fun createDirectory(path: TempDirectoryPath, mode: Set<TempDirectoryFileModeBit>) {
         platformMkdirat(CURRENT_WORKING_DIRECTORY, path.toPosixPathString(), mode.toPosixMode())
     }
 
-    override fun createSymlink(oldPath: String, newPath: TempfolderPathString, type: SymlinkType) {
+    override fun createSymlink(oldPath: String, newPath: TempDirectoryPath, type: SymlinkType) {
         val result = symlink(oldPath, newPath.asString())
         if (result == -1) {
-            throw TempfolderNativeIOException(errno, "symlink() failed. ${errnoDescription()}")
+            throw TempDirectoryNativeIOException(errno, "symlink() failed. ${errnoDescription()}")
         }
     }
 
-    private fun TempfolderPathString.toPosixPathString(): PosixPathString {
+    private fun TempDirectoryPath.toPosixPathString(): PosixPath {
         return when (this) {
-            is PosixPathString -> this
-            is MultibytePathString -> UnknownEncodingPosixPathString(this.bytes)
-            is WideCharPathString -> this.asString().toPosixPathString()
+            is PosixPath -> this
+            is MultibytePath -> UnknownEncodingPosixPath(this.bytes)
+            is WideCharPath -> this.asString().toPosixPath()
         }
     }
 
     @OptIn(UnsafeNumber::class)
-    @Throws(TempfolderNativeIOException::class)
+    @Throws(TempDirectoryNativeIOException::class)
     private fun writeToFile(fd: TempDirectoryDescriptor, content: ByteString) {
         if (content.isEmpty()) {
             return
@@ -145,7 +145,7 @@ internal object Posix2009809FilesystemTestFunctions : PlatformFilesystemTestFunc
                 if (written >= 0) {
                     byteLeft -= written
                 } else if (errno != EINTR) {
-                    throw TempfolderNativeIOException(errno, "write() failed. ${errnoDescription()}")
+                    throw TempDirectoryNativeIOException(errno, "write() failed. ${errnoDescription()}")
                 }
             }
         }

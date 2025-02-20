@@ -7,13 +7,13 @@ package at.released.tempfolder.posix200809.sync.fd
 
 import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.TempDirectoryDescriptor.Companion.CURRENT_WORKING_DIRECTORY
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.path.PosixPathString
-import at.released.tempfolder.path.PosixPathStringComponent
-import at.released.tempfolder.path.PosixPathStringComponent.Companion.asPathComponent
-import at.released.tempfolder.path.TempfolderInvalidPathException
-import at.released.tempfolder.path.toPosixPathString
-import at.released.tempfolder.posix200809.TempfolderNativeIOException
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.path.PosixPath
+import at.released.tempfolder.path.PosixPathComponent
+import at.released.tempfolder.path.PosixPathComponent.Companion.asPathComponent
+import at.released.tempfolder.path.TempDirectoryInvalidPathException
+import at.released.tempfolder.path.toPosixPath
+import at.released.tempfolder.posix200809.TempDirectoryNativeIOException
 import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.nativeOpenDirectoryAt
 import at.released.tempfolder.posix200809.platformMkdirat
@@ -29,26 +29,26 @@ import at.released.tempfolder.sync.generateTempDirectoryName
 import platform.posix.EEXIST
 
 internal object PosixTempDirectoryCreator {
-    @Throws(TempfolderIOException::class, TempfolderInvalidPathException::class)
+    @Throws(TempDirectoryIOException::class, TempDirectoryInvalidPathException::class)
     internal fun createDirectory(
         root: ResolvedTempRoot,
         mode: UInt = 0b000_111_000_000U,
         nameGenerator: () -> String = { generateTempDirectoryName("tempfolder-") },
     ): TempfolderCoordinates {
         val tempDirectoryFd = (1..MAX_CREATE_DIRECTORY_ATTEMPTS).firstNotNullOfOrNull {
-            val directoryName = nameGenerator().toPosixPathString().asPathComponent()
+            val directoryName = nameGenerator().toPosixPath().asPathComponent()
             tryCreateTempfolder(root, directoryName, mode)
         }
-        return tempDirectoryFd ?: throw TempfolderIOException("Can not create temp folder: max attempts reached")
+        return tempDirectoryFd ?: throw TempDirectoryIOException("Can not create temp folder: max attempts reached")
     }
 
-    @Throws(TempfolderIOException::class)
+    @Throws(TempDirectoryIOException::class)
     private fun tryCreateTempfolder(
         root: ResolvedTempRoot,
-        directoryName: PosixPathStringComponent,
+        directoryName: PosixPathComponent,
         mode: UInt,
     ): TempfolderCoordinates? {
-        val (dirFd: TempDirectoryDescriptor, pathname: PosixPathString) = when (root) {
+        val (dirFd: TempDirectoryDescriptor, pathname: PosixPath) = when (root) {
             is FileDescriptor -> root.fd to directoryName
             is Path -> CURRENT_WORKING_DIRECTORY to root.path.append(directoryName.asString())
         }
@@ -66,11 +66,11 @@ internal object PosixTempDirectoryCreator {
                 directoryPathname = pathname,
                 directoryDescriptor = tempdirFd,
             )
-        } catch (ie: TempfolderNativeIOException) {
+        } catch (ie: TempDirectoryNativeIOException) {
             val errno = platformUnlinkDirectory(dirFd, pathname)
             if (errno != 0) {
                 ie.addSuppressed(
-                    TempfolderNativeIOException(errno, "Can not remove temp directory. ${errnoDescription()}"),
+                    TempDirectoryNativeIOException(errno, "Can not remove temp directory. ${errnoDescription()}"),
                 )
             }
             throw ie
@@ -79,7 +79,7 @@ internal object PosixTempDirectoryCreator {
 
     private fun tryCreateDirectory(
         base: TempDirectoryDescriptor,
-        directoryName: PosixPathString,
+        directoryName: PosixPath,
         mode: UInt,
     ): CreateDirectoryResult {
         val mkdirResult = platformMkdirat(base, directoryName, mode)
@@ -96,7 +96,10 @@ internal object PosixTempDirectoryCreator {
                 result == 0 -> Success
                 result == EEXIST -> DirectoryExists
                 else -> Error(
-                    TempfolderNativeIOException(result, "Failed to open temp directory. ${errnoDescription(result)}"),
+                    TempDirectoryNativeIOException(
+                        result,
+                        "Failed to open temp directory. ${errnoDescription(result)}",
+                    ),
                 )
             }
         }
@@ -104,7 +107,7 @@ internal object PosixTempDirectoryCreator {
 
     internal class TempfolderCoordinates(
         val parentDirfd: TempDirectoryDescriptor,
-        val directoryPathname: PosixPathString,
+        val directoryPathname: PosixPath,
         val directoryDescriptor: TempDirectoryDescriptor,
     )
 }

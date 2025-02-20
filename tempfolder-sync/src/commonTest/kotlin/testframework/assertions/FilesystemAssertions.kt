@@ -12,62 +12,62 @@ import assertk.assertions.isTrue
 import assertk.assertions.support.appendName
 import assertk.assertions.support.expected
 import assertk.assertions.support.show
-import at.released.tempfolder.dsl.TempfolderFileModeBit
-import at.released.tempfolder.path.TempfolderPathString
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit
+import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.path.asStringOrDescription
-import at.released.tempfolder.path.toPosixPathString
+import at.released.tempfolder.path.toPosixPath
 import at.released.tempfolder.testframework.platformFilesystem
 
-fun Assert<TempfolderPathString>.isSamePathAs(path: String) = given { path1 ->
+fun Assert<TempDirectoryPath>.isSamePathAs(path: String) = given { path1 ->
     if (path1.asString() == path) {
         return
     }
 
-    if (platformFilesystem.isSamePathAs(path1, path.toPosixPathString())) {
+    if (platformFilesystem.isSamePathAs(path1, path.toPosixPath())) {
         return
     }
 
     expected("path the same as:${show(path)} but was:${show(path1.asStringOrDescription())}")
 }
 
-fun Assert<TempfolderPathString>.isDirectory(
+fun Assert<TempDirectoryPath>.isDirectory(
     followBasenameSymlink: Boolean = false,
 ) = transform(appendName("isDirectory", separator = "::")) {
     platformFilesystem.isDirectory(it, followBasenameSymlink)
 }.isTrue()
 
-fun Assert<TempfolderPathString>.isFile(
+fun Assert<TempDirectoryPath>.isFile(
     followBasenameSymlink: Boolean = false,
 ) = transform(appendName("isFile", separator = "::")) {
     platformFilesystem.isFile(it, followBasenameSymlink)
 }.isTrue()
 
-fun Assert<TempfolderPathString>.isSymlink() = transform { platformFilesystem.isSymlink(it) }.isTrue()
+fun Assert<TempDirectoryPath>.isSymlink() = transform { platformFilesystem.isSymlink(it) }.isTrue()
 
-private fun Assert<TempfolderPathString>.exists(
+private fun Assert<TempDirectoryPath>.exists(
     followBasenameSymlink: Boolean = false,
 ): Assert<Boolean> = transform(appendName("exists", separator = "::")) { path ->
     platformFilesystem.isExists(path, followBasenameSymlink)
 }
 
-public fun Assert<TempfolderPathString>.isExists(): Unit = exists().isTrue()
+public fun Assert<TempDirectoryPath>.isExists(): Unit = exists().isTrue()
 
-public fun Assert<TempfolderPathString>.isNotExists(): Unit = exists().isFalse()
+public fun Assert<TempDirectoryPath>.isNotExists(): Unit = exists().isFalse()
 
-public fun Assert<TempfolderPathString>.posixFileMode(
+public fun Assert<TempDirectoryPath>.posixFileMode(
     withSuidGidSticky: Boolean = false,
     followBasenameSymlink: Boolean = false,
-): Assert<Set<TempfolderFileModeBit>> = transform(appendName("fileMode", separator = ".")) { path ->
+): Assert<Set<TempDirectoryFileModeBit>> = transform(appendName("fileMode", separator = ".")) { path ->
     val fileMode = platformFilesystem.getFileMode(path, followBasenameSymlink)
     if (withSuidGidSticky) {
         fileMode
     } else {
-        fileMode - setOf(TempfolderFileModeBit.SUID, TempfolderFileModeBit.SGID, TempfolderFileModeBit.STICKY)
+        fileMode - setOf(TempDirectoryFileModeBit.SUID, TempDirectoryFileModeBit.SGID, TempDirectoryFileModeBit.STICKY)
     }
 }
 
-public fun Assert<TempfolderPathString>.posixFileModeIfSupportedIsEqualTo(
-    vararg expectedBits: TempfolderFileModeBit,
+public fun Assert<TempDirectoryPath>.posixFileModeIfSupportedIsEqualTo(
+    vararg expectedBits: TempDirectoryFileModeBit,
     withSuidGidSticky: Boolean = false,
 ): Unit = given { path ->
     if (!platformFilesystem.isPosixFileModeSupported) {

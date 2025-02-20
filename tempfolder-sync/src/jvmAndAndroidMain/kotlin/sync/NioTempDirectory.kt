@@ -7,15 +7,15 @@
 
 package at.released.tempfolder.sync
 
-import at.released.tempfolder.DeleteRecursivelyException
-import at.released.tempfolder.DeleteRecursivelyException.Companion.FAILED_TO_DELETE_MESSAGE
-import at.released.tempfolder.TempfolderClosedException
-import at.released.tempfolder.TempfolderClosedException.Companion.TEMPFOLDER_CLOSED_MESSAGE
-import at.released.tempfolder.TempfolderException
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.path.TempfolderInvalidPathException
-import at.released.tempfolder.path.TempfolderPathString
-import at.released.tempfolder.path.toPosixPathString
+import at.released.tempfolder.TempDirectoryClosedException
+import at.released.tempfolder.TempDirectoryClosedException.Companion.TEMP_DIRECTORY_CLOSED_MESSAGE
+import at.released.tempfolder.TempDirectoryDeleteException
+import at.released.tempfolder.TempDirectoryDeleteException.Companion.FAILED_TO_DELETE_MESSAGE
+import at.released.tempfolder.TempDirectoryException
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.path.TempDirectoryInvalidPathException
+import at.released.tempfolder.path.TempDirectoryPath
+import at.released.tempfolder.path.toPosixPath
 import kotlinx.atomicfu.atomic
 import java.io.IOException
 import java.nio.file.InvalidPathException
@@ -24,11 +24,11 @@ import kotlin.LazyThreadSafetyMode.PUBLICATION
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.deleteRecursively
 
-@Throws(TempfolderException::class)
-public fun Tempfolder.Companion.createJvmTempDirectory(
-    block: NioTempDirectoryConfig.() -> Unit,
-): Tempfolder<Path> {
-    val config = NioTempDirectoryConfig().apply(block)
+@Throws(TempDirectoryException::class)
+public fun TempDirectory.Companion.createJvmTempDirectory(
+    block: TempDirectoryNioConfig.() -> Unit,
+): TempDirectory<Path> {
+    val config = TempDirectoryNioConfig().apply(block)
     val path = createNioTempDirectory(
         base = config.base,
         mode = config.permissions,
@@ -39,28 +39,28 @@ public fun Tempfolder.Companion.createJvmTempDirectory(
 
 private class NioTempDirectory(
     absolutePath: Path,
-) : Tempfolder<Path> {
+) : TempDirectory<Path> {
     override val root: Path = absolutePath
     private val isClosed = atomic(false)
     override var deleteOnClose: Boolean by atomic(true)
-    private val absolutePathString: TempfolderPathString by lazy(PUBLICATION) {
-        root.toString().toPosixPathString()
+    private val absolutePathString: TempDirectoryPath by lazy(PUBLICATION) {
+        root.toString().toPosixPath()
     }
 
-    override fun getAbsolutePath(): TempfolderPathString = absolutePathString
+    override fun getAbsolutePath(): TempDirectoryPath = absolutePathString
 
-    @Throws(TempfolderIOException::class)
+    @Throws(TempDirectoryIOException::class)
     override fun delete() {
         throwIfClosed()
         deleteRecursively(root)
     }
 
-    @Throws(TempfolderIOException::class)
-    override fun append(name: String): TempfolderPathString {
+    @Throws(TempDirectoryIOException::class)
+    override fun append(name: String): TempDirectoryPath {
         return try {
-            root.resolve(name).toString().toPosixPathString()
+            root.resolve(name).toString().toPosixPath()
         } catch (ipe: InvalidPathException) {
-            throw TempfolderInvalidPathException(ipe)
+            throw TempDirectoryInvalidPathException(ipe)
         }
     }
 
@@ -75,7 +75,7 @@ private class NioTempDirectory(
 
     private fun throwIfClosed() {
         if (isClosed.value) {
-            throw TempfolderClosedException(TEMPFOLDER_CLOSED_MESSAGE)
+            throw TempDirectoryClosedException(TEMP_DIRECTORY_CLOSED_MESSAGE)
         }
     }
 
@@ -87,9 +87,9 @@ private class NioTempDirectory(
             } catch (ioe: IOException) {
                 val deleteException = ioe.suppressed.let { suppressed ->
                     if (suppressed.isEmpty()) {
-                        DeleteRecursivelyException(ioe)
+                        TempDirectoryDeleteException(ioe)
                     } else {
-                        DeleteRecursivelyException(FAILED_TO_DELETE_MESSAGE).apply {
+                        TempDirectoryDeleteException(FAILED_TO_DELETE_MESSAGE).apply {
                             suppressed.forEach(::addSuppressed)
                         }
                     }

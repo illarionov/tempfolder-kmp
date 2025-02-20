@@ -6,7 +6,7 @@
 package at.released.tempfolder.posix200809
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.path.PosixPathString
+import at.released.tempfolder.path.PosixPath
 import at.released.tempfolder.platform.androidnative.mkdirat
 import at.released.tempfolder.posix200809.path.allocNullTerminatedPath
 import kotlinx.cinterop.UnsafeNumber
@@ -17,7 +17,7 @@ import platform.posix.errno
 @OptIn(UnsafeNumber::class)
 internal actual fun platformMkdirat(
     base: TempDirectoryDescriptor,
-    directoryName: PosixPathString,
+    directoryName: PosixPath,
     mode: UInt,
 ): Int = memScoped {
     val pathBytes = allocNullTerminatedPath(directoryName)

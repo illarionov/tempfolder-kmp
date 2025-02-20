@@ -5,16 +5,16 @@
 
 package at.released.tempfolder.sync.delete
 
-import at.released.tempfolder.DeleteRecursivelyException
+import at.released.tempfolder.TempDirectoryDeleteException
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.TempfolderException
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.TempfolderWasiIOException
-import at.released.tempfolder.path.WasiPathString
-import at.released.tempfolder.path.WasiPathString.Companion.WASI_PATH_CURRENT_DIRECTORY
-import at.released.tempfolder.path.WasiPathString.Companion.asWasiPathComponent
-import at.released.tempfolder.path.WasiPathString.Companion.isWasiSpecialDirectory
-import at.released.tempfolder.path.WasiPathString.Companion.toWasiPathString
+import at.released.tempfolder.TempDirectoryException
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.TempDirectoryWasiIOException
+import at.released.tempfolder.path.WasiPath
+import at.released.tempfolder.path.WasiPath.Companion.WASI_PATH_CURRENT_DIRECTORY
+import at.released.tempfolder.path.WasiPath.Companion.asWasiPathComponent
+import at.released.tempfolder.path.WasiPath.Companion.isWasiSpecialDirectory
+import at.released.tempfolder.path.WasiPath.Companion.toWasiPathString
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.sync.delete.DirStream.DirStreamItem
 import at.released.tempfolder.sync.delete.DirStream.DirStreamItem.Entry
@@ -59,16 +59,16 @@ private class BottomUpFileTreeRemover(
     fun delete() {
         try {
             enterDirectoryOrThrow(root, WASI_PATH_CURRENT_DIRECTORY.bytes)
-        } catch (tne: TempfolderWasiIOException) {
-            throw TempfolderWasiIOException(tne.wasiErrno, "Can not open directory to remove", tne)
+        } catch (tne: TempDirectoryWasiIOException) {
+            throw TempDirectoryWasiIOException(tne.wasiErrno, "Can not open directory to remove", tne)
         }
 
         try {
             deleteUnsafe()
             suppressedExceptions.removeFirstOrNull()?.let {
-                throw DeleteRecursivelyException("${it.message}. Suppressed exceptions may contain other errors", it)
+                throw TempDirectoryDeleteException("${it.message}. Suppressed exceptions may contain other errors", it)
             }
-        } catch (ie: TempfolderException) {
+        } catch (ie: TempDirectoryException) {
             suppressedExceptions.addSuppressedToThrowable(ie)
             throw ie
         } finally {
@@ -79,7 +79,7 @@ private class BottomUpFileTreeRemover(
     private fun closeSilent() {
         try {
             close()
-        } catch (@Suppress("SwallowedException") ex: TempfolderException) {
+        } catch (@Suppress("SwallowedException") ex: TempDirectoryException) {
             // Ignore errors
         }
     }
@@ -89,7 +89,7 @@ private class BottomUpFileTreeRemover(
             val stream = pathDequeue.last()
             when (val dirEntry = stream.readNext()) {
                 is Entry -> handleEntry(dirEntry.name, dirEntry.isDirectory)
-                is Error -> throw TempfolderIOException(
+                is Error -> throw TempDirectoryIOException(
                     "Failed to read directory entry at ${pathDequeue.getPathFromRoot(stream).asStringOrDescription()}",
                     dirEntry.error,
                 )
@@ -112,7 +112,7 @@ private class BottomUpFileTreeRemover(
 
             try {
                 platformUnlinkDirectoryIfExists(rootFd, path.bytes)
-            } catch (err: TempfolderWasiIOException) {
+            } catch (err: TempDirectoryWasiIOException) {
                 suppressedExceptions.addOrThrowNativeIOException(
                     errorText = "Can not remove directory",
                     filePath = pathDequeue.getPathFromRoot(parentStream, closingStream.basename.bytes),
@@ -140,7 +140,7 @@ private class BottomUpFileTreeRemover(
             } else {
                 try {
                     enterDirectoryOrThrow(stream.dirfd, basename)
-                } catch (tne: TempfolderWasiIOException) {
+                } catch (tne: TempDirectoryWasiIOException) {
                     suppressedExceptions.addOrThrowNativeIOException(
                         errorText = "Can not enter directory",
                         filePath = pathDequeue.getPathFromRoot(stream, basename),
@@ -149,7 +149,7 @@ private class BottomUpFileTreeRemover(
                     )
                     try {
                         platformUnlinkDirectoryIfExists(stream.dirfd, basename)
-                    } catch (unlinkError: TempfolderWasiIOException) {
+                    } catch (unlinkError: TempDirectoryWasiIOException) {
                         tne.addSuppressed(unlinkError)
                         stream.addIgnore(basename)
                     }
@@ -161,7 +161,7 @@ private class BottomUpFileTreeRemover(
                 val path = pathDequeue.getPathFromRoot(stream, basename)
                 try {
                     enterDirectoryOrThrow(root, path, basename)
-                } catch (error: TempfolderWasiIOException) {
+                } catch (error: TempDirectoryWasiIOException) {
                     suppressedExceptions.addOrThrowNativeIOException(
                         errorText = "Can not enter directory",
                         filePath = path,
@@ -170,7 +170,7 @@ private class BottomUpFileTreeRemover(
                     )
                     try {
                         platformUnlinkDirectoryIfExists(root, path.bytes)
-                    } catch (unlinkError: TempfolderWasiIOException) {
+                    } catch (unlinkError: TempDirectoryWasiIOException) {
                         error.addSuppressed(unlinkError)
                     }
                 }
@@ -182,23 +182,23 @@ private class BottomUpFileTreeRemover(
         dirFd: TempDirectoryDescriptor,
         basename: ByteString,
     ) {
-        val component: WasiPathString.Component = basename.toWasiPathString().asWasiPathComponent()
+        val component: WasiPath.Component = basename.toWasiPathString().asWasiPathComponent()
         enterDirectoryOrThrow(dirFd, component, component)
     }
 
     private fun enterDirectoryOrThrow(
         dirFd: TempDirectoryDescriptor,
-        pathFromDirFd: WasiPathString,
+        pathFromDirFd: WasiPath,
         basename: ByteString,
     ) {
-        val basenameComponent: WasiPathString.Component = basename.toWasiPathString().asWasiPathComponent()
+        val basenameComponent: WasiPath.Component = basename.toWasiPathString().asWasiPathComponent()
         enterDirectoryOrThrow(dirFd, pathFromDirFd, basenameComponent)
     }
 
     private fun enterDirectoryOrThrow(
         dirFd: TempDirectoryDescriptor,
-        pathFromDirFd: WasiPathString,
-        basename: WasiPathString.Component,
+        pathFromDirFd: WasiPath,
+        basename: WasiPath.Component,
     ) {
         pathDequeue.reserveFileDescriptor(::preloadDirectory)
         val fd = wasiOpenDirectoryOrThrow(dirFd, pathFromDirFd, false)
@@ -218,7 +218,7 @@ private class BottomUpFileTreeRemover(
                     unlinkFile(stream, entry.name)
                 }
 
-                is Error -> throw TempfolderIOException(entry.error)
+                is Error -> throw TempDirectoryIOException(entry.error)
                 DirStreamItem.EndOfStream -> break
             }
         }
@@ -228,7 +228,7 @@ private class BottomUpFileTreeRemover(
     private fun unlinkFile(stream: OpenDirStream, name: ByteString) {
         try {
             platformUnlinkFileIfExists(stream.dirfd, name)
-        } catch (err: TempfolderWasiIOException) {
+        } catch (err: TempDirectoryWasiIOException) {
             suppressedExceptions.addOrThrowNativeIOException(
                 errorText = "Can not unlink file",
                 filePath = pathDequeue.getPathFromRoot(stream, name),

@@ -5,9 +5,9 @@
 
 package at.released.tempfolder.winapi.delete
 
-import at.released.tempfolder.TempfolderWindowsIOException
-import at.released.tempfolder.path.TempfolderInvalidPathException
-import at.released.tempfolder.path.TempfolderPathString
+import at.released.tempfolder.TempDirectoryWindowsIOException
+import at.released.tempfolder.path.TempDirectoryInvalidPathException
+import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.path.windowsPathEndWithSpecialDirectory
 import at.released.tempfolder.winapi.delete.WindowsDirectoryStream.DirectoryStreamItem
 import at.released.tempfolder.winapi.delete.WindowsDirectoryStream.DirectoryStreamItem.EndOfStream
@@ -23,26 +23,26 @@ import platform.windows.GetLastError
 import platform.windows.RemoveDirectoryW
 import platform.windows.SetFileAttributesW
 
-@Throws(TempfolderWindowsIOException::class)
+@Throws(TempDirectoryWindowsIOException::class)
 internal fun deleteDirectoryRecursively(
-    path: TempfolderPathString,
+    path: TempDirectoryPath,
 ) {
     return deleteDirectoryRecursively(path.asString())
 }
 
-@Throws(TempfolderWindowsIOException::class)
+@Throws(TempDirectoryWindowsIOException::class)
 internal fun deleteDirectoryRecursively(
     path: String,
 ) {
     if (windowsPathEndWithSpecialDirectory(path)) {
-        throw TempfolderInvalidPathException("Path `$path` should be canonicalized")
+        throw TempDirectoryInvalidPathException("Path `$path` should be canonicalized")
     }
 
     BottomUpFileTreeWalker(path).use { walker ->
         while (true) {
             when (val item = walker.next()) {
                 EndOfStream -> break
-                is Error -> throw TempfolderWindowsIOException("Failed to delete file or directory")
+                is Error -> throw TempDirectoryWindowsIOException("Failed to delete file or directory")
                 is Entry -> item.delete()
             }
         }
@@ -56,24 +56,24 @@ private fun Entry.delete() {
             if (lastErr == ERROR_ACCESS_DENIED.toUInt()) {
                 try {
                     stripReadOnlyAttribute(absolutePath)
-                } catch (@Suppress("SwallowedException") _: TempfolderWindowsIOException) {
+                } catch (@Suppress("SwallowedException") _: TempDirectoryWindowsIOException) {
                     // Ignore
                 }
                 if (DeleteFileW(absolutePath) == 0) {
-                    throw TempfolderWindowsIOException("Failed to delete file `$absolutePath`")
+                    throw TempDirectoryWindowsIOException("Failed to delete file `$absolutePath`")
                 }
             }
         }
 
         DIRECTORY -> if (RemoveDirectoryW(absolutePath) == 0) {
-            throw TempfolderWindowsIOException("Failed to delete directory `$absolutePath`")
+            throw TempDirectoryWindowsIOException("Failed to delete directory `$absolutePath`")
         }
     }
 }
 
 private fun stripReadOnlyAttribute(path: String) {
     if (SetFileAttributesW(path, FILE_ATTRIBUTE_NORMAL.toUInt()) == 0) {
-        throw TempfolderWindowsIOException("Failed to set file attributes to normal on`$path`")
+        throw TempDirectoryWindowsIOException("Failed to set file attributes to normal on`$path`")
     }
 }
 

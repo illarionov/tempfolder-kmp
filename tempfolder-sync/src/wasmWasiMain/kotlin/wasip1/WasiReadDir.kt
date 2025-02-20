@@ -6,7 +6,7 @@
 package at.released.tempfolder.wasip1
 
 import at.released.tempfolder.TempDirectoryDescriptor
-import at.released.tempfolder.TempfolderIOException
+import at.released.tempfolder.TempDirectoryIOException
 import at.released.tempfolder.sync.delete.DirStream.DirStreamItem.Entry
 import at.released.tempfolder.wasip1.type.Filetype
 import kotlin.wasm.unsafe.Pointer
@@ -43,7 +43,7 @@ private fun readPageEntries(buffer: Pointer, buffserSize: Int): List<Entry> {
         }
         val dNamlen = (buffer + offset + 16).loadInt()
         val dType = (buffer + offset + 20).loadByte().toInt().let {
-            Filetype.fromCode(it) ?: throw TempfolderIOException("Invalid file type code `$it`")
+            Filetype.fromCode(it) ?: throw TempDirectoryIOException("Invalid file type code `$it`")
         }
 
         val entrySize = DIRENT_PACKED_SIZE + dNamlen

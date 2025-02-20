@@ -5,16 +5,16 @@
 
 package at.released.tempfolder.testframework
 
-import at.released.tempfolder.TempfolderIOException
-import at.released.tempfolder.dsl.TempfolderFileModeBit
+import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit
 import at.released.tempfolder.jsapi.nodejs.fromNodeJsMode
 import at.released.tempfolder.jsapi.nodejs.join
 import at.released.tempfolder.jsapi.nodejs.mkdirSync
 import at.released.tempfolder.jsapi.nodejs.nodeJsErrorCode
 import at.released.tempfolder.jsapi.nodejs.realpathSync
 import at.released.tempfolder.jsapi.nodejs.toNodeJsMode
-import at.released.tempfolder.path.JsNodePathString.Companion.toJsNodePathString
-import at.released.tempfolder.path.TempfolderPathString
+import at.released.tempfolder.path.JsNodePath.Companion.toJsNodePathString
+import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.SymlinkType
 import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.SymlinkType.NOT_SPECIFIED
 import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.SymlinkType.SYMLINK_TO_DIRECTORY
@@ -36,41 +36,41 @@ private object NodeJsFilesystemTestFunctions : PlatformFilesystemTestFunctions {
     override val isSymlinkSupported: Boolean get() = true
     override val pathSeparator: Char get() = '/'
 
-    override fun joinPath(base: TempfolderPathString, append: String): TempfolderPathString {
+    override fun joinPath(base: TempDirectoryPath, append: String): TempDirectoryPath {
         return join(base.asString(), append).toJsNodePathString()
     }
 
-    override fun isDirectory(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
+    override fun isDirectory(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
         return getStatOrThrow(path, followBasenameSymlink)?.isDirectory() ?: false
     }
 
-    override fun isFile(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
+    override fun isFile(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
         return getStatOrThrow(path, followBasenameSymlink)?.let {
             return !it.isDirectory() && !it.isSymbolicLink()
         } ?: false
     }
 
-    override fun isSymlink(path: TempfolderPathString): Boolean {
+    override fun isSymlink(path: TempDirectoryPath): Boolean {
         return getStatOrThrow(path, false)?.isSymbolicLink() ?: false
     }
 
-    override fun isExists(path: TempfolderPathString, followBasenameSymlink: Boolean): Boolean {
+    override fun isExists(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
         return getStatOrThrow(path, followBasenameSymlink) != null
     }
 
-    override fun isSamePathAs(path1: TempfolderPathString, path2: TempfolderPathString): Boolean {
+    override fun isSamePathAs(path1: TempDirectoryPath, path2: TempDirectoryPath): Boolean {
         val realPath1 = realpathSync(path1.asString())
         val realPath2 = realpathSync(path2.asString())
         return realPath1 == realPath2
     }
 
-    override fun getFileMode(path: TempfolderPathString, followBasenameSymlink: Boolean): Set<TempfolderFileModeBit> {
+    override fun getFileMode(path: TempDirectoryPath, followBasenameSymlink: Boolean): Set<TempDirectoryFileModeBit> {
         val mode = getStatOrThrow(path, followBasenameSymlink)?.mode?.toInt()
-            ?: throw TempfolderIOException("File `$path` not found")
-        return TempfolderFileModeBit.fromNodeJsMode(mode)
+            ?: throw TempDirectoryIOException("File `$path` not found")
+        return TempDirectoryFileModeBit.fromNodeJsMode(mode)
     }
 
-    override fun createFile(path: TempfolderPathString, mode: Set<TempfolderFileModeBit>, content: ByteString) {
+    override fun createFile(path: TempDirectoryPath, mode: Set<TempDirectoryFileModeBit>, content: ByteString) {
         try {
             writeFileSync(
                 file = path.asString(),
@@ -80,20 +80,20 @@ private object NodeJsFilesystemTestFunctions : PlatformFilesystemTestFunctions {
                 },
             )
         } catch (err: Throwable) {
-            throw TempfolderIOException("writeFileSync() failed. Code: ${err.nodeJsErrorCode}", err)
+            throw TempDirectoryIOException("writeFileSync() failed. Code: ${err.nodeJsErrorCode}", err)
         }
     }
 
-    override fun createDirectory(path: TempfolderPathString, mode: Set<TempfolderFileModeBit>) {
+    override fun createDirectory(path: TempDirectoryPath, mode: Set<TempDirectoryFileModeBit>) {
         val intMode = mode.toNodeJsMode()
         try {
             mkdirSync(path.asString(), intMode)
         } catch (err: Throwable) {
-            throw TempfolderIOException("mkdirSync() failed. Code: ${err.nodeJsErrorCode}", err)
+            throw TempDirectoryIOException("mkdirSync() failed. Code: ${err.nodeJsErrorCode}", err)
         }
     }
 
-    override fun createSymlink(oldPath: String, newPath: TempfolderPathString, type: SymlinkType) {
+    override fun createSymlink(oldPath: String, newPath: TempDirectoryPath, type: SymlinkType) {
         val typeString = when (type) {
             NOT_SPECIFIED -> null
             SYMLINK_TO_FILE -> "file"
@@ -102,11 +102,11 @@ private object NodeJsFilesystemTestFunctions : PlatformFilesystemTestFunctions {
         try {
             symlinkSync(oldPath, newPath.asString(), typeString)
         } catch (err: Throwable) {
-            throw TempfolderIOException("symlinkSync() failed. Code: ${err.nodeJsErrorCode}", err)
+            throw TempDirectoryIOException("symlinkSync() failed. Code: ${err.nodeJsErrorCode}", err)
         }
     }
 
-    private fun getStatOrThrow(path: TempfolderPathString, followBasenameSymlink: Boolean): Stats? {
+    private fun getStatOrThrow(path: TempDirectoryPath, followBasenameSymlink: Boolean): Stats? {
         try {
             val lstatOptions = lstatOptions {
                 throwIfNoEntry = false
@@ -117,7 +117,7 @@ private object NodeJsFilesystemTestFunctions : PlatformFilesystemTestFunctions {
                 lstatSync(path.asString(), lstatOptions)
             }
         } catch (err: Throwable) {
-            throw TempfolderIOException("statSync() failed. Code: ${err.nodeJsErrorCode}", err)
+            throw TempDirectoryIOException("statSync() failed. Code: ${err.nodeJsErrorCode}", err)
         }
     }
 

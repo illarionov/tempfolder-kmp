@@ -5,17 +5,17 @@
 
 package at.released.tempfolder.sync.path
 
-import at.released.tempfolder.dsl.CommonTempfolderConfig.Companion.DEFAULT_PERMISSIONS
-import at.released.tempfolder.dsl.CommonTempfolderConfig.Companion.DEFAULT_PREFIX
-import at.released.tempfolder.dsl.TempfolderDsl
-import at.released.tempfolder.dsl.TempfolderFileModeBit
+import at.released.tempfolder.dsl.CommonTempDirectoryConfig.Companion.DEFAULT_PERMISSIONS
+import at.released.tempfolder.dsl.CommonTempDirectoryConfig.Companion.DEFAULT_PREFIX
+import at.released.tempfolder.dsl.TempDirectoryDsl
+import at.released.tempfolder.dsl.TempDirectoryFileModeBit
 
-@TempfolderDsl
+@TempDirectoryDsl
 public class WindowsTempDirectoryConfig {
     /**
      * Base path for the temporary directory
      */
-    public var base: WindowsTempBase = auto()
+    public var base: TempDirectoryWindowsBase = auto()
 
     /**
      * Prefix for the directory name.
@@ -29,11 +29,12 @@ public class WindowsTempDirectoryConfig {
      *
      * Default: 0700
      */
-    public var permissions: Set<TempfolderFileModeBit> = DEFAULT_PERMISSIONS
+    public var permissions: Set<TempDirectoryFileModeBit> = DEFAULT_PERMISSIONS
 
     public companion object {
-        public fun WindowsTempDirectoryConfig.auto(): WindowsTempBase.Auto = WindowsTempBase.Auto
+        public fun WindowsTempDirectoryConfig.auto(): TempDirectoryWindowsBase.Auto = TempDirectoryWindowsBase.Auto
 
-        public fun WindowsTempDirectoryConfig.path(path: String): WindowsTempBase.Path = WindowsTempBase.Path(path)
+        public fun WindowsTempDirectoryConfig.path(path: String): TempDirectoryWindowsBase.Path =
+            TempDirectoryWindowsBase.Path(path)
     }
 }
