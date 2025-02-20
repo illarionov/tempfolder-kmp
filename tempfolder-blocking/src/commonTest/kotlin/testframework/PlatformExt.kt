@@ -5,6 +5,11 @@
 
 package at.released.tempfolder.testframework
 
-public expect fun isSimulatorOrVirtualDevice(): Boolean
+// Keep in sync with build-logic/project/multiplatform/src/main/kotlin/test/TestExt.kt
+internal const val ENV_TEST_TMP_DIR = "TEST_TMP_DIR"
 
-public expect fun isReadingDirectorySupported(): Boolean
+internal expect val testTempDirRoot: String
+
+internal expect fun isSimulatorOrVirtualDevice(): Boolean
+
+internal expect fun isReadingDirectorySupported(): Boolean
