@@ -9,7 +9,8 @@ import at.released.tempfolder.TempDirectoryIOException
 import at.released.tempfolder.jsapi.nodejs.realpathSync
 import at.released.tempfolder.jsapi.nodejs.tmpdir
 
-internal object NodeJsTempPathResolver {
+// XXX: keep in sync with NodeJsTempPathResolver
+internal object WasmNodeJsTempPathResolver {
     internal fun resolve(parent: NodeTempDirectoryBase): String {
         val path = when (parent) {
             NodeTempDirectoryBase.Auto -> tmpdir()

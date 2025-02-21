@@ -8,19 +8,19 @@ package at.released.tempfolder.sync.path
 import at.released.tempfolder.dsl.TempDirectoryDsl
 
 /**
- * Base directory for the temporary folder on NodeJS
+ * Base directory for the temporary directory on Node.JS based File System
  */
 @TempDirectoryDsl
-public sealed class TempDirectoryNodeBase {
+public sealed class NodeTempDirectoryBase {
     /**
      * The base directory is determined automatically.
      */
     @TempDirectoryDsl
-    public data object Auto : TempDirectoryNodeBase()
+    public data object Auto : NodeTempDirectoryBase()
 
     /**
      * The base directory is specified by the [path].
      */
     @TempDirectoryDsl
-    public class Path(public val path: String) : TempDirectoryNodeBase()
+    public class Path(public val path: String) : NodeTempDirectoryBase()
 }

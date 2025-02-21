@@ -10,7 +10,6 @@ import at.released.tempfolder.dsl.TempDirectoryFileModeBit
 import at.released.tempfolder.jsapi.nodejs.fromNodeJsMode
 import at.released.tempfolder.jsapi.nodejs.join
 import at.released.tempfolder.jsapi.nodejs.mkdirSync
-import at.released.tempfolder.jsapi.nodejs.nodeJsErrorCode
 import at.released.tempfolder.jsapi.nodejs.realpathSync
 import at.released.tempfolder.jsapi.nodejs.toNodeJsMode
 import at.released.tempfolder.path.JsNodePath.Companion.toJsNodePath
@@ -19,20 +18,29 @@ import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.Syml
 import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.SymlinkType.NOT_SPECIFIED
 import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.SymlinkType.SYMLINK_TO_DIRECTORY
 import at.released.tempfolder.testframework.PlatformFilesystemTestFunctions.SymlinkType.SYMLINK_TO_FILE
-import at.released.tempfolder.testframework.jsapi.nodejs.LstatOptions
 import at.released.tempfolder.testframework.jsapi.nodejs.Stats
-import at.released.tempfolder.testframework.jsapi.nodejs.WriteFileOptions
 import at.released.tempfolder.testframework.jsapi.nodejs.lstatSync
 import at.released.tempfolder.testframework.jsapi.nodejs.statSync
 import at.released.tempfolder.testframework.jsapi.nodejs.symlinkSync
 import at.released.tempfolder.testframework.jsapi.nodejs.writeFileSync
 import kotlinx.io.bytestring.ByteString
-import org.khronos.webgl.Int8Array
+import kotlinx.io.bytestring.toHexString
 
-internal actual val platformFilesystem: PlatformFilesystemTestFunctions get() = NodeJsFilesystemTestFunctions
+internal actual val platformFilesystem: PlatformFilesystemTestFunctions
+    get() = WasmNodeJsFilesystemTestFunctions
 
-private object NodeJsFilesystemTestFunctions : PlatformFilesystemTestFunctions {
-    override val isPosixFileModeSupported: Boolean get() = js("globalThis.process.platform") as String? != "win32"
+private fun getNodejsPlatform(): String = js("globalThis.process.platform")
+
+@Suppress("UnusedParameter")
+private fun createWriteFileSynOptions(mode: Int): JsAny = js("({mode: mode})")
+
+@Suppress("UnusedParameter")
+private fun createLstatOptions(throwIfNoEntry: Boolean): JsAny =
+    js("({throwIfNoEntry: throwIfNoEntry, bigint: true})")
+
+@Suppress("TooManyFunctions")
+private object WasmNodeJsFilesystemTestFunctions : PlatformFilesystemTestFunctions {
+    override val isPosixFileModeSupported: Boolean get() = getNodejsPlatform() != "win32"
     override val isSymlinkSupported: Boolean get() = true
     override val pathSeparator: Char get() = '/'
 
@@ -74,13 +82,11 @@ private object NodeJsFilesystemTestFunctions : PlatformFilesystemTestFunctions {
         try {
             writeFileSync(
                 file = path.asString(),
-                data = content.toInt8Array(),
-                opts = writeFileOptions {
-                    this.mode = mode.toNodeJsMode()
-                },
+                data = content.toHexString(), // XXX find how to write bytes
+                opts = createWriteFileSynOptions(mode = mode.toNodeJsMode()),
             )
-        } catch (err: Throwable) {
-            throw TempDirectoryIOException("writeFileSync() failed. Code: ${err.nodeJsErrorCode}", err)
+        } catch (err: JsException) {
+            throw TempDirectoryIOException("writeFileSync() failed. Message: `${err.message}`", err)
         }
     }
 
@@ -88,8 +94,8 @@ private object NodeJsFilesystemTestFunctions : PlatformFilesystemTestFunctions {
         val intMode = mode.toNodeJsMode()
         try {
             mkdirSync(path.asString(), intMode)
-        } catch (err: Throwable) {
-            throw TempDirectoryIOException("mkdirSync() failed. Code: ${err.nodeJsErrorCode}", err)
+        } catch (err: JsException) {
+            throw TempDirectoryIOException("mkdirSync() failed. `${err.message}`", err)
         }
     }
 
@@ -101,37 +107,21 @@ private object NodeJsFilesystemTestFunctions : PlatformFilesystemTestFunctions {
         }
         try {
             symlinkSync(oldPath, newPath.asString(), typeString)
-        } catch (err: Throwable) {
-            throw TempDirectoryIOException("symlinkSync() failed. Code: ${err.nodeJsErrorCode}", err)
+        } catch (err: JsException) {
+            throw TempDirectoryIOException("symlinkSync() failed. `${err.message}`", err)
         }
     }
 
     private fun getStatOrThrow(path: TempDirectoryPath, followBasenameSymlink: Boolean): Stats? {
         try {
-            val lstatOptions = lstatOptions {
-                throwIfNoEntry = false
-            }
+            val lstatOptions = createLstatOptions(false)
             return if (followBasenameSymlink) {
                 statSync(path.asString(), lstatOptions)
             } else {
                 lstatSync(path.asString(), lstatOptions)
             }
-        } catch (err: Throwable) {
-            throw TempDirectoryIOException("statSync() failed. Code: ${err.nodeJsErrorCode}", err)
+        } catch (err: JsException) {
+            throw TempDirectoryIOException("statSync() failed. `${err.message}`", err)
         }
     }
-
-    private fun ByteString.toInt8Array(): Int8Array {
-        val bytes = this.toByteArray()
-        val i8a: Int8Array = bytes.unsafeCast<Int8Array>()
-        return Int8Array(i8a.buffer, i8a.byteOffset, i8a.byteLength)
-    }
-
-    private inline fun lstatOptions(
-        block: LstatOptions.() -> Unit = {},
-    ): LstatOptions = js("{}").unsafeCast<LstatOptions>().apply(block)
-
-    private inline fun writeFileOptions(
-        block: WriteFileOptions.() -> Unit = {},
-    ): WriteFileOptions = js("{}").unsafeCast<WriteFileOptions>().apply(block)
 }

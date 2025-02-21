@@ -9,6 +9,11 @@ import at.released.tempfolder.path.TempDirectoryPath.MultibytePath
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.encodeToByteString
 
+/**
+ * A byte string to be used as a path in implementations of a TemporaryDirectory that use the Node.js file system
+ * (the `node:fs` module).
+ * Just a plain UTF-8 encoded string without any validation for now.
+ */
 internal class JsNodePath private constructor(
     private val stringValue: String,
 ) : MultibytePath {
@@ -18,6 +23,6 @@ internal class JsNodePath private constructor(
     override fun asString(): String = stringValue
 
     internal companion object {
-        internal fun String.toJsNodePathString(): JsNodePath = JsNodePath(this)
+        internal fun String.toJsNodePath(): JsNodePath = JsNodePath(this)
     }
 }

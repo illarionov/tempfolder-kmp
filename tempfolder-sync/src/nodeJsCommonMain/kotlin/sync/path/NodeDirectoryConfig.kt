@@ -5,17 +5,29 @@
 
 package at.released.tempfolder.sync.path
 
+import at.released.tempfolder.dsl.CommonTempDirectoryConfig
 import at.released.tempfolder.dsl.CommonTempDirectoryConfig.Companion.DEFAULT_PERMISSIONS
 import at.released.tempfolder.dsl.CommonTempDirectoryConfig.Companion.DEFAULT_PREFIX
+import at.released.tempfolder.dsl.TempDirectoryBase.Auto
+import at.released.tempfolder.dsl.TempDirectoryBase.Path
 import at.released.tempfolder.dsl.TempDirectoryDsl
 import at.released.tempfolder.dsl.TempDirectoryFileModeBit
 
+internal fun NodeDirectoryConfig.setFromCommon(commonConfig: CommonTempDirectoryConfig) {
+    base = when (val commonBase = commonConfig.base) {
+        is Auto -> NodeTempDirectoryBase.Auto
+        is Path -> NodeTempDirectoryBase.Path(commonBase.path)
+    }
+    prefix = commonConfig.prefix
+    permissions = commonConfig.permissions
+}
+
 @TempDirectoryDsl
-public class NodeTempDirectoryConfig {
+public class NodeDirectoryConfig {
     /**
      * Base path for the temporary directory
      */
-    public var base: TempDirectoryNodeBase = auto()
+    public var base: NodeTempDirectoryBase = auto()
 
     /**
      * Prefix for the directory name.
@@ -32,9 +44,9 @@ public class NodeTempDirectoryConfig {
     public var permissions: Set<TempDirectoryFileModeBit> = DEFAULT_PERMISSIONS
 
     public companion object {
-        public fun NodeTempDirectoryConfig.auto(): TempDirectoryNodeBase.Auto = TempDirectoryNodeBase.Auto
+        public fun NodeDirectoryConfig.auto(): NodeTempDirectoryBase.Auto = NodeTempDirectoryBase.Auto
 
-        public fun NodeTempDirectoryConfig.path(path: String): TempDirectoryNodeBase.Path =
-            TempDirectoryNodeBase.Path(path)
+        public fun NodeDirectoryConfig.path(path: String): NodeTempDirectoryBase.Path =
+            NodeTempDirectoryBase.Path(path)
     }
 }
