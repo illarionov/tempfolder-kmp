@@ -12,11 +12,11 @@ import org.jetbrains.kotlin.gradle.targets.js.KotlinJsPlatformTestRun
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 
 /*
- * Convention plugin that configures Node JS tests for JS target in Kotlin Multiplatform project
+ * Convention plugin that configures Node JS tests for JS and WasmJS targets in Kotlin Multiplatform project
  */
 plugins.withId("org.jetbrains.kotlin.multiplatform") {
     extensions.configure<KotlinMultiplatformExtension> {
-        targets.matching { it.name == "js" }.withType<KotlinJsIrTarget> {
+        targets.matching { it.name == "js" || it.name == "wasmJs" }.withType<KotlinJsIrTarget> {
             nodejs {
                 testRuns.configureEach {
                     setupNodejsTestRun()

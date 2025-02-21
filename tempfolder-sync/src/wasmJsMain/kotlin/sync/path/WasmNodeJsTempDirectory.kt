@@ -8,7 +8,6 @@ package at.released.tempfolder.sync.path
 import at.released.tempfolder.TempDirectoryClosedException
 import at.released.tempfolder.TempDirectoryClosedException.Companion.TEMP_DIRECTORY_CLOSED_MESSAGE
 import at.released.tempfolder.TempDirectoryIOException
-import at.released.tempfolder.jsapi.nodejs.RmSyncOptions
 import at.released.tempfolder.jsapi.nodejs.join
 import at.released.tempfolder.jsapi.nodejs.rmSync
 import at.released.tempfolder.path.JsNodePath.Companion.toJsNodePath
@@ -17,7 +16,12 @@ import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.sync.TempDirectory
 import kotlinx.atomicfu.atomic
 
-internal class NodeJsTempDirectory(absolutePath: String) : TempDirectory<String> {
+@Suppress("UnusedParameter")
+private fun createRmsyncOptions(recursive: Boolean): JsAny = js("({recursive: recursive})")
+
+internal class WasmNodeJsTempDirectory(
+    absolutePath: String,
+) : TempDirectory<String> {
     override var deleteOnClose: Boolean by atomic(true)
     override val root: String = absolutePath
     private val isClosed = atomic(false)
@@ -32,7 +36,7 @@ internal class NodeJsTempDirectory(absolutePath: String) : TempDirectory<String>
     override fun append(name: String): TempDirectoryPath {
         try {
             return join(root, name).toJsNodePath()
-        } catch (@Suppress("TooGenericExceptionCaught") err: Exception) {
+        } catch (err: JsException) {
             throw TempDirectoryInvalidPathException("join(`$root`, `$name`) failed", err)
         }
     }
@@ -55,14 +59,10 @@ internal class NodeJsTempDirectory(absolutePath: String) : TempDirectory<String>
     private companion object {
         fun deleteDirectoryRecursively(path: String) {
             try {
-                rmSync(path, RmSyncOptions { recursive = true })
-            } catch (@Suppress("TooGenericExceptionCaught") err: Exception) {
+                rmSync(path, createRmsyncOptions(true))
+            } catch (err: JsException) {
                 throw TempDirectoryIOException("rmSync() failed", err)
             }
         }
-
-        private inline fun RmSyncOptions(
-            block: RmSyncOptions.() -> Unit,
-        ): RmSyncOptions = js("{}").unsafeCast<RmSyncOptions>().apply(block)
     }
 }
