@@ -22,7 +22,7 @@ internal class NodeJsTempDirectory(absolutePath: String) : TempDirectory<String>
     override val root: String = absolutePath
     private val isClosed = atomic(false)
 
-    override fun getAbsolutePath(): TempDirectoryPath = root.toJsNodePathString()
+    override fun absolutePath(): TempDirectoryPath = root.toJsNodePathString()
 
     override fun delete() {
         throwIfClosed()

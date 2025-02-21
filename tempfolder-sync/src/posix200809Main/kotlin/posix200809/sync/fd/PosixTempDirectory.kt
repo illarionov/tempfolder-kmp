@@ -37,7 +37,7 @@ internal class PosixTempDirectory internal constructor(
         }
     }
 
-    override fun getAbsolutePath(): TempDirectoryPath {
+    override fun absolutePath(): TempDirectoryPath {
         throwIfClosed()
         return rootPath.getOrThrow()
     }

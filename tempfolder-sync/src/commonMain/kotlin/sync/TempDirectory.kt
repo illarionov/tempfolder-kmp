@@ -19,7 +19,7 @@ internal expect fun createPlatformTempDirectory(config: CommonTempDirectoryConfi
  * Creates a temporary directory on the file system.
  *
  * The absolute path of the created directory can be obtained by calling
- * [getAbsolutePath().asString()][TempDirectory.getAbsolutePath].
+ * [getAbsolutePath().asString()][TempDirectory.absolutePath].
  *
  * The returned [TempDirectory] object implements [AutoCloseable]. Сall [close()][TempDirectory.close] to close
  * its file descriptor and delete the temporary directory when it is no longer needed.
@@ -47,7 +47,7 @@ public fun createTempDirectory(
  * Additional factories for platform-specific implementations are available on target platforms, offering more
  * flexible customization and usage capabilities.
  *
- * The [getAbsolutePath] method returns the absolute path of the temporary directory.
+ * The [absolutePath] method returns the absolute path of the temporary directory.
  *
  * This object implements [AutoCloseable], call [close] when the directory is no longer needed.
  * The directory is automatically recursively deleted when [close] is called.
@@ -80,7 +80,7 @@ public interface TempDirectory<out FH : Any> : AutoCloseable {
      * @throws TempDirectoryIOException if an error occurs while resolving the path.
      */
     @Throws(TempDirectoryIOException::class)
-    public fun getAbsolutePath(): TempDirectoryPath
+    public fun absolutePath(): TempDirectoryPath
 
     /**
      * Recursively deletes the temporary directory.
@@ -95,7 +95,7 @@ public interface TempDirectory<out FH : Any> : AutoCloseable {
     public fun delete()
 
     /**
-     * Appends [name] to the [getAbsolutePath] using the platform-specific file system separator and returns
+     * Appends [name] to the [absolutePath] using the platform-specific file system separator and returns
      * the complete path for [name] within the temporary directory.
      */
     @Throws(TempDirectoryException::class)

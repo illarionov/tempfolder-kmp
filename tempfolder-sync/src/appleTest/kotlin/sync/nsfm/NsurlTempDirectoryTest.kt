@@ -20,7 +20,7 @@ class NsurlTempDirectoryTest {
     fun nsurlTempfolder_test_success_case() {
         val path: TempDirectoryPath
         TempDirectory.createNsurlTempDirectory().use { tempDirectory ->
-            path = tempDirectory.getAbsolutePath()
+            path = tempDirectory.absolutePath()
             assertThat(path).isDirectory()
             bootstrapSimpleSuccessTestTestHierarchy(tempDirectory)
         }

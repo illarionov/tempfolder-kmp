@@ -20,7 +20,7 @@ internal class WindowsTempDirectory(
     override val root: TempDirectoryPath get() = absolutePath
     private val isClosed = atomic(false)
 
-    override fun getAbsolutePath(): TempDirectoryPath = root
+    override fun absolutePath(): TempDirectoryPath = root
 
     override fun delete() {
         throwIfClosed()
