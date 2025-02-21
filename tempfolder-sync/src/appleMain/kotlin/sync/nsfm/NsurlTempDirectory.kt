@@ -34,7 +34,7 @@ internal class NsurlTempDirectory private constructor(
     override val root: NSURL = absolutePath
     private val isClosed = atomic(false)
 
-    override fun getAbsolutePath(): TempDirectoryPath {
+    override fun absolutePath(): TempDirectoryPath {
         return root.path?.toPosixPath() ?: throw TempDirectoryCharacterCodingException("Can not convert url")
     }
 

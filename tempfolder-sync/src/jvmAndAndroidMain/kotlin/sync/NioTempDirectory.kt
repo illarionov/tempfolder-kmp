@@ -57,7 +57,7 @@ private class NioTempDirectory(
         root.toString().toPosixPath()
     }
 
-    override fun getAbsolutePath(): TempDirectoryPath = absolutePathString
+    override fun absolutePath(): TempDirectoryPath = absolutePathString
 
     @Throws(TempDirectoryIOException::class)
     override fun delete() {

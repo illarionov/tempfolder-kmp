@@ -37,7 +37,7 @@ import kotlinx.io.writeString
 
 fun main() {
     createTempDirectory().use { tempDirectory ->
-        val absolutePath = tempDirectory.getAbsolutePath().asString()
+        val absolutePath = tempDirectory.absolutePath().asString()
         SystemFileSystem.sink(Path(absolutePath, "temp.txt")).buffered().use {
             it.writeString("Temp file")
         }

@@ -36,7 +36,7 @@ internal class Wasip1TempDirectory private constructor(
         }
     }
 
-    override fun getAbsolutePath(): TempDirectoryPath {
+    override fun absolutePath(): TempDirectoryPath {
         throwIfClosed()
         return fullPath
     }

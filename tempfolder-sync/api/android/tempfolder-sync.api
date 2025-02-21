@@ -189,10 +189,10 @@ public final class at/released/tempfolder/sync/NioTempDirectoryBuilder {
 
 public abstract interface class at/released/tempfolder/sync/TempDirectory : java/lang/AutoCloseable {
 	public static final field Companion Lat/released/tempfolder/sync/TempDirectory$Companion;
+	public abstract fun absolutePath ()Lat/released/tempfolder/path/TempDirectoryPath;
 	public abstract fun append (Ljava/lang/String;)Lat/released/tempfolder/path/TempDirectoryPath;
 	public abstract fun close ()V
 	public abstract fun delete ()V
-	public abstract fun getAbsolutePath ()Lat/released/tempfolder/path/TempDirectoryPath;
 	public abstract fun getDeleteOnClose ()Z
 	public abstract fun getRoot ()Ljava/lang/Object;
 	public abstract fun setDeleteOnClose (Z)V

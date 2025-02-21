@@ -36,7 +36,7 @@ class TempDirectoryTest {
 
         val path: TempDirectoryPath
         val tempDirectory = createTempDirectory()
-        path = tempDirectory.getAbsolutePath()
+        path = tempDirectory.absolutePath()
         try {
             assertThat(path, path.asStringOrDescription()).all {
                 if (!isSimulatorOrVirtualDevice()) {
