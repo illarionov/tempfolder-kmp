@@ -10,6 +10,7 @@ import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.sync.TempDirectory
 import at.released.tempfolder.sync.TempDirectoryTest.Companion.bootstrapSimpleSuccessTestTestHierarchy
+import at.released.tempfolder.sync.createNsurlTempDirectory
 import at.released.tempfolder.testframework.assertions.isDirectory
 import at.released.tempfolder.testframework.assertions.isNotExists
 import kotlin.test.Test

@@ -28,7 +28,7 @@ public class AppleTempDirectoryConfig internal constructor() {
     /**
      * Permissions for the created directory in the form of POSIX file mode bits.
      *
-     * Default: 0700
+     * Default: 0700 (USER_READ, USER_WRITE, USER_EXECUTE)
      */
     public var permissions: Set<TempDirectoryFileModeBit> = DEFAULT_PERMISSIONS
 

@@ -17,18 +17,7 @@ import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.sync.TempDirectory
 import kotlinx.atomicfu.atomic
 
-public fun TempDirectory.Companion.createNodeJsTempDirectory(
-    block: NodeTempDirectoryConfig.() -> Unit = {},
-): TempDirectory<String> {
-    val config = NodeTempDirectoryConfig().apply(block)
-    val tempRoot: String = NodeJsTempPathResolver.resolve(config.base)
-    val tempDirectory = NodeJsTempDirectoryCreator.createDirectory(tempRoot, config.permissions)
-    return NodeJsTempDirectory(tempDirectory)
-}
-
-private class NodeJsTempDirectory(
-    absolutePath: String,
-) : TempDirectory<String> {
+internal class NodeJsTempDirectory(absolutePath: String) : TempDirectory<String> {
     override var deleteOnClose: Boolean by atomic(true)
     override val root: String = absolutePath
     private val isClosed = atomic(false)

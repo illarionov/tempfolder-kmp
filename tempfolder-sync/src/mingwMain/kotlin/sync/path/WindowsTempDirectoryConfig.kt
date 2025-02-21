@@ -11,7 +11,7 @@ import at.released.tempfolder.dsl.TempDirectoryDsl
 import at.released.tempfolder.dsl.TempDirectoryFileModeBit
 
 @TempDirectoryDsl
-public class WindowsTempDirectoryConfig {
+public class WindowsTempDirectoryConfig internal constructor() {
     /**
      * Base path for the temporary directory
      */

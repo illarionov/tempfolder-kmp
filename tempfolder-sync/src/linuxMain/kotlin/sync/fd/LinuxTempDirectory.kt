@@ -28,7 +28,7 @@ import platform.posix.LOCK_SH
 import platform.posix.errno
 
 @Throws(TempDirectoryException::class)
-public fun TempDirectory.Companion.createLinuxTempDirectory(
+internal fun createLinuxTempDirectoryInternal(
     block: LinuxTempDirectoryConfig.() -> Unit,
 ): TempDirectory<TempDirectoryDescriptor> {
     val config = LinuxTempDirectoryConfig().apply(block)

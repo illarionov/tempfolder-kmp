@@ -15,12 +15,14 @@ import at.released.tempfolder.dsl.TempDirectoryFileModeBit.USER_WRITE
 @TempDirectoryDsl
 public class CommonTempDirectoryConfig internal constructor() {
     /**
-     * Base path for the temporary directory
+     * Root path for the temporary directory.
+     *
+     * Use [auto()][auto] to automatically select the best location or [path()][path] to specify a custom path.
      */
     public var base: TempDirectoryBase = auto()
 
     /**
-     * Prefix for the directory name.
+     * Prefix used for naming the directory
      *
      * Default: "tempfolder-".
      */
@@ -29,7 +31,7 @@ public class CommonTempDirectoryConfig internal constructor() {
     /**
      * Permissions for the created directory in the form of POSIX file mode bits.
      *
-     * Default: 0700
+     * Default: 0700 (USER_READ, USER_WRITE, USER_EXECUTE)
      */
     public var permissions: Set<TempDirectoryFileModeBit> = DEFAULT_PERMISSIONS
 

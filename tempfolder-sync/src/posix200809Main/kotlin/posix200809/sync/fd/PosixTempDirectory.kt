@@ -9,9 +9,8 @@ import at.released.tempfolder.TempDirectoryClosedException
 import at.released.tempfolder.TempDirectoryClosedException.Companion.TEMP_DIRECTORY_CLOSED_MESSAGE
 import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.TempDirectoryDescriptor.Companion.CURRENT_WORKING_DIRECTORY
-import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.TempDirectoryException
 import at.released.tempfolder.path.PosixPath
-import at.released.tempfolder.path.TempDirectoryInvalidPathException
 import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.path.isAbsolute
@@ -48,7 +47,7 @@ internal class PosixTempDirectory internal constructor(
         deleteUnprotected(root)
     }
 
-    @Throws(TempDirectoryIOException::class, TempDirectoryInvalidPathException::class)
+    @Throws(TempDirectoryException::class)
     override fun append(name: String): TempDirectoryPath {
         return rootPath.getOrThrow().append(name)
     }
