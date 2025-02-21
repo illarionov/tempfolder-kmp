@@ -43,12 +43,11 @@ fun main() {
 
 * Provides a unified API for temporary directory creation across most Kotlin Multiplatform targets.
 * The *TempDirectory* extends *AutoCloseable* and requires calling `close()` after use.
-* By default, the temporary directory is recursively deleted upon closing. This can be disabled by setting 
+* The temporary directory is recursively deleted upon closing. This can be disabled by setting 
   `tempDirectory.deleteOnClose=false`.
-* We intentionally expose the native file descriptor of the opened directory to simplify usage with native
-  filesystem functions. For example, to use with addressing scheme relative to the open directory (`openat2()` on Linux)
-* Error handling is strict: all errors and exceptions are rethrown, including during close if files cannot be deleted.
-  This helps identify open file descriptor leaks.
+* Exposes the native file descriptor for integration with native filesystem functions, 
+  such as using `openat2()` on Linux.
+* Strict error handling: all errors and exceptions are rethrown, including during `close()` if files cannot be deleted.
 * Supports platform-specific implementations that offer further configuration options for Android, iOS, Linux, macOS,
   and more.
 
