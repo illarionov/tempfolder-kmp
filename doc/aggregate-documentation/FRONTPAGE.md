@@ -108,7 +108,7 @@ limitations under the License.
 ```
 
 [Authors]: https://github.com/illarionov/tempfolder-kmp/blob/main/AUTHORS
-[deleteOnClose]: https://tempfolder.released.at/tempfolder-sync/at.released.tempfolder.sync/-temp-directory/delete.html
+[deleteOnClose]: https://tempfolder.released.at/tempfolder-sync/at.released.tempfolder.sync/-temp-directory/delete-on-close.html
 [TempDirectory]: https://tempfolder.released.at/tempfolder-sync/at.released.tempfolder.sync/-temp-directory/index.html
 [contribution guide]: https://github.com/illarionov/tempfolder-kmp/blob/main/CONTRIBUTING.md
 [createAndroidNativeTempDirectory]: https://tempfolder.released.at/tempfolder-sync/at.released.tempfolder.sync/create-android-native-temp-directory.html
@@ -119,5 +119,5 @@ limitations under the License.
 [createNsurlTempDirectory]: https://tempfolder.released.at/tempfolder-sync/at.released.tempfolder.sync/create-nsurl-temp-directory.html
 [createTempDirectory]: https://tempfolder.released.at/tempfolder-sync/at.released.tempfolder.sync/create-temp-directory.html
 [createWasip1TempDirectory]: https://tempfolder.released.at/tempfolder-sync/at.released.tempfolder.sync/create-wasip1-temp-directory.html 
-[createWindowsTempDirectory]: https://tempfolder.released.at/tempfolder-sync/tempfolder-sync/at.released.tempfolder.sync/create-windows-temp-directory.html
+[createWindowsTempDirectory]: https://tempfolder.released.at/tempfolder-sync/at.released.tempfolder.sync/create-windows-temp-directory.html
 [kotlinx-io]: https://github.com/Kotlin/kotlinx-io
