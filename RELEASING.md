@@ -10,5 +10,6 @@
 8. Check that the "publish" workflow completed successfully on Github Actions
 9.  Visit [Sonatype Central Portal](https://central.sonatype.com/publishing/deployments) and publish new deployment
 10. Update the `config/version.properties` to the next SNAPSHOT version.
-11. `git commit -am "Prepare next development version."`
-12. `git push`
+11. `./gradlew kotlinUpgradePackageLock`
+12. `git commit -am "Prepare next development version."`
+13. `git push`
