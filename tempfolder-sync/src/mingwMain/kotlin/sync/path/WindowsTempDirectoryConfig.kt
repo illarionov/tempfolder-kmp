@@ -5,10 +5,8 @@
 
 package at.released.tempfolder.sync.path
 
-import at.released.tempfolder.dsl.CommonTempDirectoryConfig.Companion.DEFAULT_PERMISSIONS
 import at.released.tempfolder.dsl.CommonTempDirectoryConfig.Companion.DEFAULT_PREFIX
 import at.released.tempfolder.dsl.TempDirectoryDsl
-import at.released.tempfolder.dsl.TempDirectoryFileModeBit
 
 @TempDirectoryDsl
 public class WindowsTempDirectoryConfig internal constructor() {
@@ -23,13 +21,6 @@ public class WindowsTempDirectoryConfig internal constructor() {
      * Default: "tempfolder-".
      */
     public var prefix: String = DEFAULT_PREFIX
-
-    /**
-     * Permissions for the created directory in the form of POSIX file mode bits.
-     *
-     * Default: 0700
-     */
-    public var permissions: Set<TempDirectoryFileModeBit> = DEFAULT_PERMISSIONS
 
     public companion object {
         public fun WindowsTempDirectoryConfig.auto(): TempDirectoryWindowsBase.Auto = TempDirectoryWindowsBase.Auto
