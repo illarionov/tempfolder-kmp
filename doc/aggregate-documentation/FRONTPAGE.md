@@ -20,7 +20,7 @@ The latest release is available on [Maven Central]. Add the dependency:
 
 ```kotlin
 dependencies {
-    implementation("at.released.tempfolder:tempfolder-sync:<not yet released>")
+    implementation("at.released.tempfolder:tempfolder-sync:0.1")
 }
 ```
 
