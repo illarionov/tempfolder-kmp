@@ -10,10 +10,10 @@ package at.released.tempfolder.sync.nsfm
 import at.released.tempfolder.TempDirectoryClosedException
 import at.released.tempfolder.TempDirectoryClosedException.Companion.TEMP_DIRECTORY_CLOSED_MESSAGE
 import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.path.PosixPath.Companion.toPosixPath
 import at.released.tempfolder.path.TempDirectoryCharacterCodingException
 import at.released.tempfolder.path.TempDirectoryInvalidPathException
 import at.released.tempfolder.path.TempDirectoryPath
-import at.released.tempfolder.path.toPosixPath
 import at.released.tempfolder.sync.TempDirectory
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.BetaInteropApi
