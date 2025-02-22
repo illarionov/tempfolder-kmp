@@ -9,10 +9,9 @@ import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.TempDirectoryDescriptor.Companion.CURRENT_WORKING_DIRECTORY
 import at.released.tempfolder.TempDirectoryIOException
 import at.released.tempfolder.path.PosixPath
-import at.released.tempfolder.path.PosixPathComponent
-import at.released.tempfolder.path.PosixPathComponent.Companion.asPathComponent
+import at.released.tempfolder.path.PosixPath.Companion.asPathComponent
+import at.released.tempfolder.path.PosixPath.Companion.toPosixPath
 import at.released.tempfolder.path.TempDirectoryInvalidPathException
-import at.released.tempfolder.path.toPosixPath
 import at.released.tempfolder.posix200809.TempDirectoryNativeIOException
 import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.nativeOpenDirectoryAt
@@ -45,7 +44,7 @@ internal object PosixTempDirectoryCreator {
     @Throws(TempDirectoryIOException::class)
     private fun tryCreateTempfolder(
         root: ResolvedTempRoot,
-        directoryName: PosixPathComponent,
+        directoryName: PosixPath.Component,
         mode: UInt,
     ): TempfolderCoordinates? {
         val (dirFd: TempDirectoryDescriptor, pathname: PosixPath) = when (root) {

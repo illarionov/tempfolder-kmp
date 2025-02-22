@@ -7,6 +7,7 @@ package at.released.tempfolder.path
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import at.released.tempfolder.path.PosixPath.Companion.toPosixPath
 import at.released.tempfolder.path.TempDirectoryPath.Companion.encoding
 import at.released.tempfolder.path.TempDirectoryPath.Encoding.UTF8
 import kotlinx.io.bytestring.decodeToString

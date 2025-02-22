@@ -6,8 +6,8 @@
 package at.released.tempfolder.testframework
 
 import at.released.tempfolder.dsl.TempDirectoryFileModeBit
+import at.released.tempfolder.path.PosixPath.Companion.toPosixPath
 import at.released.tempfolder.path.TempDirectoryPath
-import at.released.tempfolder.path.toPosixPath
 import at.released.tempfolder.sync.linkOptions
 import at.released.tempfolder.sync.toNioPosixPermissions
 import at.released.tempfolder.sync.toTempfolderPermissions

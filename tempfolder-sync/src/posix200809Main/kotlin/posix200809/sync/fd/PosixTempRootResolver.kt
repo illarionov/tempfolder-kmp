@@ -12,8 +12,8 @@ import at.released.tempfolder.dsl.TempDirectorySizeEstimate
 import at.released.tempfolder.dsl.TempDirectorySizeEstimate.LARGE
 import at.released.tempfolder.dsl.TempDirectorySizeEstimate.SMALL
 import at.released.tempfolder.path.PosixPath
+import at.released.tempfolder.path.PosixPath.Companion.toPosixPath
 import at.released.tempfolder.path.TempDirectoryInvalidPathException
-import at.released.tempfolder.path.toPosixPath
 import at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase
 import at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase.Auto
 import at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase.FileDescriptor

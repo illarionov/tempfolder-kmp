@@ -13,9 +13,9 @@ import assertk.assertions.support.appendName
 import assertk.assertions.support.expected
 import assertk.assertions.support.show
 import at.released.tempfolder.dsl.TempDirectoryFileModeBit
+import at.released.tempfolder.path.PosixPath.Companion.toPosixPath
 import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.path.asStringOrDescription
-import at.released.tempfolder.path.toPosixPath
 import at.released.tempfolder.testframework.platformFilesystem
 
 fun Assert<TempDirectoryPath>.isSamePathAs(path: String) = given { path1 ->

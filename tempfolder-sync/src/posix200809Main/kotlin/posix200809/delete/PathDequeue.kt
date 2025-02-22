@@ -9,9 +9,8 @@ import at.released.tempfolder.TempDirectoryDescriptor
 import at.released.tempfolder.TempDirectoryIOException
 import at.released.tempfolder.path.PATH_CURRENT_DIRECTORY
 import at.released.tempfolder.path.PosixPath
-import at.released.tempfolder.path.PosixPathComponent
+import at.released.tempfolder.path.PosixPath.Companion.toPosixPath
 import at.released.tempfolder.path.UNIX_PATH_SEPARATOR
-import at.released.tempfolder.path.UnknownEncodingPosixPath
 import at.released.tempfolder.path.isCurrentDirectory
 import at.released.tempfolder.posix200809.PlatformDirent
 import at.released.tempfolder.posix200809.TempDirectoryNativeIOException
@@ -48,7 +47,7 @@ internal class PathDequeue<D>(
     fun addLast(
         dir: D,
         dirfd: TempDirectoryDescriptor,
-        basename: PosixPathComponent,
+        basename: PosixPath.Component,
     ) {
         check(openDirs.size < maxFileDescriptors) { "No free file descriptor" }
 
@@ -70,7 +69,7 @@ internal class PathDequeue<D>(
 
     fun getPathFromRoot(
         dirStream: DirStream,
-        basename: PosixPathComponent = PATH_CURRENT_DIRECTORY,
+        basename: PosixPath.Component = PATH_CURRENT_DIRECTORY,
     ): PosixPath {
         val dirStreamIndex = path.indexOfFirst { it.stream === dirStream }
         check(dirStreamIndex >= 0) { "No ${dirStream.basename} directory stream in deque" }
@@ -87,7 +86,7 @@ internal class PathDequeue<D>(
             }
         }
         return if (newBytes.isNotEmpty()) {
-            UnknownEncodingPosixPath(newBytes)
+            newBytes.toPosixPath()
         } else {
             PATH_CURRENT_DIRECTORY
         }
