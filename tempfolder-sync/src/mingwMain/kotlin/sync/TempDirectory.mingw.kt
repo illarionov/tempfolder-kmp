@@ -41,7 +41,7 @@ public fun TempDirectory.Companion.createWindowsTempDirectory(
 ): TempDirectory<TempDirectoryPath> {
     val config = WindowsTempDirectoryConfig().apply(block)
     val tempRoot: WindowsPath = WindowsTempPathResolver.resolve(config.base)
-    val tempDirectory = WindowsTempDirectoryCreator.createDirectory(tempRoot, config.permissions)
+    val tempDirectory = WindowsTempDirectoryCreator.createDirectory(tempRoot)
     return WindowsTempDirectory(tempDirectory)
 }
 
@@ -51,5 +51,4 @@ private fun WindowsTempDirectoryConfig.setFromCommon(commonConfig: CommonTempDir
         is Path -> path(commonBase.path)
     }
     prefix = commonConfig.prefix
-    permissions = commonConfig.permissions
 }

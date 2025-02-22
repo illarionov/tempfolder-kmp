@@ -6,7 +6,6 @@
 package at.released.tempfolder.sync.path
 
 import at.released.tempfolder.TempDirectoryIOException
-import at.released.tempfolder.dsl.TempDirectoryFileModeBit
 import at.released.tempfolder.path.WindowsPath
 import at.released.tempfolder.sync.MAX_CREATE_DIRECTORY_ATTEMPTS
 import at.released.tempfolder.sync.generateTempDirectoryName
@@ -16,7 +15,6 @@ internal object WindowsTempDirectoryCreator {
     @Throws(TempDirectoryIOException::class)
     internal fun createDirectory(
         root: WindowsPath,
-        @Suppress("UnusedParameter") mode: Set<TempDirectoryFileModeBit>,
         nameGenerator: () -> String = { generateTempDirectoryName("tempfolder-") },
     ): WindowsPath {
         repeat(MAX_CREATE_DIRECTORY_ATTEMPTS) {
