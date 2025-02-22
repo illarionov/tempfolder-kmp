@@ -5,7 +5,8 @@
 
 package at.released.tempfolder.path
 
-import at.released.tempfolder.path.PosixPathComponent.Companion.asPathComponent
+import at.released.tempfolder.path.PosixPath.Companion.asPathComponent
+import at.released.tempfolder.path.PosixPath.Companion.toPosixPath
 import at.released.tempfolder.path.TempDirectoryPathEmptyException.Companion.PATH_IS_EMPTY_MESSAGE
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.append
@@ -18,9 +19,6 @@ import kotlinx.io.bytestring.isEmpty
 internal const val UNIX_PATH_SEPARATOR = '/'.code.toByte()
 internal val PATH_CURRENT_DIRECTORY = ".".toPosixPath().asPathComponent()
 internal val PATH_PARENT_DIRECTORY = "..".toPosixPath().asPathComponent()
-
-internal fun ByteString.isUtfSpecialDirectory(): Boolean =
-    this == PATH_CURRENT_DIRECTORY.bytes || this == PATH_PARENT_DIRECTORY.bytes
 
 internal fun PosixPath.isSpecialDirectory(): Boolean = isCurrentDirectory() || isParentDirectory()
 internal fun PosixPath.isCurrentDirectory(): Boolean = bytes == PATH_CURRENT_DIRECTORY.bytes

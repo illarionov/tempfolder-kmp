@@ -7,8 +7,8 @@ package at.released.tempfolder.testframework.assertions
 
 import assertk.Assert
 import assertk.assertions.support.appendName
+import at.released.tempfolder.path.PosixPath.Companion.toPosixPath
 import at.released.tempfolder.path.TempDirectoryPath
-import at.released.tempfolder.path.Utf8PosixPath
 
 public fun Assert<TempDirectoryPath>.isValidString(): Assert<String> = transform(
     appendName("toString", separator = "::"),
@@ -22,14 +22,14 @@ public fun Assert<TempDirectoryPath>.dirname(): Assert<TempDirectoryPath> {
         val lastSlashIndex = noTrailingSlash.indices.reversed()
             .firstOrNull { noTrailingSlash[it].isAnyPathSeparator() } ?: noTrailingSlash.length
         val dirname = noTrailingSlash.substring(0, lastSlashIndex).ifEmpty { "." }
-        Utf8PosixPath(dirname)
+        dirname.toPosixPath()
     }
 }
 
 fun Assert<TempDirectoryPath>.basename(): Assert<TempDirectoryPath> {
     return transform(appendName("basename", separator = "::")) { path ->
         val basename = path.asString().trimEnd(Char::isAnyPathSeparator).substringAfterLastSlash().ifEmpty { "." }
-        Utf8PosixPath(basename)
+        basename.toPosixPath()
     }
 }
 

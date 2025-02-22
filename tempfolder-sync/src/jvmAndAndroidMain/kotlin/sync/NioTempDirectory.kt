@@ -13,9 +13,9 @@ import at.released.tempfolder.TempDirectoryDeleteException
 import at.released.tempfolder.TempDirectoryDeleteException.Companion.FAILED_TO_DELETE_MESSAGE
 import at.released.tempfolder.TempDirectoryException
 import at.released.tempfolder.TempDirectoryIOException
+import at.released.tempfolder.path.PosixPath.Companion.toPosixPath
 import at.released.tempfolder.path.TempDirectoryInvalidPathException
 import at.released.tempfolder.path.TempDirectoryPath
-import at.released.tempfolder.path.toPosixPath
 import kotlinx.atomicfu.atomic
 import java.io.IOException
 import java.nio.file.InvalidPathException

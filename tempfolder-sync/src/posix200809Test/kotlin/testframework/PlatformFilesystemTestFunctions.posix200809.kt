@@ -10,12 +10,11 @@ import at.released.tempfolder.TempDirectoryDescriptor.Companion.CURRENT_WORKING_
 import at.released.tempfolder.dsl.TempDirectoryFileModeBit
 import at.released.tempfolder.dsl.TempDirectoryFileModeBit.Companion
 import at.released.tempfolder.path.PosixPath
+import at.released.tempfolder.path.PosixPath.Companion.toPosixPath
 import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.path.TempDirectoryPath.MultibytePath
 import at.released.tempfolder.path.TempDirectoryPath.WideCharPath
-import at.released.tempfolder.path.UnknownEncodingPosixPath
 import at.released.tempfolder.path.appendPosixPath
-import at.released.tempfolder.path.toPosixPath
 import at.released.tempfolder.posix200809.PosixFileType
 import at.released.tempfolder.posix200809.TempDirectoryNativeIOException
 import at.released.tempfolder.posix200809.errnoDescription
@@ -58,7 +57,7 @@ internal object Posix2009809FilesystemTestFunctions : PlatformFilesystemTestFunc
 
     override fun joinPath(base: TempDirectoryPath, append: String): TempDirectoryPath {
         check(base is MultibytePath)
-        return UnknownEncodingPosixPath(base.bytes.appendPosixPath(append))
+        return base.bytes.appendPosixPath(append).toPosixPath()
     }
 
     override fun isDirectory(path: TempDirectoryPath, followBasenameSymlink: Boolean): Boolean {
@@ -126,7 +125,7 @@ internal object Posix2009809FilesystemTestFunctions : PlatformFilesystemTestFunc
     private fun TempDirectoryPath.toPosixPathString(): PosixPath {
         return when (this) {
             is PosixPath -> this
-            is MultibytePath -> UnknownEncodingPosixPath(this.bytes)
+            is MultibytePath -> this.bytes.toPosixPath()
             is WideCharPath -> this.asString().toPosixPath()
         }
     }

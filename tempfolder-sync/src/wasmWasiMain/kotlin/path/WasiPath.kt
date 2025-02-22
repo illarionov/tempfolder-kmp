@@ -20,7 +20,7 @@ internal interface WasiPath : MultibytePath {
     fun append(path: String): WasiPath
 
     /**
-     * A WasiPathString that has no path separators
+     * A WasiPath that has no path separators
      */
     interface Component : WasiPath
 

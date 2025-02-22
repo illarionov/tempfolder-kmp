@@ -11,7 +11,6 @@ import at.released.tempfolder.TempDirectoryException
 import at.released.tempfolder.TempDirectoryIOException
 import at.released.tempfolder.path.PATH_CURRENT_DIRECTORY
 import at.released.tempfolder.path.PosixPath
-import at.released.tempfolder.path.PosixPathComponent
 import at.released.tempfolder.path.asStringOrDescription
 import at.released.tempfolder.path.isSpecialDirectory
 import at.released.tempfolder.posix200809.OpenDirectoryAt
@@ -124,7 +123,7 @@ private class BottomUpFileTreeRemover<D>(
     }
 
     @Throws(TempDirectoryIOException::class)
-    private fun unlinkEmptyDirectory(name: PosixPathComponent) {
+    private fun unlinkEmptyDirectory(name: PosixPath.Component) {
         val dir = pathDequeue.last()
         val (rootFd, path) = when (dir) {
             is OpenDirStream<*> -> dir.dirfd to name
@@ -142,7 +141,7 @@ private class BottomUpFileTreeRemover<D>(
     }
 
     private fun handleEntry(
-        basename: PosixPathComponent,
+        basename: PosixPath.Component,
         type: DirEntryType,
     ) {
         if (basename.isSpecialDirectory()) {
@@ -187,7 +186,7 @@ private class BottomUpFileTreeRemover<D>(
     private fun enterDirectoryOrThrow(
         dirFd: TempDirectoryDescriptor,
         pathFromDirFd: PosixPath,
-        basename: PosixPathComponent,
+        basename: PosixPath.Component,
     ) {
         pathDequeue.reserveFileDescriptor(::preloadDirectory)
         val fd = openDirectoryAt(dirFd, pathFromDirFd, true)
@@ -218,9 +217,9 @@ private class BottomUpFileTreeRemover<D>(
 
     private inline fun handleOpenDirStreamEntry(
         stream: OpenDirStream<D>,
-        name: PosixPathComponent,
+        name: PosixPath.Component,
         type: DirEntryType,
-        crossinline onDirectory: (PosixPathComponent) -> Unit,
+        crossinline onDirectory: (PosixPath.Component) -> Unit,
     ) {
         when (type) {
             DIRECTORY -> onDirectory(name)
