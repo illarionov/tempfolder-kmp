@@ -12,7 +12,7 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
-private val htmlResourcesRoot = rootProject.layout.projectDirectory.dir("doc/aggregate-documentation")
+private val htmlResourcesRoot = layout.settingsDirectory.dir("doc/aggregate-documentation")
 
 dokka {
     dokkaPublications.configureEach {
