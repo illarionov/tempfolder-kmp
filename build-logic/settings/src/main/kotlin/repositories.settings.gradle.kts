@@ -16,23 +16,6 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-
-    // Get our own convention plugins from 'gradle/plugin/project'
-    listOf(
-        "project" to "tempfolder-gradle-project-plugins",
-    ).forEach { (path, gradleProjectsPluginName) ->
-        if (File(rootDir, "build-logic/$path").exists()) {
-            includeBuild("build-logic/$path") {
-                name = gradleProjectsPluginName
-            }
-        }
-        // If not the main build, 'project' is located next to the build
-        if (File(rootDir, "../$path").exists()) {
-            includeBuild("../$path") {
-                name = gradleProjectsPluginName
-            }
-        }
-    }
 }
 
 dependencyResolutionManagement {

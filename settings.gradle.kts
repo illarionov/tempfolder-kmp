@@ -5,6 +5,7 @@
 
 pluginManagement {
     includeBuild("build-logic/settings")
+    includeBuild("build-logic/project")
 }
 
 plugins {
