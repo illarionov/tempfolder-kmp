@@ -20,7 +20,7 @@ import javax.inject.Inject
 private const val VERSION_PROPERTIES_PATH = "config/version.properties"
 
 internal fun Project.createTempfolderVersionsExtension(): TempfolderVersionsExtension {
-    val configFilePath: RegularFile = project.rootProject.layout.projectDirectory.file(VERSION_PROPERTIES_PATH)
+    val configFilePath: RegularFile = layout.settingsDirectory.file(VERSION_PROPERTIES_PATH)
     return extensions.create<TempfolderVersionsExtension>("tempfolderVersions", configFilePath)
 }
 

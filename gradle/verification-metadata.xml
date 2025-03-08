@@ -312,6 +312,16 @@
             <pgp value="1BD97A6A154E7810EE0BC832E2F38302C8075E3D"/>
          </artifact>
       </component>
+      <component group="org.gradle.kotlin" name="gradle-kotlin-dsl-plugins" version="5.2.0">
+         <artifact name="gradle-kotlin-dsl-plugins-5.2.0.jar">
+            <pgp value="1BD97A6A154E7810EE0BC832E2F38302C8075E3D"/>
+         </artifact>
+      </component>
+      <component group="org.gradle.toolchains" name="foojay-resolver" version="0.9.0">
+         <artifact name="foojay-resolver-0.9.0.jar">
+            <pgp value="1BD97A6A154E7810EE0BC832E2F38302C8075E3D"/>
+         </artifact>
+      </component>
       <component group="org.hamcrest" name="hamcrest-core" version="1.3">
          <artifact name="hamcrest-core-1.3.jar">
             <pgp value="4DB1A49729B053CAF015CEE9A6ADFC93EF34893E"/>
@@ -377,18 +387,18 @@
          </artifact>
       </component>
       <component group="org.nodejs" name="node" version="23.8.0">
-          <artifact name="node-23.8.0-darwin-arm64.tar.gz">
-              <sha256 value="7c3bb4ccfd558f5cc12ffb81df795c5960e429088feb1ae650fa2ae65418858a" origin="https://nodejs.org/dist/v23.8.0/SHASUMS256.txt" reason="Artifact is not signed"/>
-          </artifact>
-          <artifact name="node-23.8.0-darwin-x64.tar.gz">
-              <sha256 value="a4c93b517d51d368248e9fddd20bc46ba1f6081df2a55d267a33015a4ab31886" origin="https://nodejs.org/dist/v23.8.0/SHASUMS256.txt" reason="Artifact is not signed"/>
-          </artifact>
+         <artifact name="node-23.8.0-darwin-arm64.tar.gz">
+            <sha256 value="7c3bb4ccfd558f5cc12ffb81df795c5960e429088feb1ae650fa2ae65418858a" origin="https://nodejs.org/dist/v23.8.0/SHASUMS256.txt" reason="Artifact is not signed"/>
+         </artifact>
+         <artifact name="node-23.8.0-darwin-x64.tar.gz">
+            <sha256 value="a4c93b517d51d368248e9fddd20bc46ba1f6081df2a55d267a33015a4ab31886" origin="https://nodejs.org/dist/v23.8.0/SHASUMS256.txt" reason="Artifact is not signed"/>
+         </artifact>
          <artifact name="node-23.8.0-linux-x64.tar.gz">
             <sha256 value="f6d98bbdd0a4078c1e422a6a1d8bf07ad693a4dd793bb5772990456faeca6e95" origin="https://nodejs.org/dist/v23.8.0/SHASUMS256.txt" reason="Artifact is not signed"/>
          </artifact>
-          <artifact name="node-23.8.0-win-x64.zip">
-              <sha256 value="9e03646224fcf44fa0b594df5d012da9cb5b137c52f36f33b11def3319cd132c" origin="https://nodejs.org/dist/v23.8.0/SHASUMS256.txt" reason="Artifact is not signed"/>
-          </artifact>
+         <artifact name="node-23.8.0-win-x64.zip">
+            <sha256 value="9e03646224fcf44fa0b594df5d012da9cb5b137c52f36f33b11def3319cd132c" origin="https://nodejs.org/dist/v23.8.0/SHASUMS256.txt" reason="Artifact is not signed"/>
+         </artifact>
       </component>
       <component group="org.opentest4j" name="opentest4j" version="1.3.0">
          <artifact name="opentest4j-1.3.0.jar">
