@@ -42,14 +42,10 @@ fun main() {
 ## Features
 
 * Provides a unified API for temporary directory creation across most Kotlin Multiplatform targets.
-* The *TempDirectory* extends *AutoCloseable* and requires calling `close()` after use.
-* The temporary directory is recursively deleted upon closing. This can be disabled by setting 
-  `tempDirectory.deleteOnClose=false`.
-* Exposes the native file descriptor for integration with native filesystem functions, 
-  such as using `openat2()` on Linux.
-* Strict error handling: all errors and exceptions are rethrown, including during `close()` if files cannot be deleted.
-* Supports platform-specific implementations that offer further configuration options for Android, iOS, Linux, macOS,
-  and more.
+* Supports platform-specific implementations that offer further customizations for the created directory on Android, iOS, Linux, macOS, and more.
+* Exposes the native file descriptor for integration with native filesystem APIs, such as using `openat2()` on Linux.
+* Error handling is strict: all errors and exceptions are rethrown, including during `close()` if files cannot be deleted.
+* The _TempDirectory_ extends _AutoCloseable_ and requires calling `close()` after use. Directory is recursively deleted upon closing. This can be disabled by setting `tempDirectory.deleteOnClose=false`.
 
 For more information, check the project API reference: [tempfolder.released.at](https://tempfolder.released.at)
 
