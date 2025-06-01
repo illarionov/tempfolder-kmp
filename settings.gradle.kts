@@ -23,7 +23,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:8.7.3")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.32.0")
         classpath("org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:2.0.0")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.20")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.21")
         classpath(
             "org.jetbrains.kotlinx.binary-compatibility-validator:" +
                     "org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin:0.17.0",
