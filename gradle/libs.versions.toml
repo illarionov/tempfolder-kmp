@@ -19,7 +19,7 @@ gradle-maven-publish-plugin = "0.32.0"
 kotlin = "2.1.21"
 kotlinx-binary-compatibility-validator = "0.18.0"
 kotlinx-io ="0.7.0"
-spotless = "7.0.2"
+spotless = "8.0.0"
 nodejs = "23.8.0"
 
 [libraries]
