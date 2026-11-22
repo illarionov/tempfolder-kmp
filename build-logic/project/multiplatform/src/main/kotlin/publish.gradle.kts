@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2024-2025 Alexey Illarionov and the at-released-tempfolder project contributors
+ * SPDX-FileCopyrightText: 2024-2026 Alexey Illarionov and the at-released-tempfolder project contributors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -8,7 +8,6 @@ package at.released.tempfolder.gradle.multiplatform
 import at.released.tempfolder.gradle.multiplatform.publish.createTempfolderVersionsExtension
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
-import com.vanniktech.maven.publish.SonatypeHost
 
 /*
  * Convention plugin with publishing defaults
@@ -28,7 +27,7 @@ tasks.withType<AbstractArchiveTask>().configureEach {
 createTempfolderVersionsExtension()
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
     publishing {
         repositories {
             maven {
