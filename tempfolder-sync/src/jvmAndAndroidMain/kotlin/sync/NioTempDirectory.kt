@@ -16,11 +16,11 @@ import at.released.tempfolder.TempDirectoryIOException
 import at.released.tempfolder.path.PosixPath.Companion.toPosixPath
 import at.released.tempfolder.path.TempDirectoryInvalidPathException
 import at.released.tempfolder.path.TempDirectoryPath
-import kotlinx.atomicfu.atomic
 import java.io.IOException
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import kotlin.LazyThreadSafetyMode.PUBLICATION
+import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.deleteRecursively
 
@@ -51,8 +51,12 @@ private class NioTempDirectory(
     absolutePath: Path,
 ) : TempDirectory<Path> {
     override val root: Path = absolutePath
-    private val isClosed = atomic(false)
-    override var deleteOnClose: Boolean by atomic(true)
+    private val isClosed = AtomicBoolean(false)
+
+    private val deleteOnCloseFlag = AtomicBoolean(true)
+    override var deleteOnClose: Boolean
+        get() = deleteOnCloseFlag.load()
+        set(value) = deleteOnCloseFlag.store(value)
     private val absolutePathString: TempDirectoryPath by lazy(PUBLICATION) {
         root.toString().toPosixPath()
     }
@@ -75,7 +79,7 @@ private class NioTempDirectory(
     }
 
     override fun close() {
-        if (isClosed.getAndSet(true)) {
+        if (isClosed.exchange(true)) {
             return
         }
         if (deleteOnClose) {
@@ -84,7 +88,7 @@ private class NioTempDirectory(
     }
 
     private fun throwIfClosed() {
-        if (isClosed.value) {
+        if (isClosed.load()) {
             throw TempDirectoryClosedException(TEMP_DIRECTORY_CLOSED_MESSAGE)
         }
     }

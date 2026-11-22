@@ -11,14 +11,17 @@ import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.path.WindowsPath
 import at.released.tempfolder.sync.TempDirectory
 import at.released.tempfolder.winapi.delete.deleteDirectoryRecursively
-import kotlinx.atomicfu.atomic
+import kotlin.concurrent.atomics.AtomicBoolean
 
 internal class WindowsTempDirectory(
     private val absolutePath: WindowsPath,
 ) : TempDirectory<TempDirectoryPath> {
-    override var deleteOnClose: Boolean by atomic(true)
+    private val deleteOnCloseFlag = AtomicBoolean(true)
+    override var deleteOnClose: Boolean
+        get() = deleteOnCloseFlag.load()
+        set(value) = deleteOnCloseFlag.store(value)
     override val root: TempDirectoryPath get() = absolutePath
-    private val isClosed = atomic(false)
+    private val isClosed = AtomicBoolean(false)
 
     override fun absolutePath(): TempDirectoryPath = root
 
@@ -32,7 +35,7 @@ internal class WindowsTempDirectory(
     }
 
     override fun close() {
-        if (isClosed.getAndSet(true)) {
+        if (isClosed.exchange(true)) {
             return
         }
         if (deleteOnClose) {
@@ -41,7 +44,7 @@ internal class WindowsTempDirectory(
     }
 
     private fun throwIfClosed() {
-        if (isClosed.value) {
+        if (isClosed.load()) {
             throw TempDirectoryClosedException(TEMP_DIRECTORY_CLOSED_MESSAGE)
         }
     }

@@ -20,15 +20,19 @@ import at.released.tempfolder.posix200809.errnoDescription
 import at.released.tempfolder.posix200809.getRealPath
 import at.released.tempfolder.posix200809.platformUnlinkDirectory
 import at.released.tempfolder.sync.TempDirectory
-import kotlinx.atomicfu.atomic
+import kotlin.concurrent.atomics.AtomicBoolean
 
 internal class PosixTempDirectory internal constructor(
     private val parentDirfd: TempDirectoryDescriptor,
     private val directoryPathname: PosixPath,
     override val root: TempDirectoryDescriptor,
 ) : TempDirectory<TempDirectoryDescriptor> {
-    private val isClosed = atomic(false)
-    override var deleteOnClose: Boolean by atomic(true)
+    private val isClosed = AtomicBoolean(false)
+
+    private val deleteOnCloseFlag = AtomicBoolean(true)
+    override var deleteOnClose: Boolean
+        get() = deleteOnCloseFlag.load()
+        set(value) = deleteOnCloseFlag.store(value)
     private val rootPath: Result<PosixPath> by lazy {
         if (parentDirfd == CURRENT_WORKING_DIRECTORY && directoryPathname.isAbsolute()) {
             Result.success(directoryPathname)
@@ -53,7 +57,7 @@ internal class PosixTempDirectory internal constructor(
     }
 
     override fun close() {
-        if (isClosed.getAndSet(true)) {
+        if (isClosed.exchange(true)) {
             return
         }
         if (deleteOnClose) {
@@ -75,7 +79,7 @@ internal class PosixTempDirectory internal constructor(
     }
 
     private fun throwIfClosed() {
-        if (isClosed.value) {
+        if (isClosed.load()) {
             throw TempDirectoryClosedException(TEMP_DIRECTORY_CLOSED_MESSAGE)
         }
     }

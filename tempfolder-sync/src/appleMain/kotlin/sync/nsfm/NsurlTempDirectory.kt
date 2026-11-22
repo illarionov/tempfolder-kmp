@@ -15,7 +15,6 @@ import at.released.tempfolder.path.TempDirectoryCharacterCodingException
 import at.released.tempfolder.path.TempDirectoryInvalidPathException
 import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.sync.TempDirectory
-import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.alloc
@@ -25,14 +24,18 @@ import kotlinx.cinterop.value
 import platform.Foundation.NSError
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
+import kotlin.concurrent.atomics.AtomicBoolean
 
 internal class NsurlTempDirectory private constructor(
     private val fileManager: NSFileManager,
     absolutePath: NSURL,
 ) : TempDirectory<NSURL> {
-    override var deleteOnClose: Boolean by atomic(true)
+    private val deleteOnCloseFlag = AtomicBoolean(true)
+    override var deleteOnClose: Boolean
+        get() = deleteOnCloseFlag.load()
+        set(value) = deleteOnCloseFlag.store(value)
     override val root: NSURL = absolutePath
-    private val isClosed = atomic(false)
+    private val isClosed = AtomicBoolean(false)
 
     override fun absolutePath(): TempDirectoryPath {
         return root.path?.toPosixPath() ?: throw TempDirectoryCharacterCodingException("Can not convert url")
@@ -49,7 +52,7 @@ internal class NsurlTempDirectory private constructor(
     }
 
     override fun close() {
-        if (isClosed.getAndSet(true)) {
+        if (isClosed.exchange(true)) {
             return
         }
         if (deleteOnClose) {
@@ -58,7 +61,7 @@ internal class NsurlTempDirectory private constructor(
     }
 
     private fun throwIfClosed() {
-        if (isClosed.value) {
+        if (isClosed.load()) {
             throw TempDirectoryClosedException(TEMP_DIRECTORY_CLOSED_MESSAGE)
         }
     }

@@ -25,16 +25,17 @@ import platform.windows.IO_REPARSE_TAG_SYMLINK
 import platform.windows.WIN32_FIND_DATAW
 import platform.windows._FINDEX_INFO_LEVELS
 import platform.windows._FINDEX_SEARCH_OPS
+import kotlin.concurrent.atomics.AtomicBoolean
 
 internal class WindowsDirectoryStream(
     private val path: String,
 ) : AutoCloseable {
     private var childItemsHandle: HANDLE? = null
     private val findData: WIN32_FIND_DATAW = nativeHeap.alloc()
-    private var isClosed: Boolean = false
+    private val isClosed = AtomicBoolean(false)
 
     fun next(): DirectoryStreamItem {
-        check(!isClosed)
+        check(!isClosed.load())
         val lastError: UInt
         if (childItemsHandle == null) {
             val childPattern = windowsAppendPath(path, "*")
@@ -89,10 +90,9 @@ internal class WindowsDirectoryStream(
     }
 
     override fun close() {
-        if (isClosed) {
+        if (isClosed.exchange(true)) {
             return
         }
-        isClosed = true
 
         nativeHeap.free(findData.rawPtr)
 
