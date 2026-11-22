@@ -13,12 +13,10 @@ plugins {
 
 group = "at.released.weh"
 
-android {
-    namespace = "at.released.weh.ignore.annotations"
-}
-
 kotlin {
-    androidTarget()
+    android {
+        namespace = "at.released.weh.ignore.annotations"
+    }
     androidNativeArm32()
     androidNativeArm64()
     androidNativeX86()

@@ -8,29 +8,24 @@
 
 package at.released.tempfolder.gradle.multiplatform
 
-import com.android.build.api.dsl.CommonExtension
-import com.android.build.api.dsl.ManagedVirtualDevice
-import com.android.build.api.dsl.TestOptions
-import com.android.build.gradle.LibraryPlugin
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 /*
  * Convention plugin that configures Android instrumented tests
  */
-plugins.withType(LibraryPlugin::class.java) {
-    extensions.configure(CommonExtension::class.java) {
-        defaultConfig {
-            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-        testOptions.configureManagedDevices()
-    }
-}
-
-private fun TestOptions.configureManagedDevices() {
-    managedDevices {
-        devices.maybeCreate<ManagedVirtualDevice>("pixel2api30").apply {
-            device = "Pixel 2"
-            apiLevel = 30
-            systemImageSource = "aosp-atd"
+plugins.withId("com.android.kotlin.multiplatform.library") {
+    extensions.configure<KotlinMultiplatformExtension> {
+        targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
+            withDeviceTest {
+                multidex.enable = true
+                instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                managedDevices.localDevices.register("pixel2api30") {
+                    device = "Pixel 2"
+                    sdkVersion = 30
+                    systemImageSource = "aosp-atd"
+                }
+            }
         }
     }
 }

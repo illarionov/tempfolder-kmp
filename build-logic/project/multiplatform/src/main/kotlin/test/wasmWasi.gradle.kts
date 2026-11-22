@@ -12,6 +12,8 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.js.KotlinJsPlatformTestRun
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
+import org.jetbrains.kotlin.gradle.targets.wasm.nodejs.WasmNodeJsEnvSpec
+import org.jetbrains.kotlin.gradle.targets.wasm.nodejs.WasmNodeJsPlugin
 
 /*
  * Convention plugin that configures Node JS tests in Kotlin Multiplatform project
@@ -28,6 +30,12 @@ plugins.withId("org.jetbrains.kotlin.multiplatform") {
     }
 }
 
+plugins.withType<WasmNodeJsPlugin> {
+    extensions.configure<WasmNodeJsEnvSpec> {
+        version.set(versionCatalogs.named("libs").findVersion("wasmNodejs").get().requiredVersion)
+    }
+}
+
 private fun KotlinJsPlatformTestRun.setupNodeWasiTestRun() {
     val prepareTempRootTask = PrepareTempRootTask.setup(this, tasks, layout)
     val tempRoot: String = prepareTempRootTask.flatMap(PrepareTempRootTask::outputDirectory)
@@ -40,13 +48,7 @@ private fun KotlinJsPlatformTestRun.setupNodeWasiTestRun() {
         environment(ENV_TEST_TMP_DIR, virtualTempRoot)
         environment(ENV_IS_NODE_ON_WINDOWS, isWindows.toString())
         dependsOn(prepareTempRootTask)
-    }
-    val driverFile = layout.buildDirectory.file(
-        "compileSync/wasmWasi/test/testDevelopmentExecutable/kotlin/" +
-                "tempfolder-kmp-tempfolder-sync-wasm-wasi-test.mjs",
-    )
-    executionTask {
-        doFirst(ModifyWasiDriverAction(driverFile, virtualTempRoot, tempRoot))
+        doFirst(ModifyWasiDriverAction(inputFileProperty, virtualTempRoot, tempRoot))
     }
 }
 

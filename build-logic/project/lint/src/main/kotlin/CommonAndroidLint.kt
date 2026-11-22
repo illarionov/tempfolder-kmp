@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2024-2025 Alexey Illarionov and the at-released-tempfolder project contributors
+ * SPDX-FileCopyrightText: 2024-2026 Alexey Illarionov and the at-released-tempfolder project contributors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -13,9 +13,6 @@ import com.android.build.api.dsl.Lint
 internal fun Lint.configureCommonAndroidLint() {
     quiet = false
     ignoreWarnings = false
-    htmlReport = true
-    xmlReport = true
-    sarifReport = true
     checkDependencies = false
     ignoreTestSources = false
 
