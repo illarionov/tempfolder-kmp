@@ -28,7 +28,6 @@ buildscript {
             "org.jetbrains.kotlinx.binary-compatibility-validator:" +
                     "org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin:0.17.0",
         )
-        classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.33.0")
     }
 }
 

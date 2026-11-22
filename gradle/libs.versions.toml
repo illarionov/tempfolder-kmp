@@ -9,7 +9,6 @@ agp = "9.5.2"
 androidx-test = "1.6.2"
 androidx-test-core = "1.6.1"
 androidx-test-rules = "1.6.1"
-atomicfu = "0.33.0"
 assertk = "0.28.1"
 detekt = "1.23.8"
 diktat = "2.0.0"
@@ -33,7 +32,6 @@ kotlinx-bytestring = { group = "org.jetbrains.kotlinx", name = "kotlinx-io-bytes
 # Dependencies of the included build-logic
 agp-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 agp-plugin-api = { module = "com.android.tools.build:gradle-api", version.ref = "agp" }
-atomicfu-plugin = { group = "org.jetbrains.kotlinx", name = "atomicfu-gradle-plugin", version.ref = "atomicfu" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 detekt-plugin = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detekt" }
 diktat-plugin = { group = "com.saveourtool.diktat", name = "diktat-gradle-plugin", version.ref = "diktat" }

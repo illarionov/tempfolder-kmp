@@ -15,12 +15,15 @@ import at.released.tempfolder.path.JsNodePath.Companion.toJsNodePath
 import at.released.tempfolder.path.TempDirectoryInvalidPathException
 import at.released.tempfolder.path.TempDirectoryPath
 import at.released.tempfolder.sync.TempDirectory
-import kotlinx.atomicfu.atomic
+import kotlin.concurrent.atomics.AtomicBoolean
 
 internal class NodeJsTempDirectory(absolutePath: String) : TempDirectory<String> {
-    override var deleteOnClose: Boolean by atomic(true)
+    private val deleteOnCloseFlag = AtomicBoolean(true)
+    override var deleteOnClose: Boolean
+        get() = deleteOnCloseFlag.load()
+        set(value) = deleteOnCloseFlag.store(value)
     override val root: String = absolutePath
-    private val isClosed = atomic(false)
+    private val isClosed = AtomicBoolean(false)
 
     override fun absolutePath(): TempDirectoryPath = root.toJsNodePath()
 
@@ -38,7 +41,7 @@ internal class NodeJsTempDirectory(absolutePath: String) : TempDirectory<String>
     }
 
     override fun close() {
-        if (isClosed.getAndSet(true)) {
+        if (isClosed.exchange(true)) {
             return
         }
         if (deleteOnClose) {
@@ -47,7 +50,7 @@ internal class NodeJsTempDirectory(absolutePath: String) : TempDirectory<String>
     }
 
     private fun throwIfClosed() {
-        if (isClosed.value) {
+        if (isClosed.load()) {
             throw TempDirectoryClosedException(TEMP_DIRECTORY_CLOSED_MESSAGE)
         }
     }

@@ -8,17 +8,17 @@ package at.released.tempfolder.posix200809.delete
 import at.released.tempfolder.TempDirectoryClosedException
 import at.released.tempfolder.path.PosixPath
 import at.released.tempfolder.posix200809.delete.DirStream.DirStreamItem
-import kotlinx.atomicfu.atomic
+import kotlin.concurrent.atomics.AtomicBoolean
 
 internal class PreloadedDirStream(
     override val basename: PosixPath.Component,
     items: List<DirStreamItem.Entry>,
 ) : DirStream {
     private val items: ArrayDeque<DirStreamItem.Entry> = ArrayDeque(items)
-    private var isClosed = atomic(false)
+    private val isClosed = AtomicBoolean(false)
 
     override fun readNext(): DirStreamItem {
-        if (isClosed.value) {
+        if (isClosed.load()) {
             throw TempDirectoryClosedException("Stream is closed")
         }
         return when (val item = items.removeFirstOrNull()) {
@@ -31,7 +31,7 @@ internal class PreloadedDirStream(
     }
 
     override fun close() {
-        if (isClosed.getAndSet(true)) {
+        if (isClosed.exchange(true)) {
             return
         }
         items.clear()

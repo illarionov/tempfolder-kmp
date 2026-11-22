@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.konan.target.Family
 plugins {
     id("at.released.tempfolder.gradle.lint.binary-compatibility-validator")
     id("at.released.tempfolder.gradle.lint.android-lint")
-    id("at.released.tempfolder.gradle.multiplatform.atomicfu")
     id("at.released.tempfolder.gradle.multiplatform.android")
     id("at.released.tempfolder.gradle.multiplatform.android-instrumented-test")
     id("at.released.tempfolder.gradle.multiplatform.kotlin")
@@ -139,6 +138,13 @@ kotlin {
     }
 
     sourceSets {
+        all {
+            languageSettings {
+                languageVersion = "2.1"
+                apiVersion = "2.1"
+                optIn("kotlin.concurrent.atomics.ExperimentalAtomicApi")
+            }
+        }
         commonMain.dependencies {
             api(libs.kotlinx.bytestring)
         }

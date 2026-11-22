@@ -18,16 +18,19 @@ import at.released.tempfolder.sync.delete.deleteRecursively
 import at.released.tempfolder.sync.fd.WasiTempRootResolver.WasiP1TempRoot
 import at.released.tempfolder.sync.generateTempDirectoryName
 import at.released.tempfolder.wasip1.wasiUnlinkDirectoryOrThrow
-import kotlinx.atomicfu.atomic
 import kotlin.LazyThreadSafetyMode.PUBLICATION
+import kotlin.concurrent.atomics.AtomicBoolean
 
 internal class Wasip1TempDirectory private constructor(
     private val tempRoot: WasiP1TempRoot,
     private val directoryPathname: WasiPath.Component,
     override val root: TempDirectoryDescriptor,
 ) : TempDirectory<TempDirectoryDescriptor> {
-    private val isClosed = atomic(false)
-    override var deleteOnClose: Boolean by atomic(true)
+    private val isClosed = AtomicBoolean(false)
+    private val deleteOnCloseFlag = AtomicBoolean(true)
+    override var deleteOnClose: Boolean
+        get() = deleteOnCloseFlag.load()
+        set(value) = deleteOnCloseFlag.store(value)
     private val fullPath: WasiPath by lazy(PUBLICATION) {
         if (tempRoot.fullpath.asString() != ".") {
             tempRoot.fullpath.append(directoryPathname.asString())
@@ -51,7 +54,7 @@ internal class Wasip1TempDirectory private constructor(
     }
 
     override fun close() {
-        if (isClosed.getAndSet(true)) {
+        if (isClosed.exchange(true)) {
             return
         }
 
@@ -84,7 +87,7 @@ internal class Wasip1TempDirectory private constructor(
     }
 
     private fun throwIfClosed() {
-        if (isClosed.value) {
+        if (isClosed.load()) {
             throw TempDirectoryClosedException(TEMP_DIRECTORY_CLOSED_MESSAGE)
         }
     }
