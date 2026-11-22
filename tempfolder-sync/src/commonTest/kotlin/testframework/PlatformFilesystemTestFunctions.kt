@@ -5,6 +5,7 @@
 
 package at.released.tempfolder.testframework
 
+import assertk.assertThat
 import at.released.tempfolder.TempDirectoryException
 import at.released.tempfolder.dsl.TempDirectoryFileModeBit
 import at.released.tempfolder.dsl.TempDirectoryFileModeBit.GROUP_EXECUTE
@@ -15,6 +16,8 @@ import at.released.tempfolder.dsl.TempDirectoryFileModeBit.USER_EXECUTE
 import at.released.tempfolder.dsl.TempDirectoryFileModeBit.USER_READ
 import at.released.tempfolder.dsl.TempDirectoryFileModeBit.USER_WRITE
 import at.released.tempfolder.path.TempDirectoryPath
+import at.released.tempfolder.sync.TempDirectory
+import at.released.tempfolder.testframework.assertions.isSymlink
 import kotlinx.io.bytestring.ByteString
 
 internal expect val platformFilesystem: PlatformFilesystemTestFunctions
@@ -22,6 +25,8 @@ internal expect val platformFilesystem: PlatformFilesystemTestFunctions
 interface PlatformFilesystemTestFunctions {
     val isPosixFileModeSupported: Boolean
     val isSymlinkSupported: Boolean
+    val canSymlinkOutsidePreopen: Boolean get() = isSymlinkSupported
+    val symlinkTargetOutsidePreopen: String get() = "../../../../build"
     val pathSeparator: Char
 
     @Throws(TempDirectoryException::class)
@@ -72,4 +77,18 @@ interface PlatformFilesystemTestFunctions {
         SYMLINK_TO_FILE,
         SYMLINK_TO_DIRECTORY,
     }
+}
+
+internal fun TempDirectory<*>.createSymlinkToDirectoryOutsideTree() {
+    if (!platformFilesystem.canSymlinkOutsidePreopen) return
+
+    // Put the symlink inside the temporary tree and point it at a build directory outside it. The relative
+    // path can reach an existing directory on the host, depending on where the platform creates the tree.
+    // POSIX systems and Windows allow this kind of symlink (a process with restricted path resolution may
+    // see it as dangling even when the target exists). A missing or inaccessible target is fine for this test.
+    // Cleanup should remove the link itself without following it into the build directory.
+    val target = platformFilesystem.symlinkTargetOutsidePreopen
+    val link = append("build.link")
+    platformFilesystem.createSymlink(target, link)
+    assertThat(link).isSymlink()
 }

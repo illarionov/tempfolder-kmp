@@ -22,7 +22,7 @@ kotlin {
     androidNativeX86()
     androidNativeX64()
     jvm()
-    js(IR) {
+    js {
         nodejs()
     }
     wasmJs {

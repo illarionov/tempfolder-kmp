@@ -16,7 +16,6 @@ import at.released.tempfolder.sync.TempDirectoryTest.Companion.TEST_FILE_CONTENT
 import at.released.tempfolder.sync.createTempDirectory
 import at.released.tempfolder.testframework.assertions.isDirectory
 import at.released.tempfolder.testframework.assertions.isFile
-import at.released.tempfolder.testframework.assertions.isSymlink
 import at.released.tempfolder.testframework.assertions.posixFileModeIfSupportedIsEqualTo
 import kotlin.test.Test
 
@@ -42,9 +41,7 @@ class PlatformFilesystemTestFunctionsTest {
             platformFilesystem.createDirectory(testDirectory1)
             assertThat(testDirectory1).isDirectory()
 
-            val testSymlink = tempDirectory.append("build.link")
-            platformFilesystem.createSymlink("../../../../build", testSymlink)
-            assertThat(testSymlink).isSymlink()
+            tempDirectory.createSymlinkToDirectoryOutsideTree()
         }
     }
 }

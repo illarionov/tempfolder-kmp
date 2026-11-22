@@ -12,8 +12,6 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.js.KotlinJsPlatformTestRun
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
-import org.jetbrains.kotlin.gradle.targets.wasm.nodejs.WasmNodeJsEnvSpec
-import org.jetbrains.kotlin.gradle.targets.wasm.nodejs.WasmNodeJsPlugin
 
 /*
  * Convention plugin that configures Node JS tests in Kotlin Multiplatform project
@@ -27,12 +25,6 @@ plugins.withId("org.jetbrains.kotlin.multiplatform") {
                 }
             }
         }
-    }
-}
-
-plugins.withType<WasmNodeJsPlugin> {
-    extensions.configure<WasmNodeJsEnvSpec> {
-        version.set(versionCatalogs.named("libs").findVersion("wasmNodejs").get().requiredVersion)
     }
 }
 
