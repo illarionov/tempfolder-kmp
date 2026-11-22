@@ -34,6 +34,18 @@ internal actual val platformFilesystem: PlatformFilesystemTestFunctions get() = 
 private object WasiFilesystemTestFunctions : PlatformFilesystemTestFunctions {
     override val isPosixFileModeSupported: Boolean get() = false
     override val isSymlinkSupported: Boolean get() = true
+
+    // Creating a symlink and following it are separate operations. On Linux, for example, a link can exist
+    // while openat2 with RESOLVE_BENEATH rejects a lookup through it that would leave the supplied directory.
+    // A WASI runtime can likewise allow the link to be created and still enforce the preopen boundary when
+    // the guest follows it. The link is effectively dangling for the guest, even if the target exists on the host.
+    //
+    // We skip this case specifically for Node.js WASI. Node.js 24.8.0 shipped with uvwasi 0.0.23, which checks
+    // the target during path_symlink and returns NOTCAPABLE if it falls outside the preopen. We can run this
+    // case on other WASI runtimes that allow the link to be created.
+    // https://github.com/nodejs/uvwasi/commit/98da5adf0c
+    override val canSymlinkOutsidePreopen: Boolean get() = false
+    override val symlinkTargetOutsidePreopen: String get() = "../../../../build"
     override val pathSeparator: Char get() = '/'
     private val wasiPreopens = WasiPreopens.load()
 

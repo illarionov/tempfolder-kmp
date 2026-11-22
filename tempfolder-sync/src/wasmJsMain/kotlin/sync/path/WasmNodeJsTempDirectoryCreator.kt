@@ -37,7 +37,7 @@ internal object WasmNodeJsTempDirectoryCreator {
             mkdirSync(path, mode)
             true
         } catch (err: JsException) {
-            if (err.message.contains("EEXIST")) {
+            if (err.message?.contains("EEXIST") == true) {
                 false
             } else {
                 throw TempDirectoryIOException("mkdirSync() failed", err)

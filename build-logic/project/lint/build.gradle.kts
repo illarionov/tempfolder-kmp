@@ -13,6 +13,5 @@ dependencies {
     implementation(libs.detekt.plugin)
     implementation(libs.agp.plugin.api)
     implementation(libs.kotlin.gradle.plugin)
-    implementation(libs.kotlinx.binary.compatibility.validator.plugin)
     implementation(libs.spotless.plugin)
 }

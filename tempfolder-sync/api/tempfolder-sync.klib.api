@@ -1,0 +1,526 @@
+// Klib ABI Dump
+// Targets: [androidNativeArm32, androidNativeArm64, androidNativeX64, androidNativeX86, iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, wasmWasi, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Alias: androidNative => [androidNativeArm32, androidNativeArm64, androidNativeX64, androidNativeX86]
+// Alias: apple => [iosArm64, iosSimulatorArm64, iosX64, macosArm64, macosX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Alias: linux => [linuxArm64, linuxX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <at.released.tempfolder:tempfolder-sync>
+open annotation class at.released.tempfolder.dsl/TempDirectoryDsl : kotlin/Annotation { // at.released.tempfolder.dsl/TempDirectoryDsl|null[0]
+    constructor <init>() // at.released.tempfolder.dsl/TempDirectoryDsl.<init>|<init>(){}[0]
+}
+
+final enum class at.released.tempfolder.dsl/TempDirectoryFileModeBit : kotlin/Enum<at.released.tempfolder.dsl/TempDirectoryFileModeBit> { // at.released.tempfolder.dsl/TempDirectoryFileModeBit|null[0]
+    enum entry GROUP_EXECUTE // at.released.tempfolder.dsl/TempDirectoryFileModeBit.GROUP_EXECUTE|null[0]
+    enum entry GROUP_READ // at.released.tempfolder.dsl/TempDirectoryFileModeBit.GROUP_READ|null[0]
+    enum entry GROUP_WRITE // at.released.tempfolder.dsl/TempDirectoryFileModeBit.GROUP_WRITE|null[0]
+    enum entry OTHER_EXECUTE // at.released.tempfolder.dsl/TempDirectoryFileModeBit.OTHER_EXECUTE|null[0]
+    enum entry OTHER_READ // at.released.tempfolder.dsl/TempDirectoryFileModeBit.OTHER_READ|null[0]
+    enum entry OTHER_WRITE // at.released.tempfolder.dsl/TempDirectoryFileModeBit.OTHER_WRITE|null[0]
+    enum entry SGID // at.released.tempfolder.dsl/TempDirectoryFileModeBit.SGID|null[0]
+    enum entry STICKY // at.released.tempfolder.dsl/TempDirectoryFileModeBit.STICKY|null[0]
+    enum entry SUID // at.released.tempfolder.dsl/TempDirectoryFileModeBit.SUID|null[0]
+    enum entry USER_EXECUTE // at.released.tempfolder.dsl/TempDirectoryFileModeBit.USER_EXECUTE|null[0]
+    enum entry USER_READ // at.released.tempfolder.dsl/TempDirectoryFileModeBit.USER_READ|null[0]
+    enum entry USER_WRITE // at.released.tempfolder.dsl/TempDirectoryFileModeBit.USER_WRITE|null[0]
+
+    final val entries // at.released.tempfolder.dsl/TempDirectoryFileModeBit.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<at.released.tempfolder.dsl/TempDirectoryFileModeBit> // at.released.tempfolder.dsl/TempDirectoryFileModeBit.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): at.released.tempfolder.dsl/TempDirectoryFileModeBit // at.released.tempfolder.dsl/TempDirectoryFileModeBit.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<at.released.tempfolder.dsl/TempDirectoryFileModeBit> // at.released.tempfolder.dsl/TempDirectoryFileModeBit.values|values#static(){}[0]
+
+    final object Companion // at.released.tempfolder.dsl/TempDirectoryFileModeBit.Companion|null[0]
+}
+
+final enum class at.released.tempfolder.dsl/TempDirectorySizeEstimate : kotlin/Enum<at.released.tempfolder.dsl/TempDirectorySizeEstimate> { // at.released.tempfolder.dsl/TempDirectorySizeEstimate|null[0]
+    enum entry LARGE // at.released.tempfolder.dsl/TempDirectorySizeEstimate.LARGE|null[0]
+    enum entry SMALL // at.released.tempfolder.dsl/TempDirectorySizeEstimate.SMALL|null[0]
+
+    final val entries // at.released.tempfolder.dsl/TempDirectorySizeEstimate.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<at.released.tempfolder.dsl/TempDirectorySizeEstimate> // at.released.tempfolder.dsl/TempDirectorySizeEstimate.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): at.released.tempfolder.dsl/TempDirectorySizeEstimate // at.released.tempfolder.dsl/TempDirectorySizeEstimate.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<at.released.tempfolder.dsl/TempDirectorySizeEstimate> // at.released.tempfolder.dsl/TempDirectorySizeEstimate.values|values#static(){}[0]
+}
+
+abstract interface <#A: out kotlin/Any> at.released.tempfolder.sync/TempDirectory : kotlin/AutoCloseable { // at.released.tempfolder.sync/TempDirectory|null[0]
+    abstract val root // at.released.tempfolder.sync/TempDirectory.root|{}root[0]
+        abstract fun <get-root>(): #A // at.released.tempfolder.sync/TempDirectory.root.<get-root>|<get-root>(){}[0]
+
+    abstract var deleteOnClose // at.released.tempfolder.sync/TempDirectory.deleteOnClose|{}deleteOnClose[0]
+        abstract fun <get-deleteOnClose>(): kotlin/Boolean // at.released.tempfolder.sync/TempDirectory.deleteOnClose.<get-deleteOnClose>|<get-deleteOnClose>(){}[0]
+        abstract fun <set-deleteOnClose>(kotlin/Boolean) // at.released.tempfolder.sync/TempDirectory.deleteOnClose.<set-deleteOnClose>|<set-deleteOnClose>(kotlin.Boolean){}[0]
+
+    abstract fun absolutePath(): at.released.tempfolder.path/TempDirectoryPath // at.released.tempfolder.sync/TempDirectory.absolutePath|absolutePath(){}[0]
+    abstract fun append(kotlin/String): at.released.tempfolder.path/TempDirectoryPath // at.released.tempfolder.sync/TempDirectory.append|append(kotlin.String){}[0]
+    abstract fun close() // at.released.tempfolder.sync/TempDirectory.close|close(){}[0]
+    abstract fun delete() // at.released.tempfolder.sync/TempDirectory.delete|delete(){}[0]
+
+    final object Companion // at.released.tempfolder.sync/TempDirectory.Companion|null[0]
+}
+
+sealed interface at.released.tempfolder.dsl/TempDirectoryBase { // at.released.tempfolder.dsl/TempDirectoryBase|null[0]
+    abstract interface Auto : at.released.tempfolder.dsl/TempDirectoryBase { // at.released.tempfolder.dsl/TempDirectoryBase.Auto|null[0]
+        abstract var sizeEstimate // at.released.tempfolder.dsl/TempDirectoryBase.Auto.sizeEstimate|{}sizeEstimate[0]
+            abstract fun <get-sizeEstimate>(): at.released.tempfolder.dsl/TempDirectorySizeEstimate // at.released.tempfolder.dsl/TempDirectoryBase.Auto.sizeEstimate.<get-sizeEstimate>|<get-sizeEstimate>(){}[0]
+            abstract fun <set-sizeEstimate>(at.released.tempfolder.dsl/TempDirectorySizeEstimate) // at.released.tempfolder.dsl/TempDirectoryBase.Auto.sizeEstimate.<set-sizeEstimate>|<set-sizeEstimate>(at.released.tempfolder.dsl.TempDirectorySizeEstimate){}[0]
+
+        final object Companion { // at.released.tempfolder.dsl/TempDirectoryBase.Auto.Companion|null[0]
+            final fun invoke(kotlin/Function1<at.released.tempfolder.dsl/TempDirectoryBase.Auto, kotlin/Unit> = ...): at.released.tempfolder.dsl/TempDirectoryBase // at.released.tempfolder.dsl/TempDirectoryBase.Auto.Companion.invoke|invoke(kotlin.Function1<at.released.tempfolder.dsl.TempDirectoryBase.Auto,kotlin.Unit>){}[0]
+        }
+    }
+
+    final class Path : at.released.tempfolder.dsl/TempDirectoryBase { // at.released.tempfolder.dsl/TempDirectoryBase.Path|null[0]
+        constructor <init>(kotlin/String) // at.released.tempfolder.dsl/TempDirectoryBase.Path.<init>|<init>(kotlin.String){}[0]
+
+        final val path // at.released.tempfolder.dsl/TempDirectoryBase.Path.path|{}path[0]
+            final fun <get-path>(): kotlin/String // at.released.tempfolder.dsl/TempDirectoryBase.Path.path.<get-path>|<get-path>(){}[0]
+
+        final fun component1(): kotlin/String // at.released.tempfolder.dsl/TempDirectoryBase.Path.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): at.released.tempfolder.dsl/TempDirectoryBase.Path // at.released.tempfolder.dsl/TempDirectoryBase.Path.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // at.released.tempfolder.dsl/TempDirectoryBase.Path.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // at.released.tempfolder.dsl/TempDirectoryBase.Path.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // at.released.tempfolder.dsl/TempDirectoryBase.Path.toString|toString(){}[0]
+    }
+}
+
+sealed interface at.released.tempfolder.path/TempDirectoryPath { // at.released.tempfolder.path/TempDirectoryPath|null[0]
+    abstract val bytes // at.released.tempfolder.path/TempDirectoryPath.bytes|{}bytes[0]
+        abstract fun <get-bytes>(): kotlinx.io.bytestring/ByteString // at.released.tempfolder.path/TempDirectoryPath.bytes.<get-bytes>|<get-bytes>(){}[0]
+
+    abstract fun asString(): kotlin/String // at.released.tempfolder.path/TempDirectoryPath.asString|asString(){}[0]
+
+    final enum class Encoding : kotlin/Enum<at.released.tempfolder.path/TempDirectoryPath.Encoding> { // at.released.tempfolder.path/TempDirectoryPath.Encoding|null[0]
+        enum entry UNDEFINED // at.released.tempfolder.path/TempDirectoryPath.Encoding.UNDEFINED|null[0]
+        enum entry UTF16_LE // at.released.tempfolder.path/TempDirectoryPath.Encoding.UTF16_LE|null[0]
+        enum entry UTF8 // at.released.tempfolder.path/TempDirectoryPath.Encoding.UTF8|null[0]
+
+        final val entries // at.released.tempfolder.path/TempDirectoryPath.Encoding.entries|#static{}entries[0]
+            final fun <get-entries>(): kotlin.enums/EnumEntries<at.released.tempfolder.path/TempDirectoryPath.Encoding> // at.released.tempfolder.path/TempDirectoryPath.Encoding.entries.<get-entries>|<get-entries>#static(){}[0]
+
+        final fun valueOf(kotlin/String): at.released.tempfolder.path/TempDirectoryPath.Encoding // at.released.tempfolder.path/TempDirectoryPath.Encoding.valueOf|valueOf#static(kotlin.String){}[0]
+        final fun values(): kotlin/Array<at.released.tempfolder.path/TempDirectoryPath.Encoding> // at.released.tempfolder.path/TempDirectoryPath.Encoding.values|values#static(){}[0]
+    }
+
+    abstract interface MultibytePath : at.released.tempfolder.path/TempDirectoryPath { // at.released.tempfolder.path/TempDirectoryPath.MultibytePath|null[0]
+        abstract val isEncodingUndefined // at.released.tempfolder.path/TempDirectoryPath.MultibytePath.isEncodingUndefined|{}isEncodingUndefined[0]
+            abstract fun <get-isEncodingUndefined>(): kotlin/Boolean // at.released.tempfolder.path/TempDirectoryPath.MultibytePath.isEncodingUndefined.<get-isEncodingUndefined>|<get-isEncodingUndefined>(){}[0]
+    }
+
+    abstract interface WideCharPath : at.released.tempfolder.path/TempDirectoryPath // at.released.tempfolder.path/TempDirectoryPath.WideCharPath|null[0]
+
+    final object Companion { // at.released.tempfolder.path/TempDirectoryPath.Companion|null[0]
+        final val encoding // at.released.tempfolder.path/TempDirectoryPath.Companion.encoding|@at.released.tempfolder.path.TempDirectoryPath{}encoding[0]
+            final fun (at.released.tempfolder.path/TempDirectoryPath).<get-encoding>(): at.released.tempfolder.path/TempDirectoryPath.Encoding // at.released.tempfolder.path/TempDirectoryPath.Companion.encoding.<get-encoding>|<get-encoding>@at.released.tempfolder.path.TempDirectoryPath(){}[0]
+    }
+}
+
+final class at.released.tempfolder.dsl/CommonTempDirectoryConfig { // at.released.tempfolder.dsl/CommonTempDirectoryConfig|null[0]
+    final var base // at.released.tempfolder.dsl/CommonTempDirectoryConfig.base|{}base[0]
+        final fun <get-base>(): at.released.tempfolder.dsl/TempDirectoryBase // at.released.tempfolder.dsl/CommonTempDirectoryConfig.base.<get-base>|<get-base>(){}[0]
+        final fun <set-base>(at.released.tempfolder.dsl/TempDirectoryBase) // at.released.tempfolder.dsl/CommonTempDirectoryConfig.base.<set-base>|<set-base>(at.released.tempfolder.dsl.TempDirectoryBase){}[0]
+    final var permissions // at.released.tempfolder.dsl/CommonTempDirectoryConfig.permissions|{}permissions[0]
+        final fun <get-permissions>(): kotlin.collections/Set<at.released.tempfolder.dsl/TempDirectoryFileModeBit> // at.released.tempfolder.dsl/CommonTempDirectoryConfig.permissions.<get-permissions>|<get-permissions>(){}[0]
+        final fun <set-permissions>(kotlin.collections/Set<at.released.tempfolder.dsl/TempDirectoryFileModeBit>) // at.released.tempfolder.dsl/CommonTempDirectoryConfig.permissions.<set-permissions>|<set-permissions>(kotlin.collections.Set<at.released.tempfolder.dsl.TempDirectoryFileModeBit>){}[0]
+    final var prefix // at.released.tempfolder.dsl/CommonTempDirectoryConfig.prefix|{}prefix[0]
+        final fun <get-prefix>(): kotlin/String // at.released.tempfolder.dsl/CommonTempDirectoryConfig.prefix.<get-prefix>|<get-prefix>(){}[0]
+        final fun <set-prefix>(kotlin/String) // at.released.tempfolder.dsl/CommonTempDirectoryConfig.prefix.<set-prefix>|<set-prefix>(kotlin.String){}[0]
+
+    final object Companion { // at.released.tempfolder.dsl/CommonTempDirectoryConfig.Companion|null[0]
+        final fun (at.released.tempfolder.dsl/CommonTempDirectoryConfig).auto(kotlin/Function1<at.released.tempfolder.dsl/TempDirectoryBase.Auto, kotlin/Unit> = ...): at.released.tempfolder.dsl/TempDirectoryBase // at.released.tempfolder.dsl/CommonTempDirectoryConfig.Companion.auto|auto@at.released.tempfolder.dsl.CommonTempDirectoryConfig(kotlin.Function1<at.released.tempfolder.dsl.TempDirectoryBase.Auto,kotlin.Unit>){}[0]
+        final fun (at.released.tempfolder.dsl/CommonTempDirectoryConfig).path(kotlin/String): at.released.tempfolder.dsl/TempDirectoryBase // at.released.tempfolder.dsl/CommonTempDirectoryConfig.Companion.path|path@at.released.tempfolder.dsl.CommonTempDirectoryConfig(kotlin.String){}[0]
+    }
+}
+
+final class at.released.tempfolder.path/TempDirectoryCharacterCodingException : at.released.tempfolder.path/TempDirectoryInvalidPathException { // at.released.tempfolder.path/TempDirectoryCharacterCodingException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable?) // at.released.tempfolder.path/TempDirectoryCharacterCodingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+    constructor <init>(kotlin/String?) // at.released.tempfolder.path/TempDirectoryCharacterCodingException.<init>|<init>(kotlin.String?){}[0]
+    constructor <init>(kotlin/Throwable) // at.released.tempfolder.path/TempDirectoryCharacterCodingException.<init>|<init>(kotlin.Throwable){}[0]
+}
+
+final class at.released.tempfolder.path/TempDirectoryInvalidCharacterException : at.released.tempfolder.path/TempDirectoryInvalidPathException { // at.released.tempfolder.path/TempDirectoryInvalidCharacterException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable?) // at.released.tempfolder.path/TempDirectoryInvalidCharacterException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+    constructor <init>(kotlin/String?) // at.released.tempfolder.path/TempDirectoryInvalidCharacterException.<init>|<init>(kotlin.String?){}[0]
+    constructor <init>(kotlin/Throwable) // at.released.tempfolder.path/TempDirectoryInvalidCharacterException.<init>|<init>(kotlin.Throwable){}[0]
+}
+
+final class at.released.tempfolder.path/TempDirectoryPathEmptyException : at.released.tempfolder.path/TempDirectoryInvalidPathException { // at.released.tempfolder.path/TempDirectoryPathEmptyException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable?) // at.released.tempfolder.path/TempDirectoryPathEmptyException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+    constructor <init>(kotlin/String?) // at.released.tempfolder.path/TempDirectoryPathEmptyException.<init>|<init>(kotlin.String?){}[0]
+    constructor <init>(kotlin/Throwable) // at.released.tempfolder.path/TempDirectoryPathEmptyException.<init>|<init>(kotlin.Throwable){}[0]
+
+    final object Companion // at.released.tempfolder.path/TempDirectoryPathEmptyException.Companion|null[0]
+}
+
+final class at.released.tempfolder/TempDirectoryClosedException : at.released.tempfolder/TempDirectoryIOException { // at.released.tempfolder/TempDirectoryClosedException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable?) // at.released.tempfolder/TempDirectoryClosedException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+    constructor <init>(kotlin/String?) // at.released.tempfolder/TempDirectoryClosedException.<init>|<init>(kotlin.String?){}[0]
+    constructor <init>(kotlin/Throwable) // at.released.tempfolder/TempDirectoryClosedException.<init>|<init>(kotlin.Throwable){}[0]
+
+    final object Companion // at.released.tempfolder/TempDirectoryClosedException.Companion|null[0]
+}
+
+final class at.released.tempfolder/TempDirectoryDeleteException : at.released.tempfolder/TempDirectoryIOException { // at.released.tempfolder/TempDirectoryDeleteException|null[0]
+    constructor <init>() // at.released.tempfolder/TempDirectoryDeleteException.<init>|<init>(){}[0]
+    constructor <init>(kotlin/String, kotlin/Throwable?) // at.released.tempfolder/TempDirectoryDeleteException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+    constructor <init>(kotlin/String?) // at.released.tempfolder/TempDirectoryDeleteException.<init>|<init>(kotlin.String?){}[0]
+    constructor <init>(kotlin/Throwable) // at.released.tempfolder/TempDirectoryDeleteException.<init>|<init>(kotlin.Throwable){}[0]
+
+    final object Companion // at.released.tempfolder/TempDirectoryDeleteException.Companion|null[0]
+}
+
+final value class at.released.tempfolder/TempDirectoryDescriptor { // at.released.tempfolder/TempDirectoryDescriptor|null[0]
+    constructor <init>(kotlin/Int) // at.released.tempfolder/TempDirectoryDescriptor.<init>|<init>(kotlin.Int){}[0]
+
+    final val fd // at.released.tempfolder/TempDirectoryDescriptor.fd|{}fd[0]
+        final fun <get-fd>(): kotlin/Int // at.released.tempfolder/TempDirectoryDescriptor.fd.<get-fd>|<get-fd>(){}[0]
+
+    final fun equals(kotlin/Any?): kotlin/Boolean // at.released.tempfolder/TempDirectoryDescriptor.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // at.released.tempfolder/TempDirectoryDescriptor.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // at.released.tempfolder/TempDirectoryDescriptor.toString|toString(){}[0]
+
+    final object Companion // at.released.tempfolder/TempDirectoryDescriptor.Companion|null[0]
+}
+
+open class at.released.tempfolder.path/TempDirectoryInvalidPathException : at.released.tempfolder/TempDirectoryException { // at.released.tempfolder.path/TempDirectoryInvalidPathException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable?) // at.released.tempfolder.path/TempDirectoryInvalidPathException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+    constructor <init>(kotlin/String?) // at.released.tempfolder.path/TempDirectoryInvalidPathException.<init>|<init>(kotlin.String?){}[0]
+    constructor <init>(kotlin/Throwable) // at.released.tempfolder.path/TempDirectoryInvalidPathException.<init>|<init>(kotlin.Throwable){}[0]
+
+    final object Companion // at.released.tempfolder.path/TempDirectoryInvalidPathException.Companion|null[0]
+}
+
+open class at.released.tempfolder/TempDirectoryException : at.released.tempfolder/TempDirectoryPlatformIOException { // at.released.tempfolder/TempDirectoryException|null[0]
+    constructor <init>() // at.released.tempfolder/TempDirectoryException.<init>|<init>(){}[0]
+    constructor <init>(kotlin/String, kotlin/Throwable?) // at.released.tempfolder/TempDirectoryException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+    constructor <init>(kotlin/String?) // at.released.tempfolder/TempDirectoryException.<init>|<init>(kotlin.String?){}[0]
+    constructor <init>(kotlin/Throwable) // at.released.tempfolder/TempDirectoryException.<init>|<init>(kotlin.Throwable){}[0]
+}
+
+open class at.released.tempfolder/TempDirectoryIOException : at.released.tempfolder/TempDirectoryException { // at.released.tempfolder/TempDirectoryIOException|null[0]
+    constructor <init>() // at.released.tempfolder/TempDirectoryIOException.<init>|<init>(){}[0]
+    constructor <init>(kotlin/String, kotlin/Throwable?) // at.released.tempfolder/TempDirectoryIOException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+    constructor <init>(kotlin/String?) // at.released.tempfolder/TempDirectoryIOException.<init>|<init>(kotlin.String?){}[0]
+    constructor <init>(kotlin/Throwable) // at.released.tempfolder/TempDirectoryIOException.<init>|<init>(kotlin.Throwable){}[0]
+}
+
+open class at.released.tempfolder/TempDirectoryPlatformIOException : kotlin/Exception { // at.released.tempfolder/TempDirectoryPlatformIOException|null[0]
+    constructor <init>() // at.released.tempfolder/TempDirectoryPlatformIOException.<init>|<init>(){}[0]
+    constructor <init>(kotlin/String, kotlin/Throwable?) // at.released.tempfolder/TempDirectoryPlatformIOException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+    constructor <init>(kotlin/String?) // at.released.tempfolder/TempDirectoryPlatformIOException.<init>|<init>(kotlin.String?){}[0]
+    constructor <init>(kotlin/Throwable) // at.released.tempfolder/TempDirectoryPlatformIOException.<init>|<init>(kotlin.Throwable){}[0]
+}
+
+final fun at.released.tempfolder.sync/createTempDirectory(kotlin/Function1<at.released.tempfolder.dsl/CommonTempDirectoryConfig, kotlin/Unit> = ...): at.released.tempfolder.sync/TempDirectory<*> // at.released.tempfolder.sync/createTempDirectory|createTempDirectory(kotlin.Function1<at.released.tempfolder.dsl.CommonTempDirectoryConfig,kotlin.Unit>){}[0]
+
+// Targets: [androidNative, apple, linux]
+final enum class at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType : kotlin/Enum<at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType> { // at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType|null[0]
+    enum entry EXCLUSIVE // at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType.EXCLUSIVE|null[0]
+    enum entry NONE // at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType.NONE|null[0]
+    enum entry SHARED // at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType.SHARED|null[0]
+
+    final val entries // at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType> // at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType // at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType> // at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType.values|values#static(){}[0]
+}
+
+// Targets: [androidNative, apple, linux]
+sealed interface at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase { // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase|null[0]
+    final class Auto : at.released.tempfolder.dsl/TempDirectoryBase.Auto, at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase { // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Auto|null[0]
+        final var sizeEstimate // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Auto.sizeEstimate|{}sizeEstimate[0]
+            final fun <get-sizeEstimate>(): at.released.tempfolder.dsl/TempDirectorySizeEstimate // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Auto.sizeEstimate.<get-sizeEstimate>|<get-sizeEstimate>(){}[0]
+            final fun <set-sizeEstimate>(at.released.tempfolder.dsl/TempDirectorySizeEstimate) // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Auto.sizeEstimate.<set-sizeEstimate>|<set-sizeEstimate>(at.released.tempfolder.dsl.TempDirectorySizeEstimate){}[0]
+
+        final object Companion { // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Auto.Companion|null[0]
+            final fun invoke(kotlin/Function1<at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Auto, kotlin/Unit> = ...): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Auto // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Auto.Companion.invoke|invoke(kotlin.Function1<at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase.Auto,kotlin.Unit>){}[0]
+        }
+    }
+
+    final class Path : at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase { // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Path|null[0]
+        constructor <init>(kotlin/String) // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Path.<init>|<init>(kotlin.String){}[0]
+
+        final val path // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Path.path|{}path[0]
+            final fun <get-path>(): kotlin/String // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Path.path.<get-path>|<get-path>(){}[0]
+
+        final fun component1(): kotlin/String // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Path.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Path // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Path.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Path.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Path.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Path.toString|toString(){}[0]
+    }
+
+    final value class FileDescriptor : at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase { // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.FileDescriptor|null[0]
+        constructor <init>(kotlin/Int) // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.FileDescriptor.<init>|<init>(kotlin.Int){}[0]
+
+        final val fd // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.FileDescriptor.fd|{}fd[0]
+            final fun <get-fd>(): kotlin/Int // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.FileDescriptor.fd.<get-fd>|<get-fd>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.FileDescriptor.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.FileDescriptor.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.FileDescriptor.toString|toString(){}[0]
+    }
+}
+
+// Targets: [androidNative, apple, linux]
+final class at.released.tempfolder.posix200809/TempDirectoryNativeIOException : at.released.tempfolder/TempDirectoryIOException { // at.released.tempfolder.posix200809/TempDirectoryNativeIOException|null[0]
+    constructor <init>(kotlin/Int) // at.released.tempfolder.posix200809/TempDirectoryNativeIOException.<init>|<init>(kotlin.Int){}[0]
+    constructor <init>(kotlin/Int, kotlin/String, kotlin/Throwable?) // at.released.tempfolder.posix200809/TempDirectoryNativeIOException.<init>|<init>(kotlin.Int;kotlin.String;kotlin.Throwable?){}[0]
+    constructor <init>(kotlin/Int, kotlin/String?) // at.released.tempfolder.posix200809/TempDirectoryNativeIOException.<init>|<init>(kotlin.Int;kotlin.String?){}[0]
+    constructor <init>(kotlin/Int, kotlin/Throwable) // at.released.tempfolder.posix200809/TempDirectoryNativeIOException.<init>|<init>(kotlin.Int;kotlin.Throwable){}[0]
+
+    final val errno // at.released.tempfolder.posix200809/TempDirectoryNativeIOException.errno|{}errno[0]
+        final fun <get-errno>(): kotlin/Int // at.released.tempfolder.posix200809/TempDirectoryNativeIOException.errno.<get-errno>|<get-errno>(){}[0]
+}
+
+// Targets: [apple]
+final class at.released.tempfolder.sync.fd/AppleTempDirectoryConfig { // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig|null[0]
+    final var base // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.base|{}base[0]
+        final fun <get-base>(): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.base.<get-base>|<get-base>(){}[0]
+        final fun <set-base>(at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase) // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.base.<set-base>|<set-base>(at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase){}[0]
+    final var permissions // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.permissions|{}permissions[0]
+        final fun <get-permissions>(): kotlin.collections/Set<at.released.tempfolder.dsl/TempDirectoryFileModeBit> // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.permissions.<get-permissions>|<get-permissions>(){}[0]
+        final fun <set-permissions>(kotlin.collections/Set<at.released.tempfolder.dsl/TempDirectoryFileModeBit>) // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.permissions.<set-permissions>|<set-permissions>(kotlin.collections.Set<at.released.tempfolder.dsl.TempDirectoryFileModeBit>){}[0]
+    final var prefix // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.prefix|{}prefix[0]
+        final fun <get-prefix>(): kotlin/String // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.prefix.<get-prefix>|<get-prefix>(){}[0]
+        final fun <set-prefix>(kotlin/String) // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.prefix.<set-prefix>|<set-prefix>(kotlin.String){}[0]
+
+    final object Companion { // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.Companion|null[0]
+        final fun (at.released.tempfolder.sync.fd/AppleTempDirectoryConfig).auto(kotlin/Function1<at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Auto, kotlin/Unit> = ...): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.Companion.auto|auto@at.released.tempfolder.sync.fd.AppleTempDirectoryConfig(kotlin.Function1<at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase.Auto,kotlin.Unit>){}[0]
+        final fun (at.released.tempfolder.sync.fd/AppleTempDirectoryConfig).fileDescriptor(kotlin/Int): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.Companion.fileDescriptor|fileDescriptor@at.released.tempfolder.sync.fd.AppleTempDirectoryConfig(kotlin.Int){}[0]
+        final fun (at.released.tempfolder.sync.fd/AppleTempDirectoryConfig).path(kotlin/String): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase // at.released.tempfolder.sync.fd/AppleTempDirectoryConfig.Companion.path|path@at.released.tempfolder.sync.fd.AppleTempDirectoryConfig(kotlin.String){}[0]
+    }
+}
+
+// Targets: [apple]
+final class at.released.tempfolder.sync.nsfm/NsurlTempDirectoryConfig { // at.released.tempfolder.sync.nsfm/NsurlTempDirectoryConfig|null[0]
+    final var base // at.released.tempfolder.sync.nsfm/NsurlTempDirectoryConfig.base|{}base[0]
+        final fun <get-base>(): at.released.tempfolder.sync.nsfm/NsurlTempBase // at.released.tempfolder.sync.nsfm/NsurlTempDirectoryConfig.base.<get-base>|<get-base>(){}[0]
+        final fun <set-base>(at.released.tempfolder.sync.nsfm/NsurlTempBase) // at.released.tempfolder.sync.nsfm/NsurlTempDirectoryConfig.base.<set-base>|<set-base>(at.released.tempfolder.sync.nsfm.NsurlTempBase){}[0]
+    final var fileManager // at.released.tempfolder.sync.nsfm/NsurlTempDirectoryConfig.fileManager|{}fileManager[0]
+        final fun <get-fileManager>(): platform.Foundation/NSFileManager // at.released.tempfolder.sync.nsfm/NsurlTempDirectoryConfig.fileManager.<get-fileManager>|<get-fileManager>(){}[0]
+        final fun <set-fileManager>(platform.Foundation/NSFileManager) // at.released.tempfolder.sync.nsfm/NsurlTempDirectoryConfig.fileManager.<set-fileManager>|<set-fileManager>(platform.Foundation.NSFileManager){}[0]
+
+    final object Companion { // at.released.tempfolder.sync.nsfm/NsurlTempDirectoryConfig.Companion|null[0]
+        final fun auto(kotlin/Function1<at.released.tempfolder.sync.nsfm/NsurlTempBase.Auto, kotlin/Unit> = ...): at.released.tempfolder.sync.nsfm/NsurlTempBase // at.released.tempfolder.sync.nsfm/NsurlTempDirectoryConfig.Companion.auto|auto(kotlin.Function1<at.released.tempfolder.sync.nsfm.NsurlTempBase.Auto,kotlin.Unit>){}[0]
+    }
+}
+
+// Targets: [apple]
+sealed class at.released.tempfolder.sync.nsfm/NsurlTempBase { // at.released.tempfolder.sync.nsfm/NsurlTempBase|null[0]
+    final enum class SearchPathDomain : kotlin/Enum<at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain> { // at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain|null[0]
+        enum entry LOCAL // at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain.LOCAL|null[0]
+        enum entry NETWORK // at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain.NETWORK|null[0]
+        enum entry SYSTEM // at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain.SYSTEM|null[0]
+        enum entry USER // at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain.USER|null[0]
+
+        final val entries // at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain.entries|#static{}entries[0]
+            final fun <get-entries>(): kotlin.enums/EnumEntries<at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain> // at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain.entries.<get-entries>|<get-entries>#static(){}[0]
+
+        final fun valueOf(kotlin/String): at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain // at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain.valueOf|valueOf#static(kotlin.String){}[0]
+        final fun values(): kotlin/Array<at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain> // at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain.values|values#static(){}[0]
+    }
+
+    final class Auto : at.released.tempfolder.sync.nsfm/NsurlTempBase { // at.released.tempfolder.sync.nsfm/NsurlTempBase.Auto|null[0]
+        final var appropriateForUrl // at.released.tempfolder.sync.nsfm/NsurlTempBase.Auto.appropriateForUrl|{}appropriateForUrl[0]
+            final fun <get-appropriateForUrl>(): platform.Foundation/NSURL? // at.released.tempfolder.sync.nsfm/NsurlTempBase.Auto.appropriateForUrl.<get-appropriateForUrl>|<get-appropriateForUrl>(){}[0]
+            final fun <set-appropriateForUrl>(platform.Foundation/NSURL?) // at.released.tempfolder.sync.nsfm/NsurlTempBase.Auto.appropriateForUrl.<set-appropriateForUrl>|<set-appropriateForUrl>(platform.Foundation.NSURL?){}[0]
+        final var inDomain // at.released.tempfolder.sync.nsfm/NsurlTempBase.Auto.inDomain|{}inDomain[0]
+            final fun <get-inDomain>(): at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain // at.released.tempfolder.sync.nsfm/NsurlTempBase.Auto.inDomain.<get-inDomain>|<get-inDomain>(){}[0]
+            final fun <set-inDomain>(at.released.tempfolder.sync.nsfm/NsurlTempBase.SearchPathDomain) // at.released.tempfolder.sync.nsfm/NsurlTempBase.Auto.inDomain.<set-inDomain>|<set-inDomain>(at.released.tempfolder.sync.nsfm.NsurlTempBase.SearchPathDomain){}[0]
+    }
+}
+
+// Targets: [apple]
+final fun (at.released.tempfolder.sync/TempDirectory.Companion).at.released.tempfolder.sync/createAppleTempDirectory(kotlin/Function1<at.released.tempfolder.sync.fd/AppleTempDirectoryConfig, kotlin/Unit> = ...): at.released.tempfolder.sync/TempDirectory<at.released.tempfolder/TempDirectoryDescriptor> // at.released.tempfolder.sync/createAppleTempDirectory|createAppleTempDirectory@at.released.tempfolder.sync.TempDirectory.Companion(kotlin.Function1<at.released.tempfolder.sync.fd.AppleTempDirectoryConfig,kotlin.Unit>){}[0]
+
+// Targets: [apple]
+final fun (at.released.tempfolder.sync/TempDirectory.Companion).at.released.tempfolder.sync/createNsurlTempDirectory(kotlin/Function1<at.released.tempfolder.sync.nsfm/NsurlTempDirectoryConfig, kotlin/Unit> = ...): at.released.tempfolder.sync/TempDirectory<platform.Foundation/NSURL> // at.released.tempfolder.sync/createNsurlTempDirectory|createNsurlTempDirectory@at.released.tempfolder.sync.TempDirectory.Companion(kotlin.Function1<at.released.tempfolder.sync.nsfm.NsurlTempDirectoryConfig,kotlin.Unit>){}[0]
+
+// Targets: [androidNative]
+final class at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig { // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig|null[0]
+    final var base // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.base|{}base[0]
+        final fun <get-base>(): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.base.<get-base>|<get-base>(){}[0]
+        final fun <set-base>(at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase) // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.base.<set-base>|<set-base>(at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase){}[0]
+    final var permissions // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.permissions|{}permissions[0]
+        final fun <get-permissions>(): kotlin.collections/Set<at.released.tempfolder.dsl/TempDirectoryFileModeBit> // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.permissions.<get-permissions>|<get-permissions>(){}[0]
+        final fun <set-permissions>(kotlin.collections/Set<at.released.tempfolder.dsl/TempDirectoryFileModeBit>) // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.permissions.<set-permissions>|<set-permissions>(kotlin.collections.Set<at.released.tempfolder.dsl.TempDirectoryFileModeBit>){}[0]
+    final var prefix // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.prefix|{}prefix[0]
+        final fun <get-prefix>(): kotlin/String // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.prefix.<get-prefix>|<get-prefix>(){}[0]
+        final fun <set-prefix>(kotlin/String) // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.prefix.<set-prefix>|<set-prefix>(kotlin.String){}[0]
+
+    final object Companion { // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.Companion|null[0]
+        final fun (at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig).auto(kotlin/Function1<at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Auto, kotlin/Unit> = ...): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.Companion.auto|auto@at.released.tempfolder.sync.AndroidNativeTempDirectoryConfig(kotlin.Function1<at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase.Auto,kotlin.Unit>){}[0]
+        final fun (at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig).fileDescriptor(kotlin/Int): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.Companion.fileDescriptor|fileDescriptor@at.released.tempfolder.sync.AndroidNativeTempDirectoryConfig(kotlin.Int){}[0]
+        final fun (at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig).path(kotlin/String): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase // at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig.Companion.path|path@at.released.tempfolder.sync.AndroidNativeTempDirectoryConfig(kotlin.String){}[0]
+    }
+}
+
+// Targets: [androidNative]
+final fun (at.released.tempfolder.sync/TempDirectory.Companion).at.released.tempfolder.sync/createAndroidNativeTempDirectory(kotlin/Function1<at.released.tempfolder.sync/AndroidNativeTempDirectoryConfig, kotlin/Unit> = ...): at.released.tempfolder.sync/TempDirectory<at.released.tempfolder/TempDirectoryDescriptor> // at.released.tempfolder.sync/createAndroidNativeTempDirectory|createAndroidNativeTempDirectory@at.released.tempfolder.sync.TempDirectory.Companion(kotlin.Function1<at.released.tempfolder.sync.AndroidNativeTempDirectoryConfig,kotlin.Unit>){}[0]
+
+// Targets: [js, wasmJs]
+final class at.released.tempfolder.sync.path/NodeDirectoryConfig { // at.released.tempfolder.sync.path/NodeDirectoryConfig|null[0]
+    constructor <init>() // at.released.tempfolder.sync.path/NodeDirectoryConfig.<init>|<init>(){}[0]
+
+    final var base // at.released.tempfolder.sync.path/NodeDirectoryConfig.base|{}base[0]
+        final fun <get-base>(): at.released.tempfolder.sync.path/NodeTempDirectoryBase // at.released.tempfolder.sync.path/NodeDirectoryConfig.base.<get-base>|<get-base>(){}[0]
+        final fun <set-base>(at.released.tempfolder.sync.path/NodeTempDirectoryBase) // at.released.tempfolder.sync.path/NodeDirectoryConfig.base.<set-base>|<set-base>(at.released.tempfolder.sync.path.NodeTempDirectoryBase){}[0]
+    final var permissions // at.released.tempfolder.sync.path/NodeDirectoryConfig.permissions|{}permissions[0]
+        final fun <get-permissions>(): kotlin.collections/Set<at.released.tempfolder.dsl/TempDirectoryFileModeBit> // at.released.tempfolder.sync.path/NodeDirectoryConfig.permissions.<get-permissions>|<get-permissions>(){}[0]
+        final fun <set-permissions>(kotlin.collections/Set<at.released.tempfolder.dsl/TempDirectoryFileModeBit>) // at.released.tempfolder.sync.path/NodeDirectoryConfig.permissions.<set-permissions>|<set-permissions>(kotlin.collections.Set<at.released.tempfolder.dsl.TempDirectoryFileModeBit>){}[0]
+    final var prefix // at.released.tempfolder.sync.path/NodeDirectoryConfig.prefix|{}prefix[0]
+        final fun <get-prefix>(): kotlin/String // at.released.tempfolder.sync.path/NodeDirectoryConfig.prefix.<get-prefix>|<get-prefix>(){}[0]
+        final fun <set-prefix>(kotlin/String) // at.released.tempfolder.sync.path/NodeDirectoryConfig.prefix.<set-prefix>|<set-prefix>(kotlin.String){}[0]
+
+    final object Companion { // at.released.tempfolder.sync.path/NodeDirectoryConfig.Companion|null[0]
+        final fun (at.released.tempfolder.sync.path/NodeDirectoryConfig).auto(): at.released.tempfolder.sync.path/NodeTempDirectoryBase.Auto // at.released.tempfolder.sync.path/NodeDirectoryConfig.Companion.auto|auto@at.released.tempfolder.sync.path.NodeDirectoryConfig(){}[0]
+        final fun (at.released.tempfolder.sync.path/NodeDirectoryConfig).path(kotlin/String): at.released.tempfolder.sync.path/NodeTempDirectoryBase.Path // at.released.tempfolder.sync.path/NodeDirectoryConfig.Companion.path|path@at.released.tempfolder.sync.path.NodeDirectoryConfig(kotlin.String){}[0]
+    }
+}
+
+// Targets: [js, wasmJs]
+sealed class at.released.tempfolder.sync.path/NodeTempDirectoryBase { // at.released.tempfolder.sync.path/NodeTempDirectoryBase|null[0]
+    final class Path : at.released.tempfolder.sync.path/NodeTempDirectoryBase { // at.released.tempfolder.sync.path/NodeTempDirectoryBase.Path|null[0]
+        constructor <init>(kotlin/String) // at.released.tempfolder.sync.path/NodeTempDirectoryBase.Path.<init>|<init>(kotlin.String){}[0]
+
+        final val path // at.released.tempfolder.sync.path/NodeTempDirectoryBase.Path.path|{}path[0]
+            final fun <get-path>(): kotlin/String // at.released.tempfolder.sync.path/NodeTempDirectoryBase.Path.path.<get-path>|<get-path>(){}[0]
+    }
+
+    final object Auto : at.released.tempfolder.sync.path/NodeTempDirectoryBase { // at.released.tempfolder.sync.path/NodeTempDirectoryBase.Auto|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // at.released.tempfolder.sync.path/NodeTempDirectoryBase.Auto.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // at.released.tempfolder.sync.path/NodeTempDirectoryBase.Auto.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // at.released.tempfolder.sync.path/NodeTempDirectoryBase.Auto.toString|toString(){}[0]
+    }
+}
+
+// Targets: [linux]
+final class at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig { // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig|null[0]
+    final var advisoryLock // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.advisoryLock|{}advisoryLock[0]
+        final fun <get-advisoryLock>(): at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.advisoryLock.<get-advisoryLock>|<get-advisoryLock>(){}[0]
+        final fun <set-advisoryLock>(at.released.tempfolder.posix200809.dsl/TempDirectoryAdvisoryLockType) // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.advisoryLock.<set-advisoryLock>|<set-advisoryLock>(at.released.tempfolder.posix200809.dsl.TempDirectoryAdvisoryLockType){}[0]
+    final var base // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.base|{}base[0]
+        final fun <get-base>(): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.base.<get-base>|<get-base>(){}[0]
+        final fun <set-base>(at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase) // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.base.<set-base>|<set-base>(at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase){}[0]
+    final var permissions // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.permissions|{}permissions[0]
+        final fun <get-permissions>(): kotlin.collections/Set<at.released.tempfolder.dsl/TempDirectoryFileModeBit> // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.permissions.<get-permissions>|<get-permissions>(){}[0]
+        final fun <set-permissions>(kotlin.collections/Set<at.released.tempfolder.dsl/TempDirectoryFileModeBit>) // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.permissions.<set-permissions>|<set-permissions>(kotlin.collections.Set<at.released.tempfolder.dsl.TempDirectoryFileModeBit>){}[0]
+    final var prefix // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.prefix|{}prefix[0]
+        final fun <get-prefix>(): kotlin/String // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.prefix.<get-prefix>|<get-prefix>(){}[0]
+        final fun <set-prefix>(kotlin/String) // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.prefix.<set-prefix>|<set-prefix>(kotlin.String){}[0]
+
+    final object Companion { // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.Companion|null[0]
+        final fun (at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig).auto(kotlin/Function1<at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase.Auto, kotlin/Unit> = ...): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.Companion.auto|auto@at.released.tempfolder.sync.fd.LinuxTempDirectoryConfig(kotlin.Function1<at.released.tempfolder.posix200809.dsl.TempDirectoryPosixBase.Auto,kotlin.Unit>){}[0]
+        final fun (at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig).fileDescriptor(kotlin/Int): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.Companion.fileDescriptor|fileDescriptor@at.released.tempfolder.sync.fd.LinuxTempDirectoryConfig(kotlin.Int){}[0]
+        final fun (at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig).path(kotlin/String): at.released.tempfolder.posix200809.dsl/TempDirectoryPosixBase // at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig.Companion.path|path@at.released.tempfolder.sync.fd.LinuxTempDirectoryConfig(kotlin.String){}[0]
+    }
+}
+
+// Targets: [linux]
+final fun (at.released.tempfolder.sync/TempDirectory.Companion).at.released.tempfolder.sync/createLinuxTempDirectory(kotlin/Function1<at.released.tempfolder.sync.fd/LinuxTempDirectoryConfig, kotlin/Unit>): at.released.tempfolder.sync/TempDirectory<at.released.tempfolder/TempDirectoryDescriptor> // at.released.tempfolder.sync/createLinuxTempDirectory|createLinuxTempDirectory@at.released.tempfolder.sync.TempDirectory.Companion(kotlin.Function1<at.released.tempfolder.sync.fd.LinuxTempDirectoryConfig,kotlin.Unit>){}[0]
+
+// Targets: [js]
+final fun (at.released.tempfolder.sync/TempDirectory.Companion).at.released.tempfolder.sync/createNodeJsTempDirectory(kotlin/Function1<at.released.tempfolder.sync.path/NodeDirectoryConfig, kotlin/Unit> = ...): at.released.tempfolder.sync/TempDirectory<kotlin/String> // at.released.tempfolder.sync/createNodeJsTempDirectory|createNodeJsTempDirectory@at.released.tempfolder.sync.TempDirectory.Companion(kotlin.Function1<at.released.tempfolder.sync.path.NodeDirectoryConfig,kotlin.Unit>){}[0]
+
+// Targets: [mingwX64]
+final class at.released.tempfolder.sync.path/WindowsTempDirectoryConfig { // at.released.tempfolder.sync.path/WindowsTempDirectoryConfig|null[0]
+    final var base // at.released.tempfolder.sync.path/WindowsTempDirectoryConfig.base|{}base[0]
+        final fun <get-base>(): at.released.tempfolder.sync.path/TempDirectoryWindowsBase // at.released.tempfolder.sync.path/WindowsTempDirectoryConfig.base.<get-base>|<get-base>(){}[0]
+        final fun <set-base>(at.released.tempfolder.sync.path/TempDirectoryWindowsBase) // at.released.tempfolder.sync.path/WindowsTempDirectoryConfig.base.<set-base>|<set-base>(at.released.tempfolder.sync.path.TempDirectoryWindowsBase){}[0]
+    final var prefix // at.released.tempfolder.sync.path/WindowsTempDirectoryConfig.prefix|{}prefix[0]
+        final fun <get-prefix>(): kotlin/String // at.released.tempfolder.sync.path/WindowsTempDirectoryConfig.prefix.<get-prefix>|<get-prefix>(){}[0]
+        final fun <set-prefix>(kotlin/String) // at.released.tempfolder.sync.path/WindowsTempDirectoryConfig.prefix.<set-prefix>|<set-prefix>(kotlin.String){}[0]
+
+    final object Companion { // at.released.tempfolder.sync.path/WindowsTempDirectoryConfig.Companion|null[0]
+        final fun (at.released.tempfolder.sync.path/WindowsTempDirectoryConfig).auto(): at.released.tempfolder.sync.path/TempDirectoryWindowsBase.Auto // at.released.tempfolder.sync.path/WindowsTempDirectoryConfig.Companion.auto|auto@at.released.tempfolder.sync.path.WindowsTempDirectoryConfig(){}[0]
+        final fun (at.released.tempfolder.sync.path/WindowsTempDirectoryConfig).path(kotlin/String): at.released.tempfolder.sync.path/TempDirectoryWindowsBase.Path // at.released.tempfolder.sync.path/WindowsTempDirectoryConfig.Companion.path|path@at.released.tempfolder.sync.path.WindowsTempDirectoryConfig(kotlin.String){}[0]
+    }
+}
+
+// Targets: [mingwX64]
+final class at.released.tempfolder/TempDirectoryWindowsIOException : at.released.tempfolder/TempDirectoryIOException { // at.released.tempfolder/TempDirectoryWindowsIOException|null[0]
+    constructor <init>(kotlin/String, kotlin/UInt, kotlin/Throwable?) // at.released.tempfolder/TempDirectoryWindowsIOException.<init>|<init>(kotlin.String;kotlin.UInt;kotlin.Throwable?){}[0]
+    constructor <init>(kotlin/UInt) // at.released.tempfolder/TempDirectoryWindowsIOException.<init>|<init>(kotlin.UInt){}[0]
+
+    final val lastError // at.released.tempfolder/TempDirectoryWindowsIOException.lastError|{}lastError[0]
+        final fun <get-lastError>(): kotlin/UInt // at.released.tempfolder/TempDirectoryWindowsIOException.lastError.<get-lastError>|<get-lastError>(){}[0]
+
+    final object Companion // at.released.tempfolder/TempDirectoryWindowsIOException.Companion|null[0]
+}
+
+// Targets: [mingwX64]
+sealed class at.released.tempfolder.sync.path/TempDirectoryWindowsBase { // at.released.tempfolder.sync.path/TempDirectoryWindowsBase|null[0]
+    final class Path : at.released.tempfolder.sync.path/TempDirectoryWindowsBase { // at.released.tempfolder.sync.path/TempDirectoryWindowsBase.Path|null[0]
+        constructor <init>(kotlin/String) // at.released.tempfolder.sync.path/TempDirectoryWindowsBase.Path.<init>|<init>(kotlin.String){}[0]
+
+        final val path // at.released.tempfolder.sync.path/TempDirectoryWindowsBase.Path.path|{}path[0]
+            final fun <get-path>(): kotlin/String // at.released.tempfolder.sync.path/TempDirectoryWindowsBase.Path.path.<get-path>|<get-path>(){}[0]
+    }
+
+    final object Auto : at.released.tempfolder.sync.path/TempDirectoryWindowsBase { // at.released.tempfolder.sync.path/TempDirectoryWindowsBase.Auto|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // at.released.tempfolder.sync.path/TempDirectoryWindowsBase.Auto.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // at.released.tempfolder.sync.path/TempDirectoryWindowsBase.Auto.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // at.released.tempfolder.sync.path/TempDirectoryWindowsBase.Auto.toString|toString(){}[0]
+    }
+}
+
+// Targets: [mingwX64]
+final fun (at.released.tempfolder.sync/TempDirectory.Companion).at.released.tempfolder.sync/createWindowsTempDirectory(kotlin/Function1<at.released.tempfolder.sync.path/WindowsTempDirectoryConfig, kotlin/Unit> = ...): at.released.tempfolder.sync/TempDirectory<at.released.tempfolder.path/TempDirectoryPath> // at.released.tempfolder.sync/createWindowsTempDirectory|createWindowsTempDirectory@at.released.tempfolder.sync.TempDirectory.Companion(kotlin.Function1<at.released.tempfolder.sync.path.WindowsTempDirectoryConfig,kotlin.Unit>){}[0]
+
+// Targets: [wasmJs]
+final fun (at.released.tempfolder.sync/TempDirectory.Companion).at.released.tempfolder.sync/createWasmNodeJsTempDirectory(kotlin/Function1<at.released.tempfolder.sync.path/NodeDirectoryConfig, kotlin/Unit> = ...): at.released.tempfolder.sync/TempDirectory<kotlin/String> // at.released.tempfolder.sync/createWasmNodeJsTempDirectory|createWasmNodeJsTempDirectory@at.released.tempfolder.sync.TempDirectory.Companion(kotlin.Function1<at.released.tempfolder.sync.path.NodeDirectoryConfig,kotlin.Unit>){}[0]
+
+// Targets: [wasmWasi]
+sealed interface at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase { // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase|null[0]
+    final class FileDescriptor : at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase { // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase.FileDescriptor|null[0]
+        constructor <init>(kotlin/Int) // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase.FileDescriptor.<init>|<init>(kotlin.Int){}[0]
+
+        final val fd // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase.FileDescriptor.fd|{}fd[0]
+            final fun <get-fd>(): kotlin/Int // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase.FileDescriptor.fd.<get-fd>|<get-fd>(){}[0]
+    }
+
+    final class Path : at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase { // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase.Path|null[0]
+        constructor <init>(kotlin/String) // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase.Path.<init>|<init>(kotlin.String){}[0]
+
+        final val path // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase.Path.path|{}path[0]
+            final fun <get-path>(): kotlin/String // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase.Path.path.<get-path>|<get-path>(){}[0]
+    }
+
+    final object Auto : at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase { // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase.Auto|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase.Auto.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase.Auto.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase.Auto.toString|toString(){}[0]
+    }
+}
+
+// Targets: [wasmWasi]
+final class at.released.tempfolder.sync.fd/Wasip1TempDirectoryConfig { // at.released.tempfolder.sync.fd/Wasip1TempDirectoryConfig|null[0]
+    final var base // at.released.tempfolder.sync.fd/Wasip1TempDirectoryConfig.base|{}base[0]
+        final fun <get-base>(): at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase // at.released.tempfolder.sync.fd/Wasip1TempDirectoryConfig.base.<get-base>|<get-base>(){}[0]
+        final fun <set-base>(at.released.tempfolder.sync.fd/TempDirectoryWasip1TempBase) // at.released.tempfolder.sync.fd/Wasip1TempDirectoryConfig.base.<set-base>|<set-base>(at.released.tempfolder.sync.fd.TempDirectoryWasip1TempBase){}[0]
+    final var prefix // at.released.tempfolder.sync.fd/Wasip1TempDirectoryConfig.prefix|{}prefix[0]
+        final fun <get-prefix>(): kotlin/String // at.released.tempfolder.sync.fd/Wasip1TempDirectoryConfig.prefix.<get-prefix>|<get-prefix>(){}[0]
+        final fun <set-prefix>(kotlin/String) // at.released.tempfolder.sync.fd/Wasip1TempDirectoryConfig.prefix.<set-prefix>|<set-prefix>(kotlin.String){}[0]
+}
+
+// Targets: [wasmWasi]
+final class at.released.tempfolder/TempDirectoryWasiIOException : at.released.tempfolder/TempDirectoryIOException { // at.released.tempfolder/TempDirectoryWasiIOException|null[0]
+    constructor <init>(kotlin/Int) // at.released.tempfolder/TempDirectoryWasiIOException.<init>|<init>(kotlin.Int){}[0]
+    constructor <init>(kotlin/Int, kotlin/String, kotlin/Throwable?) // at.released.tempfolder/TempDirectoryWasiIOException.<init>|<init>(kotlin.Int;kotlin.String;kotlin.Throwable?){}[0]
+    constructor <init>(kotlin/Int, kotlin/String?) // at.released.tempfolder/TempDirectoryWasiIOException.<init>|<init>(kotlin.Int;kotlin.String?){}[0]
+    constructor <init>(kotlin/Int, kotlin/Throwable) // at.released.tempfolder/TempDirectoryWasiIOException.<init>|<init>(kotlin.Int;kotlin.Throwable){}[0]
+
+    final val name // at.released.tempfolder/TempDirectoryWasiIOException.name|{}name[0]
+        final fun <get-name>(): kotlin/String // at.released.tempfolder/TempDirectoryWasiIOException.name.<get-name>|<get-name>(){}[0]
+    final val wasiErrno // at.released.tempfolder/TempDirectoryWasiIOException.wasiErrno|{}wasiErrno[0]
+        final fun <get-wasiErrno>(): kotlin/Int // at.released.tempfolder/TempDirectoryWasiIOException.wasiErrno.<get-wasiErrno>|<get-wasiErrno>(){}[0]
+}
+
+// Targets: [wasmWasi]
+final fun (at.released.tempfolder.sync/TempDirectory.Companion).at.released.tempfolder.sync/createWasip1TempDirectory(kotlin/Function1<at.released.tempfolder.sync.fd/Wasip1TempDirectoryConfig, kotlin/Unit>): at.released.tempfolder.sync/TempDirectory<at.released.tempfolder/TempDirectoryDescriptor> // at.released.tempfolder.sync/createWasip1TempDirectory|createWasip1TempDirectory@at.released.tempfolder.sync.TempDirectory.Companion(kotlin.Function1<at.released.tempfolder.sync.fd.Wasip1TempDirectoryConfig,kotlin.Unit>){}[0]

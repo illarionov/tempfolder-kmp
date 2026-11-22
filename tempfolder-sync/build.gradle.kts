@@ -6,7 +6,6 @@
 @file:Suppress("OPT_IN_USAGE", "UnstableApiUsage")
 
 import com.android.build.api.withAndroid
-import org.apache.tools.ant.taskdefs.condition.Os
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
@@ -53,9 +52,6 @@ kotlin {
         nodejs()
     }
     wasmJs {
-        compilerOptions {
-            freeCompilerArgs.add("-Xwasm-attach-js-exception")
-        }
         nodejs()
     }
     wasmWasi {
@@ -111,12 +107,9 @@ kotlin {
     }
 
     targets.withType<KotlinNativeTarget>().matching { it.konanTarget.family.isAppleFamily }.configureEach {
-        // https://youtrack.jetbrains.com/issue/KT-73136
-        if (Os.isFamily("mac")) {
-            compilations.named("main") {
-                cinterops.create("apple") {
-                    packageName("at.released.tempfolder.platform.apple")
-                }
+        compilations.named("main") {
+            cinterops.create("apple") {
+                packageName("at.released.tempfolder.platform.apple")
             }
         }
     }

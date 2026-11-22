@@ -28,8 +28,8 @@ kotlin {
     sourceSets {
         all {
             languageSettings {
-                languageVersion = "1.9"
-                apiVersion = "1.9"
+                languageVersion = "2.1"
+                apiVersion = "2.1"
                 listOf(
                     "kotlin.RequiresOptIn",
                     "kotlin.ExperimentalStdlibApi",

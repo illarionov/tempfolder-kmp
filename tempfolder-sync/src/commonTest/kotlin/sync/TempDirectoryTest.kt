@@ -20,6 +20,7 @@ import at.released.tempfolder.testframework.assertions.isDirectory
 import at.released.tempfolder.testframework.assertions.isNotExists
 import at.released.tempfolder.testframework.assertions.isSamePathAs
 import at.released.tempfolder.testframework.assertions.posixFileModeIfSupportedIsEqualTo
+import at.released.tempfolder.testframework.createSymlinkToDirectoryOutsideTree
 import at.released.tempfolder.testframework.isReadingDirectorySupported
 import at.released.tempfolder.testframework.isSimulatorOrVirtualDevice
 import at.released.tempfolder.testframework.platformFilesystem
@@ -65,10 +66,7 @@ class TempDirectoryTest {
                 tempDirectory.append("file1.txt"),
                 content = TEST_FILE_CONTENT,
             )
-            platformFilesystem.createSymlink(
-                "../../../../build",
-                tempDirectory.append("build.link"),
-            )
+            tempDirectory.createSymlinkToDirectoryOutsideTree()
 
             tempDirectory.append("dir1").also { dir1Path ->
                 platformFilesystem.createDirectory(dir1Path)
