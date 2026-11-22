@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-@file:Suppress("OPT_IN_USAGE")
+@file:Suppress("OPT_IN_USAGE", "UnstableApiUsage")
 
+import com.android.build.api.withAndroid
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -15,6 +16,7 @@ plugins {
     id("at.released.tempfolder.gradle.lint.android-lint")
     id("at.released.tempfolder.gradle.multiplatform.atomicfu")
     id("at.released.tempfolder.gradle.multiplatform.android")
+    id("at.released.tempfolder.gradle.multiplatform.android-instrumented-test")
     id("at.released.tempfolder.gradle.multiplatform.kotlin")
     id("at.released.tempfolder.gradle.multiplatform.js")
     id("at.released.tempfolder.gradle.multiplatform.publish")
@@ -31,38 +33,24 @@ version = tempfolderVersions.getSubmoduleVersionProvider(
     envVariableName = "TEMPFOLDER_SYNC_VERSION",
 ).get()
 
-android {
-    namespace = "at.released.tempfolder.sync"
-    defaultConfig {
-        consumerProguardFiles("consumer-rules.pro")
-    }
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            isShrinkResources = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
+@OptIn(ExperimentalWasmDsl::class)
+kotlin {
+    android {
+        namespace = "at.released.tempfolder.sync"
+        enableCoreLibraryDesugaring = true
+        packaging {
+            resources.excludes += listOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
             )
         }
     }
-    packaging {
-        resources.excludes += listOf(
-            "META-INF/LICENSE.md",
-            "META-INF/LICENSE-notice.md",
-        )
-    }
-}
-
-@OptIn(ExperimentalWasmDsl::class)
-kotlin {
-    androidTarget()
     androidNativeArm32()
     androidNativeArm64()
     androidNativeX86()
     androidNativeX64()
     jvm()
-    js(IR) {
+    js {
         nodejs()
     }
     wasmJs {
@@ -101,7 +89,7 @@ kotlin {
         common {
             group("jvmAndAndroid") {
                 withJvm()
-                withAndroidTarget()
+                withAndroid()
             }
             group("native") {
                 group("posix200809") {
@@ -159,10 +147,14 @@ kotlin {
             implementation(projects.testIgnoreAnnotations)
             implementation(libs.assertk)
         }
-        androidInstrumentedTest.dependencies {
+        androidDeviceTest.dependencies {
             implementation(libs.androidx.test.core)
             implementation(libs.androidx.test.runner)
             implementation(libs.androidx.test.rules)
         }
     }
+}
+
+dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs.nio)
 }

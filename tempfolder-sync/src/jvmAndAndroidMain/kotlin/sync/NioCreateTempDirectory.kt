@@ -37,13 +37,11 @@ internal fun createNioTempDirectory(
 private fun resolveBase(base: TempDirectoryNioBase): Path {
     return when (base) {
         is Auto -> getDefaultPath(base.fileSystem)
-        is Path -> try {
-            base.toRealPath()
+        is TempDirectoryNioBase.Path -> try {
+            base.path.toRealPath()
         } catch (ioe: IOException) {
             throw TempDirectoryIOException("Failed to resolve temp dir root", ioe)
         }
-
-        else -> error("Not expected")
     }
 }
 
@@ -69,6 +67,8 @@ private fun tryCreateTempfolder(
     mode: Set<PosixFilePermission>,
 ): Path? {
     val modeAttr = if (base.fileSystem.supportedFileAttributeViews().contains("posix")) {
+        // Only filesystems advertising the POSIX attribute view reach this call.
+        @Suppress("NioDesugaring")
         arrayOf(PosixFilePermissions.asFileAttribute(mode))
     } else {
         emptyArray()

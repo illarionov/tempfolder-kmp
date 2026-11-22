@@ -11,8 +11,3 @@ package at.released.tempfolder.gradle.multiplatform
 plugins {
     id("org.jetbrains.kotlinx.atomicfu")
 }
-
-atomicfu {
-    transformJvm = true
-    jvmVariant = "FU"
-}
